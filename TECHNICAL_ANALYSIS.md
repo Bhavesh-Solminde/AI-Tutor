@@ -39,7 +39,7 @@ Neither competitor has all three of these. **These are the live demo anchors —
 User uploads a syllabus PDF → AI extracts all topics → renders them as **clickable nodes on an interactive graph**. As the user learns and gets quizzed, each node updates its color in real time:
 - 🔘 **Gray** = not started yet
 - 🟡 **Yellow** = currently learning / partially mastered
-- 🟢 **Green** = fully mastered (quiz score > 85%)
+- 🟢 **Green** = fully mastered (passed quiz with ≥ 70% on minimum 10 questions)
 
 No other edtech app shows a spatial, visual map of what you know and what you don't. This is the **money shot** in the demo.
 
@@ -117,12 +117,12 @@ This is the **most flexible entry point** — students with no syllabus or who j
 │  /api/auth        /api/upload      /api/tutor                   │
 │  /api/quiz        /api/progress    /api/roadmap                 │
 │                                                                 │
-│  Multer (file upload)  │  PDF/DOCX parser  │  JWT middleware     │
+│  Multer (file upload)  │  PDF/DOCX parser  │  JWT middleware    │
 └────────────┬───────────────────────┬────────────────────────────┘
              │                       │
              ▼                       ▼
 ┌────────────────────┐   ┌──────────────────────────────────────┐
-│   MongoDB Atlas    │   │         LangGraph AI Layer            │
+│   MongoDB Atlas    │   │         LangGraph AI Layer           │
 │                    │   │                                      │
 │  Users             │   │  Tutor Agent                         │
 │  Sessions          │   │  Quiz Generator Agent                │
@@ -133,8 +133,8 @@ This is the **most flexible entry point** — students with no syllabus or who j
                                         │
                                         ▼
                           ┌─────────────────────────┐
-                          │     Pinecone Vector DB   │
-                          │  (chunked PDF embeddings)│
+                          │     Pinecone Vector DB  │
+                          │ (chunked PDF embeddings)│
                           └─────────────────────────┘
 ```
 
@@ -162,7 +162,7 @@ The design is a personalized, premium platform — **not a StudyFetch clone**. T
 
 #### Dark Mode
 > **Vibe:** Deep dark blue-charcoal workspace — not flat black, not gray. Has a subtle cool purple-blue undertone throughout. Inspired by StudyFetch's exact dark theme analysis.  
-> **Key elements:** GitHub-style Personal Mastery heatmap in sidebar, spatial node roadmap on a grid backdrop, NeuralNest Tutor drawer with abstract brain icon and action chips.
+> **Key elements:** Spatial node roadmap on a grid backdrop, NeuralNest Tutor chat with abstract brain icon and action chips, Personal Mastery heatmap on Profile page.
 
 | Token | Hex | Usage |
 |---|---|---|
@@ -309,39 +309,58 @@ frontend/ (or Ai-tutor/src/)
 ├── pages/
 │   ├── Landing.jsx                  # /  — Auth + pitch
 │   ├── Onboarding.jsx               # /onboarding — 3-step wizard
-│   ├── Roadmap.jsx                  # /roadmap — React Flow node graph hub
-│   ├── Tutor.jsx                    # /tutor/:topicId — split-pane session
-│   ├── Quiz.jsx                     # /quiz/:topicId — gamified MCQ
-│   └── Dashboard.jsx                # /dashboard — mastery overview
+│   ├── Dashboard.jsx                # /dashboard — mission control hub
+│   ├── Roadmap.jsx                  # /roadmap — React Flow node graph
+│   ├── Tutor.jsx                    # /tutor/:topicId — full-width chat session
+│   ├── Quiz.jsx                     # /quiz/:topicId — timed gamified MCQ
+│   ├── ExamMode.jsx                 # /exam — setup wizard + exam roadmap
+│   ├── ActiveQuizzes.jsx            # /active-quizzes — timed quizzes + quiz history
+│   └── Profile.jsx                  # /profile — user stats + study heatmap
 ├── components/
 │   ├── layout/
-│   │   ├── Sidebar.jsx              # Left nav: logo, links, mastery heatmap
-│   │   ├── TopBar.jsx               # Search, theme toggle, user avatar
-│   │   └── ThemeToggle.jsx          # dark/light switch button
+│   │   ├── Sidebar.jsx              # Fixed left sidebar nav (~210px)
+│   │   ├── TopBar.jsx               # Search + Ask Doubt + bell + theme toggle + avatar
+│   │   └── ThemeToggle.jsx          # dark/light switch button (moon/sun icon)
+│   ├── sidebar/
+│   │   ├── NavItem.jsx              # Single nav link (icon + label + active pill)
+│   │   ├── CollapsibleSection.jsx   # Expandable section (Chat History ▾, Notes ▾)
+│   │   └── ChatHistoryList.jsx      # Sub-items under Chat History (Exam / Roadmap / Other)
 │   ├── roadmap/
 │   │   ├── RoadmapCanvas.jsx        # ReactFlow wrapper + custom nodes + edges
 │   │   ├── TopicNode.jsx            # Custom node: gray/yellow/green states
-│   │   └── TopicPopupCard.jsx       # Glassmorphism click popup card
+│   │   └── TopicPopupCard.jsx       # Inline popup: stats + Start Learning + Test my Skills
 │   ├── tutor/
-│   │   ├── TutorChatPanel.jsx       # Streaming message bubbles + chips
+│   │   ├── TutorChatPanel.jsx       # Full-width streaming message bubbles + chips
 │   │   ├── MessageBubble.jsx        # AI vs user message styles
 │   │   ├── ComprehensionChips.jsx   # [Understood] [Need more help] [Go deeper]
 │   │   ├── DoubtPrompt.jsx          # "Do you have any doubts?" + freeform input
-│   │   └── NotesPanel.jsx           # Left panel: PDF/notes formatted viewer
+│   │   ├── QuickActionCards.jsx     # 2×2 suggestion tiles (empty state)
+│   │   └── MaterialsModal.jsx       # Select materials modal (search + PDF grid)
 │   ├── quiz/
 │   │   ├── QuizCard.jsx             # Question + 4 MCQ options
-│   │   ├── LivesBar.jsx             # ❤️ hearts + XP counter + progress dots
+│   │   ├── LivesBar.jsx             # ❤️ hearts + XP counter
+│   │   ├── QuizSteps.jsx            # Left panel: numbered question list
 │   │   ├── AnswerOptionButton.jsx   # Correct/wrong animation states
 │   │   ├── XPPopup.jsx              # Floating "+20 XP" animation
+│   │   ├── QuizTimer.jsx            # Countdown timer (auto-submits at 0)
 │   │   └── ScoreSummary.jsx         # End-of-quiz mastery delta card
 │   ├── dashboard/
 │   │   ├── MasteryRing.jsx          # Circular % progress indicator
-│   │   ├── MasteryHeatmap.jsx       # GitHub-style study activity grid
 │   │   ├── TopicMasteryTable.jsx    # Sortable table with progress bars
 │   │   ├── ExamCountdownWidget.jsx  # Date + days remaining
-│   │   ├── StudyModeSelector.jsx    # Cram / Standard / Deep toggle
-│   │   ├── RescuePlanTimeline.jsx   # Vertical day-by-day plan view
-│   │   └── NextTopicCard.jsx        # AI-recommended next topic
+│   │   ├── WeeklyStreakWidget.jsx    # Streak days + XP today
+│   │   ├── AIRecommendedCard.jsx    # AI-recommended next topic
+│   │   ├── RescuePlanTimeline.jsx   # Day-by-day exam study plan
+│   │   └── NextTopicCard.jsx        # Continue where you left off card
+│   ├── exam/
+│   │   ├── ExamSetupWizard.jsx      # 3-step exam setup flow
+│   │   ├── ExamDatePicker.jsx       # Date picker + days remaining calc
+│   │   ├── SyllabusUpload.jsx       # Drag-drop syllabus PDF (optional)
+│   │   └── PYQUpload.jsx            # Drag-drop PYQ PDF (optional)
+│   ├── profile/
+│   │   ├── UserProfileCard.jsx      # Avatar + name + email + mastery level
+│   │   ├── MasteryHeatmap.jsx       # GitHub-style study activity grid
+│   │   └── XPStreakBadge.jsx        # Total XP + streak counter
 │   └── onboarding/
 │       ├── DropZone.jsx             # Drag-and-drop file upload
 │       ├── ExplanationLevelCard.jsx # Beginner/Intermediate/Advanced selector
@@ -350,15 +369,71 @@ frontend/ (or Ai-tutor/src/)
 └── hooks/
     ├── useSSE.js                    # SSE streaming parser for tutor chat
     ├── useTheme.js                  # Dark/light class toggle + persistence
+    ├── useTimer.js                  # Quiz countdown timer hook
     └── useMastery.js                # Mastery score state + node color resolver
 ```
+
+---
+
+### Global Layout
+
+#### Sidebar (Fixed Left — ~210px)
+
+Present on every authenticated page. Dark surface background (`#111118` dark / `#F3F4F6` light).
+
+```
+┌─────────────────────┐
+│  🧠 NEURALNEST       │ ← Logo + wordmark
+│─────────────────────│
+│  🏠 Dashboard        │
+│  🗺️ Roadmap          │
+│  🤖 AI Tutor         │
+│  ⏱️ Exam Mode        │
+│  📝 Active Quizzes   │
+│─────────────────────│
+│  💬 Chat History   ▾ │ ← collapsible
+│     📅 Exam          │
+│     🗺️ Roadmap       │
+│     💡 Other         │
+│─────────────────────│
+│  📓 Notes          ▾ │ ← collapsible
+│     📄 PDF-name-1    │
+│     📄 PDF-name-2    │
+│─────────────────────│
+│  [  + New Session  ] │ ← primary CTA button
+└─────────────────────┘
+```
+
+- **Active item:** `#1E2A45` dark blue pill background, `#E8E8F2` text
+- **Inactive items:** `#8888A8` muted text, no background
+- **+ New Session:** `#3B6BFF` CTA button, full width
+
+#### Top Bar (Fixed Top — full width minus sidebar)
+
+Present on every authenticated page.
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔍 Search topics, syllabuses, or notes...  │  ✦ Ask Doubt  │  🔔  │  🌙  │  (G) Name  │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+| Element | Position | Function |
+|---|---|---|
+| Search bar | Left (~40% width) | Global search across topics/notes |
+| `✦ Ask Doubt` | Center-right | Opens open-topic AI chat (Core Feature #3) |
+| Bell icon | Right | Notifications |
+| Moon/Sun icon | Right | Theme toggle (dark ↔ light) |
+| Avatar circle | Far right | Click → navigates to `/profile` |
+
+---
 
 ### Pages / Routes
 
 #### `/` — Landing / Auth
 - Google OAuth sign-in button
 - App pitch copy + feature highlights
-- Redirects to `/onboarding` if first login, `/roadmap` if returning user
+- Redirects to `/onboarding` if first login, `/dashboard` if returning user
 
 #### `/onboarding` — Setup Wizard (3 steps)
 **Step 1:** Input method selector
@@ -406,34 +481,109 @@ Stored as `explanationLevel: 'beginner' | 'intermediate' | 'advanced'` in the Us
 - `<MasteryRatingSlider />` — range input per topic
 - `<ProgressStepper />` — 1/2/3 step indicator header
 
+#### `/dashboard` — Mission Control Hub
+
+The main home screen after login. Shows all key stats and recommendations.
+
+**Layout:**
+```
+┌──────────────────────────┬────────────────────┬─────────────────────┐
+│  📊 OVERALL SYLLABUS     │  📅 EXAM COUNTDOWN  │  🔥 WEEKLY STREAK    │
+│  33.7%                   │  5 Days Remaining  │  4 Days  +180 XP   │
+│  (progress ring)         │  Exam: Jun 21      │  Mastery: College   │
+│  2/4 topics started      │                    │  Scholar            │
+├──────────────────────────┴────────────────────┴─────────────────────┤
+│  📋 TOPIC-BY-TOPIC MASTERY                        Sort by: Mastery ↕│
+│  ┌──────────────────┬────────┬──────┬──────────────┬──────┐        │
+│  │ Topic Concept    │ Diff.  │ Est. │ Mastery Score │ Study│        │
+│  │ CPU Scheduling   │ Medium │ 25m  │ ████████ 90% │  ▶   │        │
+│  │ Virtual Memory   │ Hard   │ 35m  │ █████░░░ 45% │  ▶   │        │
+│  │ Deadlocks        │ Hard   │ 30m  │ ░░░░░░░░  0% │  ▶   │        │
+│  │ File Systems     │ Easy   │ 20m  │ ░░░░░░░░  0% │  ▶   │        │
+│  └──────────────────┴────────┴──────┴──────────────┴──────┘        │
+├──────────────────────────────────────┬──────────────────────────────┤
+│  ✦ AI RECOMMENDED NEXT              │  📅 EXAM RESCUE TIMELINE     │
+│  Virtual Memory & Paging            │  Day-by-day scheduler        │
+│  Your mastery: 45%                  │                              │
+│  Set at onboarding as target topic  │  ✓ Day 1 Study Block  Jun 16 │
+│  ⏱ 35m est   📊 Hard               │    VM & Paging + CPU Rev.    │
+│  [Resume Study Pacing →]            │  ② Day 2 Study Block  Jun 17 │
+│                                     │    Deadlocks & Sync          │
+│  ⚡ CONTINUE WHERE YOU LEFT OFF      │  ③ Day 3 Study Block  Jun 18 │
+│  Last: Virtual Memory • Yesterday   │    File Systems & I/O        │
+│  [Resume Tutor →] [Take Quiz →]     │  ④ Day 4 Mock Exam    Jun 19 │
+└──────────────────────────────────────┴──────────────────────────────┘
+```
+
+**Key rules:**
+- No heatmap here (heatmap is on Profile page)
+- No Study Mode selector (removed — not needed)
+- The "Study ▶" button in the mastery table → navigates to `/tutor/:topicId` for that topic
+- Exam Rescue Timeline only shows if exam date is set
+
+**Components needed:**
+- `<MasteryRing />` — circular progress indicator
+- `<TopicMasteryTable />` — sortable table with mastery bars
+- `<ExamCountdownWidget />` — date + days remaining
+- `<WeeklyStreakWidget />` — streak days + XP today
+- `<AIRecommendedCard />` — AI-recommended next study card + "Resume Study Pacing →" button
+- `<RescuePlanTimeline />` — vertical day-by-day study plan view
+- `<NextTopicCard />` — "Continue where you left off" with Resume / Quiz buttons
+
 #### `/roadmap` — Visual Syllabus Roadmap (MONEY SHOT)
 **What it does:** Renders a zoomable, pannable node graph. Each node = one topic.
 
-**Node states:**
+**Page header (below top bar):**
+- Left: Title — *"[Subject] Roadmap"* + subtitle *"Click a node to open details and start studying."*
+- Right: `📅 Exam: X Days Left (date)` orange pill + `✓ X Mastered` green pill + `✦ X Active` yellow pill
+
+**Canvas controls:** `+` / `−` / `⛶` expand — bottom left corner
+
+**Node states and transition rules:**
 ```
-Unstarted  → gray circle,  dashed border,  🔒 icon
-Learning   → yellow circle, solid border,  pulsing glow animation
-Mastered   → green circle,  solid border,  ✓ checkmark
+⬜ GRAY (Unstarted)
+    Icon: 🔒 lock
+    Border: dashed gray
+    Label: gray text
+    ↓ User clicks "Start Learning" on this node → begins AI Tutor session
+🟡 YELLOW (Learning / Active)
+    Icon: ✦ sparkle
+    Border: solid yellow
+    Effect: pulsing glow animation
+    ↓ User clicks "Test my Skills" → takes quiz (minimum 10 questions)
+    ↓ User must score ≥ 70% (7/10+ correct) to advance
+    ↓ If user fails: node STAYS yellow (no regression to gray)
+🟢 GREEN (Mastered)
+    Icon: ✓ checkmark
+    Border: solid green
+    Label: green text
 ```
 
-**On node click:**
-- Glassmorphism popup card opens (topic name, mastery %, estimated time)
-- "Start Learning" button → navigates to `/tutor/:topicId`
+**Edge/arrow styles:**
+- Dashed green line → mastered/completed path
+- Solid dark arrow → upcoming/unstarted path
 
-**Sidebar (left):**
-- NeuralNest-OS logo + nav links
-- Course list
-- GitHub-style Personal Mastery heatmap (7×N grid, one square per study day)
-
-**Top bar:**
-- Search topics
-- "Tutor Mode" button
-- "View Insights" button
-- User avatar + settings
-
-**Right panel (collapsible):**
-- NeuralNest Tutor chat (compact version)
-- Quick options: Explain this node / Start Quiz / Find Resources
+**On node click — inline popup card** (attached to canvas, not a modal):
+```
+┌─────────────────────────────────────────┐
+│  CPU Scheduling Algorithms      [Close] │
+│  ┌──────────┐                          │
+│  │ MASTERED │  ← status badge (green)  │
+│  └──────────┘                          │
+│  First-Come First-Served (FCFS),       │
+│  Shortest Job First (SJF), and...      │
+│                                        │
+│  ⏱ Est. Time   📊 Level   ✦ Mastery   │
+│    25 mins      Medium      98%        │
+│                                        │
+│  ┌──────────────────────────────────┐  │
+│  │     Start Learning  ›            │  │  → navigates to /tutor/:topicId
+│  └──────────────────────────────────┘  │  → filled bright blue #3B6BFF
+│  ┌──────────────────────────────────┐  │
+│  │     Test my Skills  ›            │  │  → navigates to /quiz/:topicId
+│  └──────────────────────────────────┘  │  → outlined blue border, no fill
+└─────────────────────────────────────────┘
+```
 
 **React Flow custom node implementation:**
 ```jsx
@@ -454,93 +604,254 @@ const TopicNode = ({ data }) => {
 
 **Components needed:**
 - `<RoadmapCanvas />` — wraps `<ReactFlow>` with custom nodes + edges
-- `<TopicNode />` — custom node component
-- `<TopicPopupCard />` — glassmorphism hover/click card
-- `<MasteryHeatmap />` — GitHub-style activity grid in sidebar
+- `<TopicNode />` — custom node component (gray/yellow/green)
+- `<TopicPopupCard />` — inline popup with stats + 2 action buttons
 
-#### `/tutor/:topicId` — Tutor Session
-**Layout:** Split-pane (side-by-side, like StudyFetch)
-- **Left (55%):** Notes/material panel — read-only uploaded content rendered as formatted text
-- **Right (45%):** NeuralNest Tutor chat drawer
+#### `/tutor/:topicId` — Full-Width Tutor Chat Session
 
-**Two modes — same page, same UI:**
+**Layout:** Full-width chat (no split-pane). Same layout style as the empty state.
 
-| Mode | How it starts | Left panel shows | RAG source |
-|---|---|---|---|
-| **Syllabus mode** (default) | User clicks a node on the roadmap | Uploaded PDF/notes content for that topic | Pinecone vectors from uploaded material |
-| **Open mode** (Core #3) | User pastes notes or types "Explain me [topic]" via the navbar input or dashboard | Pasted notes (formatted), or empty if typed topic | Pasted notes get chunked + embedded on-the-fly. Typed topic = no RAG, pure LLM knowledge |
+**Empty state (first visit / new session):**
+- NeuralNest mascot icon centered
+- Greeting: *"Hello, I'm NeuralNest"*
+- 2×2 grid of quick action suggestion cards (e.g. "Explain my lecture notes", "Test my multiplication tables")
+- *"View More • View Previous Chat Sessions"* links
+- Pinned input bar at bottom
 
-Both modes use the **exact same tutor UI and chat behavior** below. The only difference is where the content comes from.
+**Active session (messages flowing):**
+- AI message bubbles streaming word-by-word via SSE
+- User message bubbles (right-aligned)
+- After each AI teaching chunk → comprehension chips appear:
+  - `[Understood]` `[Need more help]` `[Go deeper]`
+  - Below chips: *"Do you have any doubts or questions before we move on?"*
+- Typing natural language triggers `ANSWER_DOUBT` mode
+- After topic complete: mastery delta shown + "Start Quiz" button
 
-**Tutor chat behavior:**
-- AI teaches in chunks (not full dumps)
-- After each chunk → comprehension checkpoint with 3 action chips + Q&A doubt prompt
-- Chip responses: `[Understood]` `[Need more help]` `[Go deeper]`
-- Below chips: *"Do you have any doubts or questions before we move on?"*
-- Typing natural language also accepted — triggers `ANSWER_DOUBT` mode
-- The tutor answers the doubt fully, then resumes the normal teaching flow
-- Explanation fallback chain (never repeats):
-  1. Simpler language
-  2. Real-world analogy
-  3. Step-by-step atomic breakdown
+**Pinned input bar (bottom of page):**
+```
+┌────────────────────────────────────────────────────────────────────┐
+│  Ask your AI tutor anything...                              [⬆]   │
+│  📎  🌐  💬  📁 0 materials                                 🎤   │
+└────────────────────────────────────────────────────────────────────┘
+```
+- 📎 Attach icon → opens `<MaterialsModal />`
+- 📁 "X materials" chip → shows attached materials count, click to manage
+- 🎤 Microphone icon
+- ⬆ Blue send button (`#3B6BFF`)
+
+**Materials selector modal** (triggered by attach icon or materials chip):
+```
+┌────────────────────────────────────────────────────────────┐
+│  Select Materials                              [X Close]  │
+│  Select materials to use for the chat.                    │
+│                                                           │
+│  🔍 Search materials...           [Grid|List]  [Select All]│
+│                                                           │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐     │
+│  │  + Upload │ │ AI Eng.  │ │ AI Ops   │ │ Agentic  │     │
+│  │  New Mat. │ │ Foundat. │ │ & Ethics │ │ AI Syst. │     │
+│  │          │ │ Intro to │ │ Intro to │ │ The evo. │     │
+│  │          │ │ AI Engi. │ │ AI Oper. │ │ of AI... │     │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────┘     │
+│                                                           │
+│                              [  Confirm Selection  ]      │
+└────────────────────────────────────────────────────────────┘
+```
+
+**+ New Chat flow:**
+- User clicks `+ New Session` in sidebar
+- A small inline prompt appears: *"Where should this chat be saved?"*
+- 3 selectable pills: `📅 Exam` / `🗺️ Roadmap` / `💡 Other`
+- Selection determines which Chat History subsection it appears under
 
 **Streaming:** Responses stream via SSE (Server-Sent Events) so text appears word-by-word.
 
-**After topic complete:**
-- Mastery self-rating prompt: "How would you rate your understanding now? 1–10"
-- Mastery delta shown: "You went from 3/10 → 8/10 🎉"
-- "Start Quiz" button appears
+**Explanation fallback chain (never repeats):**
+1. Simpler language
+2. Real-world analogy
+3. Step-by-step atomic breakdown
 
 **Components needed:**
-- `<NotesPanel />` — formatted PDF/notes viewer
-- `<TutorChatPanel />` — streaming message bubbles
+- `<TutorChatPanel />` — full-width streaming message bubbles
 - `<MessageBubble />` — AI vs user message variants
 - `<ComprehensionChips />` — "Understood / Need more help / Go deeper" action pills
+- `<DoubtPrompt />` — "Any doubts?" text + freeform input
+- `<QuickActionCards />` — 2×2 suggestion tiles (empty state only)
+- `<MaterialsModal />` — select/attach materials modal
 - `<MasteryDeltaBanner />` — before/after score comparison callout
 
-#### `/quiz/:topicId` — Gamified Quiz
-**Borrowed from Gizmo AI layout:**
-- Top bar: `❤️ 5 LIVES` + progress dots + `+XP` earned counter
-- Left sidebar: Step checklist (Step 1 ✓, Step 2 ✓, Current Step 3...)
-- Center: Large quiz card with blue border, MCQ options
-- Right: NeuralNest Tutor drawer showing feedback popup
+#### `/quiz/:topicId` — Timed Gamified Quiz
+
+**Layout:** Left panel (quiz steps) + right panel (question + options)
+
+**Page header:**
+- Back arrow ← + `PRACTICE MODULE` label (small caps, accent color)
+- `Topic Mastery Quiz` — large bold title
+- Top right: ❤️❤️❤️❤️❤️ 5 hearts (lives) + `🔥 XP` amber pill
+
+**Timer:**
+- Visible countdown timer at top (configurable per quiz)
+- When timer hits 0 → quiz **auto-submits** whatever was answered
+- Unanswered questions count as wrong
+
+**Left panel — Quiz Steps:**
+```
+QUIZ STEPS
+① Question 1  ← active (blue numbered circle)
+② Question 2
+③ Question 3
+...
+⑩ Question 10
+```
+
+**Main question area:**
+- `Question X of 10` — small muted text top left
+- Question text — large bold
+- 4 answer option cards — dark surface `#1E1E2C`, rounded, full width
+- **Correct answer:** green border + subtle green tint bg + ✅ checkmark icon right
+- **Wrong answer:** red flash + heart removed + "Explain" button appears (dark olive bg `#2D2A14`)
+- **Bottom left (correct):** `✓ Correct! You gained +20 XP.` — green text
+- **Bottom right:** `Continue →` — bright blue `#3B6BFF` pill button
 
 **Answer flow:**
 - Correct: Green highlight + `+20 XP` popup + confetti
-- Wrong: Red flash + heart removed + "Explain" button appears
-- "Explain" → Tutor explains the correct answer from a completely fresh angle
+- Wrong: Red flash + heart removed + explanation card appears (bg `#1A2414`)
+  - "Explain" → Tutor explains the correct answer from a completely fresh angle
+- All 5 hearts lost → quiz ends early
+
+**Mastery rules:**
+- **Minimum 10 questions** per quiz — always
+- **Pass threshold: 70%** (7/10+ correct)
+- Pass → node turns 🟢 Green on roadmap
+- Fail → node **stays 🟡 Yellow** (no regression to gray)
 
 **After all questions:**
 - Score summary card
-- Mastery delta shown
+- Mastery delta shown ("You went from 45% → 82%")
 - Roadmap node color updates via API call
 - "Next Topic" recommendation
 
 **Components needed:**
 - `<QuizCard />` — question + options MCQ card
 - `<LivesBar />` — heart icons + XP counter
-- `<StepChecklist />` — left sidebar progress tracker
+- `<QuizSteps />` — left sidebar numbered question list
+- `<QuizTimer />` — countdown timer component
 - `<AnswerOptionButton />` — clickable option with correct/wrong states
 - `<XPPopup />` — animated floating XP gained notification
 - `<ScoreSummary />` — end-of-quiz breakdown
 
-#### `/dashboard` — Overview Hub
-**Widgets:**
-- Overall syllabus mastery % (progress ring)
-- Topic-by-topic mastery table (sortable)
-- Exam Dates widget + countdown timer (like StudyFetch)
-- Study Mode selector: `Cram` / `Standard` / `Deep`
-- Personal Mastery Heatmap (full-width, 12-week view)
-- "What should I study next?" → AI-recommended topic card
-- Exam Rescue Plan (if exam date set): day-by-day schedule timeline
+#### `/exam` — Exam Mode
+
+Same as Roadmap page but with an **Exam Setup Wizard** before the roadmap appears.
+
+**Exam Setup Wizard (3 steps):**
+
+**Step 1 — Exam Details:**
+- Subject name input
+- Exam date picker → auto-calculates and shows *"You have X days left"*
+- `[Next →]` button
+
+**Step 2 — Syllabus Upload (optional):**
+- Drag-and-drop zone for syllabus PDF
+- `[Skip — let AI find the syllabus online]` link
+  - If skipped → AI does a **web search** for `"{subject} exam syllabus topics importance difficulty"` → extracts topic list + importance weights from web results
+- `[Next →]` button
+
+**Step 3 — PYQ Upload (optional):**
+- Drag-and-drop zone for Previous Year Questions PDF
+- AI explanation text: *"AI will count how many times each topic appears in past papers to prioritize your study plan."*
+- `[Skip]` link / `[Generate Roadmap]` CTA button
+
+**AI logic after setup:**
+```
+Has syllabus PDF?
+    YES → Extract topics from PDF
+    NO  → Web search: "{subject} exam syllabus topics" → extract topic list
+
+Has PYQ PDF?
+    YES → Scan all questions
+          Count frequency per topic:
+            e.g. { "CPU Scheduling": 12, "Memory Management": 8, "Deadlocks": 3 }
+          Higher frequency → higher priority weight → more days allocated
+    NO  → Equal weight to all topics (or use difficulty from web search)
+
+Then:
+    Sort topics by (PYQ frequency × difficulty)
+    Assign day-by-day plan based on days left
+    Weakest + highest-frequency topics → first days
+    Final day → Mock Exam from PYQs
+    Generate nodes → same roadmap UI
+```
+
+**Resulting exam roadmap page — identical to `/roadmap` PLUS:**
+
+| Extra element | Detail |
+|---|---|
+| Page title | `[Subject] Exam Roadmap` instead of `[Subject] Roadmap` |
+| Exam countdown chip | `📅 Exam: X Days Left (date)` — always visible top right |
+| PYQ frequency badge | `🔥 12 PYQ Qs` on high-frequency topic nodes |
+| Day plan strip | Right/bottom panel showing Day 1 → Day N assigned topics |
+| Node ordering | Arranged by priority (highest PYQ freq + weakest mastery = first in path) |
 
 **Components needed:**
-- `<MasteryRing />` — circular progress indicator
-- `<TopicMasteryTable />` — sortable table with mastery bars
-- `<ExamCountdownWidget />` — date + days remaining
-- `<StudyModeSelector />` — Cram / Standard / Deep toggle
-- `<RescuePlanTimeline />` — vertical day-by-day study plan view
-- `<NextTopicCard />` — AI-recommended next study card
+- `<ExamSetupWizard />` — 3-step setup flow container
+- `<ExamDatePicker />` — date picker with auto-days calculation
+- `<SyllabusUpload />` — drag-drop with skip option
+- `<PYQUpload />` — drag-drop with frequency analysis explanation
+
+#### `/active-quizzes` — Active Quizzes + Quiz History
+
+**Layout:** Two sections stacked.
+
+**Top section — Active / In-Progress Quizzes:**
+- Shows quizzes currently in progress or scheduled for today
+- Each card shows: topic name, time remaining (countdown), questions answered / total, progress bar
+- `[Resume →]` button on each card
+- Timer is **always visible** — when it hits 0, quiz auto-submits
+
+**Bottom section — Quiz History / Record:**
+- Table of all past quizzes
+- Columns: Topic name, Score (X/10), Pass/Fail badge, Date taken, Time taken
+- Pass = green ✓ badge, Fail = red ✗ badge
+- Click any row → opens score summary with answers breakdown
+
+**Components needed:**
+- `<ActiveQuizCard />` — in-progress quiz with timer + resume button
+- `<QuizHistoryTable />` — sortable table of all past quiz attempts
+- `<QuizHistoryRow />` — single row with score + pass/fail badge
+
+#### `/profile` — User Profile
+
+Accessed by clicking the **user avatar circle** in the top bar.
+
+**Layout:**
+```
+┌──────────────────────────────────────────────────┐
+│  [Avatar]  Guest Scholar                         │
+│            guest@neuralnest.ai                   │
+│            Mastery Level: College Scholar 🎓     │
+│            Total XP: 1,240  │  Streak: 4 days 🔥 │
+├──────────────────────────────────────────────────┤
+│  PERSONAL STUDY CONSISTENCY                      │
+│  (GitHub-style heatmap — weekly activity grid)   │
+│                                                  │
+│  Less ░ ▒ ▓ █ More                              │
+│  Mon Tue Wed Thu Fri Sat Sun                     │
+│  ▓   ░   ▓   ▓   ░   ░   ░  ← this week        │
+│  ▓   ▓   ░   ▓   ▓   ░   ░  ← last week        │
+│  ...                        ← 12-week view      │
+├──────────────────────────────────────────────────┤
+│  📊 Explanation Level: Beginner  [Change]        │
+│  📅 Exam Date: Jun 21, 2026     [Update]        │
+├──────────────────────────────────────────────────┤
+│  [Settings]          [Logout]                    │
+└──────────────────────────────────────────────────┘
+```
+
+**Components needed:**
+- `<UserProfileCard />` — avatar + name + email + mastery level
+- `<MasteryHeatmap />` — GitHub-style 12-week study activity grid
+- `<XPStreakBadge />` — total XP + streak counter
 
 ---
 
@@ -579,20 +890,26 @@ backend/
 │   │   ├── tutor.js              # POST /api/tutor/chat (streaming)
 │   │   ├── quiz.js               # POST /api/quiz/generate, /api/quiz/submit
 │   │   ├── progress.js           # GET/POST /api/progress
-│   │   └── studyplan.js          # POST /api/studyplan/generate
+│   │   ├── studyplan.js          # POST /api/studyplan/generate
+│   │   ├── exam.js               # POST /api/exam/setup, /api/exam/upload-syllabus, /api/exam/upload-pyq
+│   │   └── chatHistory.js        # GET /api/chat-history (sections: exam/roadmap/other)
 │   ├── agents/
 │   │   ├── tutorAgent.js         # LangGraph Tutor Agent
 │   │   ├── quizAgent.js          # LangGraph Quiz Generator Agent
-│   │   └── progressAgent.js      # LangGraph Progress Tracking Agent
+│   │   ├── progressAgent.js      # LangGraph Progress Tracking Agent
+│   │   └── pyqAnalysisAgent.js   # PYQ PDF → topic frequency analysis
 │   ├── pipelines/
 │   │   ├── ingest.js             # PDF → chunks → embeddings → Pinecone
-│   │   └── retriever.js          # RAG retrieval from Pinecone
+│   │   ├── retriever.js          # RAG retrieval from Pinecone
+│   │   └── pyqParser.js          # PYQ PDF → extract questions → count per topic
 │   └── models/
 │       ├── User.js
 │       ├── Session.js
 │       ├── Topic.js
 │       ├── QuizResult.js
-│       └── StudyPlan.js
+│       ├── StudyPlan.js
+│       ├── Exam.js               # Exam date, subject, syllabus source, PYQ data
+│       └── ChatHistory.js        # Chat sessions categorized by section
 └── package.json
 ```
 
@@ -671,7 +988,7 @@ User message
   If user responds QUIZ_READY:
 [Quiz Generator Agent Node]
   - Reads concepts covered in session
-  - Generates 5 MCQ questions with structured JSON
+  - Generates minimum 10 MCQ questions with structured JSON
   - Emits: { questions: [{q, options, correct, explanation}] }
     ↓
 [Progress Tracking Agent Node]
@@ -957,8 +1274,8 @@ Judges can be shown a live LangSmith trace dashboard during demo.
 ### Quiz
 | Method | Endpoint | Description |
 |---|---|---|
-| POST | `/api/quiz/generate` | Generate 5 MCQs for a topic |
-| POST | `/api/quiz/submit` | Submit answers → get score + explanation |
+| POST | `/api/quiz/generate` | Generate minimum 10 MCQs for a topic (timed) |
+| POST | `/api/quiz/submit` | Submit answers → get score + explanation. Pass ≥ 70% → node turns green |
 
 ### Progress
 | Method | Endpoint | Description |
@@ -973,6 +1290,21 @@ Judges can be shown a live LangSmith trace dashboard during demo.
 | POST | `/api/studyplan/generate` | Generate rescue plan from exam date |
 | GET | `/api/studyplan/:userId` | Get current study plan |
 | PATCH | `/api/studyplan/day/:dayId` | Mark day as complete |
+
+### Exam Mode
+| Method | Endpoint | Description |
+|---|---|---|
+| POST | `/api/exam/setup` | Save exam subject + date → calculate days remaining |
+| POST | `/api/exam/upload-syllabus` | Upload syllabus PDF → extract topics. If skipped: web search fallback |
+| POST | `/api/exam/upload-pyq` | Upload PYQ PDF → analyze topic frequency → return priority weights |
+| GET | `/api/exam/:userId` | Get current exam config + roadmap |
+
+### Chat History
+| Method | Endpoint | Description |
+|---|---|---|
+| GET | `/api/chat-history/:userId` | Get all chat sessions grouped by section (exam/roadmap/other) |
+| POST | `/api/chat-history` | Create new chat in specific section |
+| DELETE | `/api/chat-history/:chatId` | Delete a chat session |
 
 ---
 
@@ -1017,7 +1349,7 @@ Frontend                      Backend / Agent           MongoDB
    |                             |                         |
    | POST /api/quiz/generate     |                         |
    |─────────────────────────>   |                         |
-   |                             | Quiz Agent generates 5 Qs|
+   |                             | Quiz Agent generates 10 Qs|
    | { questions }               |                         |
    |<────────────────────────    |                         |
    | User answers all questions  |                         |
