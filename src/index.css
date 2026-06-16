@@ -1,0 +1,93 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply transition-colors duration-300;
+  }
+}
+
+/* Custom Backdrop Grids */
+.grid-backdrop {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+}
+
+.light .grid-backdrop {
+  background-image: 
+    linear-gradient(to right, rgba(229, 231, 235, 0.8) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(229, 231, 235, 0.8) 1px, transparent 1px);
+}
+
+/* Glassmorphism utility */
+.glass-card {
+  @apply backdrop-blur-md bg-opacity-70 border;
+  background-color: rgba(18, 18, 18, 0.75);
+  border-color: rgba(38, 38, 38, 0.6);
+}
+
+.light .glass-card {
+  background-color: rgba(255, 255, 255, 0.8);
+  border-color: rgba(229, 231, 235, 0.8);
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(251, 191, 36, 0.2);
+    border-color: rgba(251, 191, 36, 0.5);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(251, 191, 36, 0.6);
+    border-color: rgba(251, 191, 36, 1);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2s infinite ease-in-out;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) scale(0.9);
+    opacity: 0;
+  }
+  15% {
+    transform: translateY(-10px) scale(1);
+    opacity: 1;
+  }
+  85% {
+    transform: translateY(-30px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-40px) scale(0.9);
+    opacity: 0;
+  }
+}
+
+.animate-float-up {
+  animation: floatUp 1.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* React Flow custom dark styles */
+.dark .react-flow__controls button {
+  background-color: #121212 !important;
+  border-bottom: 1px solid #262626 !important;
+}
+
+.dark .react-flow__controls button:hover {
+  background-color: #1e1e1e !important;
+}
+
+.dark .react-flow__controls button svg {
+  fill: #f3f4f6 !important;
+}
+
+.dark .react-flow__attribution {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  color: #9ca3af !important;
+}
