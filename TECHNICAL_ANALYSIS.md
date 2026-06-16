@@ -161,15 +161,28 @@ This is the **most flexible entry point** — students with no syllabus or who j
 The design is a personalized, premium platform — **not a StudyFetch clone**. Two modes are fully defined.
 
 #### Dark Mode
-> **Vibe:** Sleek, high-focus, premium dark workspace.  
-> **Key elements:** GitHub-style Personal Mastery heatmap in sidebar, spatial node roadmap on a grid backdrop, NeuralNest Tutor drawer with abstract brain icon and action chips.  
-> **Palette:**
-> - Background: `#090A0F` (deep navy charcoal)
-> - Surface cards: `#131520`
-> - Border/grid lines: `#1E2030`
-> - Primary button (Home, My Courses, active nav): `#1D4ED8` (professional dark blue)
-> - Accent (roadmap nodes, highlights): `#8A72FF` (purple)
-> - Success / mastered: `#10B981` (green)
+> **Vibe:** Deep dark blue-charcoal workspace — not flat black, not gray. Has a subtle cool purple-blue undertone throughout. Inspired by StudyFetch's exact dark theme analysis.  
+> **Key elements:** GitHub-style Personal Mastery heatmap in sidebar, spatial node roadmap on a grid backdrop, NeuralNest Tutor drawer with abstract brain icon and action chips.
+
+| Token | Hex | Usage |
+|---|---|---|
+| `bg-page` | `#16161F` | Main page background — dark blue-charcoal base |
+| `bg-sidebar` | `#111118` | Left sidebar — slightly darker than page, creates depth |
+| `bg-surface` | `#1E1E2C` | Cards, quiz options, quick action tiles |
+| `bg-elevated` | `#25253A` | Input bars, dropdowns, modals — most prominent surfaces |
+| `bg-active-nav` | `#1E2A45` | Active sidebar item selection highlight (dark blue pill) |
+| `bg-quiz-wrong` | `#2D2A14` | Wrong answer card background (dark olive/amber) |
+| `bg-quiz-explain`| `#1A2414` | Explanation card background (dark green tint) |
+| `border` | `#2A2A3E` | All borders and dividers — subtle cool-purple |
+| `border-subtle` | `#1E1E30` | Very subtle section dividers |
+| `text-primary` | `#E8E8F2` | Main text — near white with slight blue tint (not harsh white) |
+| `text-muted` | `#8888A8` | Secondary text, labels, placeholders — muted blue-gray |
+| `primary` | `#1D4ED8` | Buttons: Home, My Courses, active nav |
+| `primary-cta` | `#3B6BFF` | Primary CTA / action buttons (Upgrade, Send, Next) |
+| `accent` | `#8A72FF` | Roadmap nodes, highlights, accent icons |
+| `mastery-unstarted` | `#9CA3AF` | Gray node |
+| `mastery-learning` | `#FBBF24` | Yellow node |
+| `mastery-mastered` | `#10B981` | Green node |
 
 ![NeuralNest-OS Dark Mode Mockup](/Users/solminde/Developer/Ai-tutor/neuralnest_dark_mockup_1781390980129.png)
 
@@ -199,25 +212,94 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        background: { light: '#F9FAFB', dark: '#090A0F' },
-        surface:    { light: '#FFFFFF',  dark: '#131520' },
-        border:     { light: '#E5E7EB',  dark: '#1E2030' },
-        primary:    { DEFAULT: '#1D4ED8', hover: '#1E40AF' }, // dark blue — all buttons, active nav
-        accent:     { DEFAULT: '#7C6EF8' },                   // purple — roadmap nodes, highlights
+        // ─── Page Structure ────────────────────────────────────────
+        page: {
+          light: '#F9FAFB',    // warm off-white
+          dark:  '#16161F',    // dark blue-charcoal (NOT black — has cool purple undertone)
+        },
+        sidebar: {
+          light: '#F3F4F6',    // light gray panel
+          dark:  '#111118',    // deeper dark than page — creates visual sidebar depth
+        },
+        surface: {
+          light: '#FFFFFF',    // pure white cards
+          dark:  '#1E1E2C',    // elevated card surface — quiz options, action tiles
+        },
+        elevated: {
+          light: '#F9FAFB',    // slightly off-white for inputs
+          dark:  '#25253A',    // most prominent surface — input bars, modals, dropdowns
+        },
+
+        // ─── Borders ───────────────────────────────────────────────
+        border: {
+          light: '#E5E7EB',    // light gray border
+          dark:  '#2A2A3E',    // subtle cool-purple border
+        },
+        'border-subtle': {
+          light: '#F3F4F6',
+          dark:  '#1E1E30',    // very subtle dividers only
+        },
+
+        // ─── Text ──────────────────────────────────────────────────
+        'text-base': {
+          light: '#111827',    // near black
+          dark:  '#E8E8F2',    // near white with slight blue tint — NOT harsh pure white
+        },
+        'text-muted': {
+          light: '#6B7280',    // mid gray
+          dark:  '#8888A8',    // muted blue-gray — labels, placeholders, secondary info
+        },
+
+        // ─── Navigation ────────────────────────────────────────────
+        'nav-active': {
+          light: '#EFF6FF',    // light blue selection
+          dark:  '#1E2A45',    // dark blue pill — active sidebar item
+        },
+
+        // ─── Brand Colors (same in both modes) ─────────────────────
+        primary: {
+          DEFAULT: '#1D4ED8',  // professional dark blue — Home, My Courses, nav buttons
+          hover:   '#1E40AF',
+        },
+        cta: {
+          DEFAULT: '#3B6BFF',  // bright blue CTA — Send, Next, Upgrade actions
+          hover:   '#2952CC',
+        },
+        accent: {
+          DEFAULT: '#8A72FF',  // purple — roadmap nodes, highlights, accent icons
+          light:   '#7C6EF8',  // slightly softer purple for light mode
+        },
+
+        // ─── Mastery Node Colors ────────────────────────────────────
         mastery: {
-          unstarted: '#9CA3AF',   // gray
-          learning:  '#FBBF24',   // yellow
-          mastered:  '#10B981',   // green
-        }
+          unstarted: '#9CA3AF',  // gray   — not started
+          learning:  '#FBBF24',  // yellow — in progress
+          mastered:  '#10B981',  // green  — fully mastered
+        },
+
+        // ─── Quiz Card States (dark mode specific) ──────────────────
+        quiz: {
+          wrong:   '#2D2A14',  // dark olive/amber — wrong answer card background
+          explain: '#1A2414',  // dark green tint   — explanation card background
+        },
       },
+
       fontFamily: {
         sans: ['Inter', 'sans-serif'],         // all body text
-        mono: ['JetBrains Mono', 'monospace'], // code, terminal-style labels
-      }
+        mono: ['JetBrains Mono', 'monospace'], // roadmap labels, mastery scores, code
+      },
+
+      boxShadow: {
+        'card-dark':  '0 1px 3px rgba(0,0,0,0.4), 0 0 0 1px rgba(42,42,62,0.8)',
+        'card-light': '0 1px 3px rgba(0,0,0,0.08), 0 0 0 1px rgba(229,231,235,1)',
+        'node-glow':  '0 0 16px rgba(138,114,255,0.35)',  // roadmap node pulse glow
+      },
     }
   }
 }
 ```
+
+> **Implementation note:** Use Tailwind's `dark:` prefix for every component. Example: `className="bg-page-light dark:bg-page-dark text-text-base-light dark:text-text-base-dark border border-border-light dark:border-border-dark"`
 
 ### Frontend File Structure
 ```
