@@ -7,13 +7,13 @@
                 "responseMode": "responseNode",
                 "options": {}
             },
-            "id": "ce0a4b7d-98e5-4a39-9794-329c962f79bc",
+            "id": "023cd78a-1a37-4438-96e5-2c256b33ba2a",
             "name": "Webhook (File Upload)",
             "type": "n8n-nodes-base.webhook",
             "typeVersion": 1.1,
             "position": [
-                -624,
-                384
+                -1312,
+                3440
             ],
             "webhookId": "6e2dc195-5093-4c60-ab87-aeb31c230d02"
         },
@@ -21,13 +21,13 @@
             "parameters": {
                 "operation": "extractFromTextFile"
             },
-            "id": "38e350b8-946f-444e-91ca-ef403d30f33a",
+            "id": "a7bd971c-30a8-4bf3-ae98-39e5209aa06d",
             "name": "Extract Text",
             "type": "n8n-nodes-base.extractFromFile",
             "typeVersion": 1,
             "position": [
-                -352,
-                384
+                -864,
+                3680
             ]
         },
         {
@@ -39,13 +39,13 @@
                 },
                 "options": {}
             },
-            "id": "aed78125-021f-4a0c-be30-4972faaefbdd",
+            "id": "e251b722-4ec4-44fb-8e81-a8a1c8f17ffd",
             "name": "Pinecone (Insert)",
             "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
             "typeVersion": 1.3,
             "position": [
-                -16,
-                128
+                -608,
+                3024
             ],
             "credentials": {
                 "pineconeApi": {
@@ -56,36 +56,17 @@
         },
         {
             "parameters": {
-                "options": {}
-            },
-            "id": "bcaaad2b-5928-4ebb-aff7-f03d122da4a3",
-            "name": "Embeddings OpenAI 1",
-            "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-            "typeVersion": 1.1,
-            "position": [
-                -64,
-                336
-            ],
-            "credentials": {
-                "openAiApi": {
-                    "id": "CqeQVnlFiniYcQFu",
-                    "name": "OpenAI account"
-                }
-            }
-        },
-        {
-            "parameters": {
                 "dataType": "binary",
                 "textSplittingMode": "custom",
                 "options": {}
             },
-            "id": "0d9ddec2-fa63-452f-baf8-05d396d23049",
+            "id": "ca5421a7-f33d-4db8-a851-1549123fbcab",
             "name": "Default Data Loader",
             "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
             "typeVersion": 1.1,
             "position": [
-                96,
-                336
+                -512,
+                3248
             ]
         },
         {
@@ -93,26 +74,26 @@
                 "chunkOverlap": 200,
                 "options": {}
             },
-            "id": "9d1bbfec-9cf3-4c57-918d-6f9f81e5932f",
+            "id": "211cef62-a975-451a-85d7-507de03c9851",
             "name": "Recursive Character Text Splitter",
             "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
             "typeVersion": 1,
             "position": [
-                96,
-                496
+                -432,
+                3456
             ]
         },
         {
             "parameters": {
                 "jsCode": "var text = $input.item.json.text || $input.item.json.data || '';\nvar fileName = ($input.item.binary && $input.item.binary.data && $input.item.binary.data.fileName) ? $input.item.binary.data.fileName : '';\nvar isPdf = fileName.toLowerCase().endsWith('.pdf');\n\nvar topics = [];\n\nif (!isPdf) {\n  // MD / TXT: extract markdown headings (# ## ###)\n  var lines = text.split('\\n');\n  for (var i = 0; i < lines.length; i++) {\n    var line = lines[i].trim();\n    var match = line.match(/^#{1,3}\\s+(.+)$/);\n    if (match && match[1].length > 2) {\n      var topicName = match[1].replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1').replace(/#/g, '').trim();\n      if (topicName && !topics.find(function(t) { return t.name === topicName; })) {\n        topics.push({ name: topicName, difficulty: 'medium', estimatedMinutes: 30 });\n      }\n    }\n  }\n} else {\n  // PDF: look for ALL-CAPS lines or lines ending with colon (chapter/section markers)\n  var pdfLines = text.split('\\n');\n  for (var j = 0; j < pdfLines.length; j++) {\n    var pl = pdfLines[j].trim();\n    // Skip very short lines, page numbers, or lines that are purely numeric\n    if (pl.length < 4 || /^\\d+$/.test(pl)) continue;\n    var isHeading = (pl === pl.toUpperCase() && pl.length > 4 && pl.length < 80) ||\n                   (pl.endsWith(':') && pl.length < 80 && pl.split(' ').length <= 8);\n    if (isHeading && !topics.find(function(t) { return t.name === pl; })) {\n      topics.push({ name: pl.replace(/:$/, '').trim(), difficulty: 'medium', estimatedMinutes: 30 });\n    }\n  }\n}\n\n// Cap at 20 topics\nif (topics.length > 20) topics = topics.slice(0, 20);\n\n// Fallback if nothing found\nif (topics.length === 0) {\n  var firstLine = text.split('\\n').find(function(l) { return l.trim().length > 4; }) || 'Document Content';\n  topics = [{ name: firstLine.trim().substring(0, 60), difficulty: 'medium', estimatedMinutes: 30 }];\n}\n\nreturn { message: { content: JSON.stringify({ topics: topics }) } };"
             },
-            "id": "37816ed5-fe5a-4e65-8318-4756e8f3aa25",
+            "id": "a3e95e3f-56d0-431e-a9d9-901290a931f5",
             "name": "OpenAI Topic Extractor",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
             "position": [
-                -48,
-                688
+                -496,
+                3632
             ]
         },
         {
@@ -122,13 +103,13 @@
                 "fields": "={{ $json.message.content }}",
                 "options": {}
             },
-            "id": "38c4ce1e-736f-46dc-929f-2147eb2b86cc",
+            "id": "53f2384b-c2f7-42e1-8114-b0112b8f2952",
             "name": "MongoDB (Save Topics)",
             "type": "n8n-nodes-base.mongoDb",
             "typeVersion": 1,
             "position": [
-                208,
-                688
+                -144,
+                3632
             ],
             "credentials": {
                 "mongoDb": {
@@ -141,13 +122,13 @@
             "parameters": {
                 "jsCode": "try {\n  // Read from Topic Extractor node directly — MongoDB output doesn't carry message.content\n  var topicNode = $('OpenAI Topic Extractor').item.json;\n  var rawContent = (topicNode.message && topicNode.message.content) ? topicNode.message.content : '{\"topics\": []}';\n  var extractedData = JSON.parse(rawContent);\n  var topics = extractedData.topics || [];\n  var roadmapNodes = topics.map(function(topic, index) {\n    return {\n      id: 'topic-' + index,\n      label: typeof topic === 'string' ? topic : (topic.name || 'Topic ' + (index + 1)),\n      status: 'unstarted',\n      position: { x: 250, y: index * 120 },\n      difficulty: topic.difficulty || 'medium',\n      estimatedMinutes: topic.estimatedMinutes || 30\n    };\n  });\n  return { topics: topics, roadmapNodes: roadmapNodes };\n} catch (error) {\n  return { topics: [], roadmapNodes: [], error: error.message };\n}"
             },
-            "id": "7183aa84-9703-4072-ae70-1fca0b360cba",
+            "id": "e9e03394-c16a-4523-bacd-99917326416d",
             "name": "Format Webhook Response",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
             "position": [
-                464,
-                688
+                80,
+                3632
             ]
         },
         {
@@ -156,13 +137,13 @@
                 "responseBody": "={{ JSON.stringify($json) }}",
                 "options": {}
             },
-            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "id": "e295def7-d806-450b-8700-4da4ad2e3c4d",
             "name": "Respond to Webhook",
             "type": "n8n-nodes-base.respondToWebhook",
             "typeVersion": 1.1,
             "position": [
-                704,
-                688
+                304,
+                3632
             ]
         },
         {
@@ -172,13 +153,13 @@
                 "responseMode": "lastNode",
                 "options": {}
             },
-            "id": "6457aa43-9a61-4eac-a7fc-0ef72eca4462",
+            "id": "2f7ba059-6881-4643-859e-410394d5e743",
             "name": "Webhook (Ask Question)",
             "type": "n8n-nodes-base.webhook",
             "typeVersion": 1.1,
             "position": [
-                816,
-                208
+                -1312,
+                2592
             ],
             "webhookId": "6bc7f4ae-f173-42a9-b745-b0410d37fe47"
         },
@@ -190,13 +171,13 @@
                     "systemMessage": "You are NeuralNest, an adaptive AI tutor. You teach one concept at a time.\n\nRules:\n- NEVER dump the full topic. Teach in a single focused chunk.\n- Always end with exactly one comprehension check question.\n- If the user says they are confused, COMPLETELY CHANGE your explanation style.\n  Never repeat the same phrasing. Try: simpler language → analogy → step-by-step.\n- Use the provided mastery score (out of 10) to judge how deeply to go.\n\nExplanation Level Calibrations:\n  BEGINNER:\n  - Define every jargon term the moment you first use it.\n  - Use real-life examples for every concept.\n  - Use simple, conversational language.\n  - Assume the user knows nothing. Start from first principles.\n  INTERMEDIATE:\n  - Briefly define jargon only if domain-specific.\n  - Include one example per concept, can be technical.\n  - Do not over-explain basics they likely know.\n  ADVANCED:\n  - Use full technical jargon without defining it.\n  - Be concise and precise — study-notes style.\n  - No real-life analogies unless asked.\n  - Pack more information per sentence. Be accurate and complete.\n\nCRITICAL: You must output ONLY a raw JSON object (no markdown, no backticks). Do not include any text outside this JSON structure:\n{\n  \"explanation\": \"string — the teaching chunk\",\n  \"checkpoint_question\": \"string — comprehension check e.g. 'Did that click?'\",\n  \"doubt_prompt\": \"Do you have any doubts or questions before we move on?\",\n  \"next_action\": \"CONTINUE | GO_DEEPER | GO_SIMPLER | ANSWER_DOUBT\",\n  \"explanation_mode\": \"standard | simpler | analogy | step_by_step\"\n}"
                 }
             },
-            "id": "09a8f091-d410-411b-9c9c-9174a2e26f22",
+            "id": "63ec086b-eec0-4e3f-941e-c094205743c5",
             "name": "Tutor AI Agent",
             "type": "@n8n/n8n-nodes-langchain.agent",
             "typeVersion": 1.6,
             "position": [
-                1088,
-                208
+                -1024,
+                2384
             ]
         },
         {
@@ -206,13 +187,13 @@
                     "temperature": 0.7
                 }
             },
-            "id": "10ae74d6-5dc4-464a-819c-76d374fe6b08",
+            "id": "c2c79cb1-ce16-4db2-aca0-8fe175770715",
             "name": "OpenAI Chat Model",
             "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
             "typeVersion": 1.1,
             "position": [
-                976,
-                416
+                -1088,
+                2608
             ],
             "credentials": {
                 "openAiApi": {
@@ -224,36 +205,16 @@
         {
             "parameters": {
                 "sessionIdType": "customKey",
-                "sessionKey": "={{ $json.body.userId || 'default-session' }}",
-                "contextWindowLength": 5
+                "sessionKey": "={{ $json.body.userId || 'default-session' }}"
             },
-            "id": "39c70753-3be0-4c8b-91c8-b39da2cd3cf6",
+            "id": "b289728d-3d4c-498a-a9da-301c9dcff31e",
             "name": "Window Buffer Memory",
             "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
             "typeVersion": 1.2,
             "position": [
-                1184,
-                400
+                -960,
+                2608
             ]
-        },
-        {
-            "parameters": {
-                "options": {}
-            },
-            "id": "e352386a-eaae-4417-b91a-33bba9735659",
-            "name": "Embeddings OpenAI 2",
-            "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-            "typeVersion": 1.1,
-            "position": [
-                1408,
-                592
-            ],
-            "credentials": {
-                "openAiApi": {
-                    "id": "CqeQVnlFiniYcQFu",
-                    "name": "OpenAI account"
-                }
-            }
         },
         {
             "parameters": {
@@ -270,10 +231,10 @@
             "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
             "typeVersion": 1.3,
             "position": [
-                1312,
-                416
+                -832,
+                2608
             ],
-            "id": "269211e7-dabf-4433-b805-803e17759621",
+            "id": "5541528b-d702-46f3-b845-05e91062e2b9",
             "name": "Pinecone Vector Store",
             "credentials": {
                 "pineconeApi": {
@@ -286,13 +247,13 @@
             "parameters": {
                 "jsCode": "try {\n  var raw = $input.item.json.output || '{}';\n  raw = raw.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/\\s*```$/i, '').trim();\n  var parsed = JSON.parse(raw);\n  return {\n    explanation: parsed.explanation || '',\n    checkpoint_question: parsed.checkpoint_question || '',\n    doubt_prompt: parsed.doubt_prompt || 'Do you have any doubts?',\n    next_action: parsed.next_action || 'CONTINUE',\n    explanation_mode: parsed.explanation_mode || 'standard'\n  };\n} catch(e) {\n  return { error: 'Parse failed', raw: $input.item.json.output, details: e.message };\n}"
             },
-            "id": "f1e2d3c4-b5a6-7890-cdef-012345678901",
+            "id": "6e26b3d0-a22b-4eed-be03-fbbdf7f1e9ba",
             "name": "Format Tutor Response",
             "type": "n8n-nodes-base.code",
             "typeVersion": 2,
             "position": [
-                1360,
-                208
+                -464,
+                2592
             ]
         },
         {
@@ -326,31 +287,68 @@
                     ]
                 },
                 "options": {
-                    "fallbackOutput": "extra",
-                    "version": 3
+                    "fallbackOutput": "extra"
                 }
             },
-            "id": "aa11bb22-cc33-dd44-ee55-ff6677889900",
+            "id": "ad0969c8-4c37-4c21-884d-eb078c8bbf66",
             "name": "File Type Switch",
             "type": "n8n-nodes-base.switch",
             "typeVersion": 3,
             "position": [
-                -352,
-                384
+                -1088,
+                3440
             ]
         },
         {
             "parameters": {
                 "operation": "extractFromPdf"
             },
-            "id": "b1c2d3e4-f5a6-7890-bcde-f01234567890",
+            "id": "14460f39-9ac8-42a1-b2c2-9fc6984f5b4d",
             "name": "Extract PDF",
             "type": "n8n-nodes-base.extractFromFile",
             "typeVersion": 1,
             "position": [
-                -112,
-                240
+                -864,
+                3184
             ]
+        },
+        {
+            "parameters": {
+                "modelName": "embed-english-v3.0"
+            },
+            "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+            "typeVersion": 1,
+            "position": [
+                -880,
+                2816
+            ],
+            "id": "a4114fb5-9c8a-4402-a3bf-f36fe1642b03",
+            "name": "Embeddings Cohere",
+            "credentials": {
+                "cohereApi": {
+                    "id": "aqE5kb9GZySxhXht",
+                    "name": "Cohere account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "modelName": "embed-english-v3.0"
+            },
+            "type": "@n8n/n8n-nodes-langchain.embeddingsCohere",
+            "typeVersion": 1,
+            "position": [
+                -640,
+                3248
+            ],
+            "id": "279c1a14-afee-4d82-80c0-a8cbf175b2e1",
+            "name": "Embeddings Cohere1",
+            "credentials": {
+                "cohereApi": {
+                    "id": "aqE5kb9GZySxhXht",
+                    "name": "Cohere account"
+                }
+            }
         }
     ],
     "connections": {
@@ -359,40 +357,6 @@
                 [
                     {
                         "node": "File Type Switch",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "File Type Switch": {
-            "main": [
-                [
-                    {
-                        "node": "Extract PDF",
-                        "type": "main",
-                        "index": 0
-                    }
-                ],
-                [
-                    {
-                        "node": "Extract Text",
-                        "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Extract PDF": {
-            "main": [
-                [
-                    {
-                        "node": "Pinecone (Insert)",
-                        "type": "main",
-                        "index": 0
-                    },
-                    {
-                        "node": "OpenAI Topic Extractor",
                         "type": "main",
                         "index": 0
                     }
@@ -410,17 +374,6 @@
                     {
                         "node": "OpenAI Topic Extractor",
                         "type": "main",
-                        "index": 0
-                    }
-                ]
-            ]
-        },
-        "Embeddings OpenAI 1": {
-            "ai_embedding": [
-                [
-                    {
-                        "node": "Pinecone (Insert)",
-                        "type": "ai_embedding",
                         "index": 0
                     }
                 ]
@@ -525,7 +478,52 @@
                 ]
             ]
         },
-        "Embeddings OpenAI 2": {
+        "Pinecone Vector Store": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Tutor AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "File Type Switch": {
+            "main": [
+                [
+                    {
+                        "node": "Extract PDF",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Extract Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract PDF": {
+            "main": [
+                [
+                    {
+                        "node": "Pinecone (Insert)",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "OpenAI Topic Extractor",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Embeddings Cohere": {
             "ai_embedding": [
                 [
                     {
@@ -536,12 +534,12 @@
                 ]
             ]
         },
-        "Pinecone Vector Store": {
-            "ai_tool": [
+        "Embeddings Cohere1": {
+            "ai_embedding": [
                 [
                     {
-                        "node": "Tutor AI Agent",
-                        "type": "ai_tool",
+                        "node": "Pinecone (Insert)",
+                        "type": "ai_embedding",
                         "index": 0
                     }
                 ]
