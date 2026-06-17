@@ -1,398 +1,465 @@
 {
-  "nodes": [
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "upload-document",
-        "responseMode": "lastNode",
-        "options": {}
-      },
-      "id": "dadff7a8-8888-47aa-8fd0-8c99de91ea17",
-      "name": "Webhook (File Upload)",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1.1,
-      "position": [
-        -1952,
-        -640
-      ],
-      "webhookId": "6e2dc195-5093-4c60-ab87-aeb31c230d02"
-    },
-    {
-      "parameters": {
-        "operation": "extract"
-      },
-      "id": "87182aff-9338-4737-9bfd-a9631a1f2b99",
-      "name": "Extract Text",
-      "type": "n8n-nodes-base.extractFromFile",
-      "typeVersion": 1,
-      "position": [
-        -1680,
-        -640
-      ]
-    },
-    {
-      "parameters": {
-        "mode": "insert",
-        "pineconeIndex": {
-          "value": "your-pinecone-index-name",
-          "mode": "list"
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "upload",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "id": "ce0a4b7d-98e5-4a39-9794-329c962f79bc",
+            "name": "Webhook (File Upload)",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                -624,
+                384
+            ],
+            "webhookId": "6e2dc195-5093-4c60-ab87-aeb31c230d02"
         },
-        "options": {}
-      },
-      "id": "02dc1ee5-ae40-4356-b7fe-7cd7cb80beb3",
-      "name": "Pinecone (Insert)",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1.3,
-      "position": [
-        -1344,
-        -896
-      ]
-    },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "6a449e86-0e78-42be-89b1-7809c1388492",
-      "name": "Embeddings OpenAI 1",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.1,
-      "position": [
-        -1392,
-        -688
-      ]
-    },
-    {
-      "parameters": {
-        "dataType": "string",
-        "textSplittingMode": "custom",
-        "options": {}
-      },
-      "id": "0b8d87d2-a480-4692-aa86-cedd62c2a5c4",
-      "name": "Default Data Loader",
-      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
-      "typeVersion": 1.1,
-      "position": [
-        -1232,
-        -688
-      ]
-    },
-    {
-      "parameters": {
-        "chunkOverlap": 200,
-        "options": {}
-      },
-      "id": "7bbb2e0d-ed9a-4580-ac5d-6ceb2512dafa",
-      "name": "Recursive Character Text Splitter",
-      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
-      "typeVersion": 1,
-      "position": [
-        -1232,
-        -528
-      ]
-    },
-    {
-      "parameters": {
-        "resource": "chat",
-        "operation": "create",
-        "requestOptions": {}
-      },
-      "id": "7d0b21ef-3ac0-42d7-9190-7bcf0f8395fb",
-      "name": "OpenAI Topic Extractor",
-      "type": "n8n-nodes-base.openAi",
-      "typeVersion": 1.1,
-      "position": [
-        -1376,
-        -336
-      ]
-    },
-    {
-      "parameters": {
-        "operation": "insert",
-        "collection": "Topics",
-        "fields": "={{ $json.message.content }}",
-        "options": {}
-      },
-      "id": "de681f41-67e6-4084-91ba-4e1c4d92b454",
-      "name": "MongoDB (Save Topics)",
-      "type": "n8n-nodes-base.mongoDb",
-      "typeVersion": 1,
-      "position": [
-        -1120,
-        -336
-      ]
-    },
-    {
-      "parameters": {
-        "jsCode": "try {\n  const extractedData = JSON.parse($input.item.json.message.content || '{\"topics\":[]}');\n  return {\n    topics: extractedData.topics,\n    roadmapNodes: []\n  };\n} catch (error) {\n  return { topics: [], roadmapNodes: [], error: \"Failed to parse JSON\" };\n}"
-      },
-      "id": "cfe0715e-a872-4385-beb7-1daba6a1e171",
-      "name": "Format Webhook Response",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -864,
-        -336
-      ]
-    },
-    {
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "ask-tutor",
-        "responseMode": "lastNode",
-        "options": {}
-      },
-      "id": "8fa482ab-bdd8-4a5c-a5cd-2e49d17f3aef",
-      "name": "Webhook (Ask Question)",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 1.1,
-      "position": [
-        -512,
-        -816
-      ],
-      "webhookId": "6bc7f4ae-f173-42a9-b745-b0410d37fe47"
-    },
-    {
-      "parameters": {
-        "promptType": "define",
-        "text": "User Query: {{ $json.body.question }}\nCurrent topic: {{ $json.body.topicName }}\nMastery Level: {{ $json.body.masteryLevel }}\nExplanation Level: {{ $json.body.explanationLevel }}",
-        "options": {
-          "systemMessage": "You are NeuralNest, an adaptive AI tutor. You teach one concept at a time.\n\nRules:\n- NEVER dump the full topic. Teach in a single focused chunk.\n- Always end with exactly one comprehension check question.\n- If the user says they are confused, COMPLETELY CHANGE your explanation style.\n  Never repeat the same phrasing. Try: simpler language → analogy → step-by-step.\n- Use the provided mastery score (out of 10) to judge how deeply to go.\n\nExplanation Level Calibrations:\n  BEGINNER:\n  - Define every jargon term the moment you first use it.\n  - Use real-life examples for every concept.\n  - Use simple, conversational language.\n  INTERMEDIATE:\n  - Briefly define jargon only if domain-specific.\n  - Include one example per concept, can be technical.\n  ADVANCED:\n  - Use full technical jargon without defining it.\n  - Be concise and precise — study-notes style.\n  - No real-life analogies unless asked.\n\nCRITICAL: You must output ONLY a raw JSON object (no markdown, no backticks). Do not include any text outside this JSON structure:\n{\n  \"explanation\": \"string — the teaching chunk\",\n  \"checkpoint_question\": \"string — comprehension check e.g. 'Did that click?'\",\n  \"doubt_prompt\": \"Do you have any doubts or questions before we move on?\",\n  \"next_action\": \"CONTINUE | GO_DEEPER | GO_SIMPLER | ANSWER_DOUBT\",\n  \"explanation_mode\": \"standard | simpler | analogy | step_by_step\"\n}"
-        }
-      },
-      "id": "287dda35-5eda-460e-bee9-9a6bdf565b02",
-      "name": "Tutor AI Agent",
-      "type": "@n8n/n8n-nodes-langchain.agent",
-      "typeVersion": 1.6,
-      "position": [
-        -240,
-        -816
-      ]
-    },
-    {
-      "parameters": {
-        "model": "gpt-4o-mini",
-        "options": {
-          "temperature": 0.2
-        }
-      },
-      "id": "f77f9b7a-1df3-473f-9eac-6fedd4b40de6",
-      "name": "OpenAI Chat Model",
-      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
-      "typeVersion": 1.1,
-      "position": [
-        -240,
-        -624
-      ]
-    },
-    {
-      "parameters": {},
-      "id": "e64762fc-329c-4581-a1f4-d5c7d7bd967b",
-      "name": "Window Buffer Memory",
-      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
-      "typeVersion": 1.2,
-      "position": [
-        -144,
-        -624
-      ]
-    },
-    {
-      "parameters": {
-        "name": "syllabus_retriever",
-        "description": "Call this tool to search the uploaded syllabus documents for answers to the user's question."
-      },
-      "id": "c245d9d8-2af0-4051-a4d4-ee90836e89d2",
-      "name": "Vector Store Tool",
-      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
-      "typeVersion": 1,
-      "position": [
-        16,
-        -624
-      ]
-    },
-    {
-      "parameters": {
-        "pineconeIndex": {
-          "value": "your-pinecone-index-name",
-          "mode": "list"
+        {
+            "parameters": {
+                "operation": "extractFromTextFile"
+            },
+            "id": "38e350b8-946f-444e-91ca-ef403d30f33a",
+            "name": "Extract Text",
+            "type": "n8n-nodes-base.extractFromFile",
+            "typeVersion": 1,
+            "position": [
+                -352,
+                384
+            ]
         },
-        "options": {}
-      },
-      "id": "8b9c2de5-91d2-4dff-aed2-d335454a49d8",
-      "name": "Pinecone (Retrieve)",
-      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
-      "typeVersion": 1.3,
-      "position": [
-        -64,
-        -416
-      ]
+        {
+            "parameters": {
+                "mode": "insert",
+                "pineconeIndex": {
+                    "value": "neuralnest-os",
+                    "mode": "list"
+                },
+                "options": {}
+            },
+            "id": "aed78125-021f-4a0c-be30-4972faaefbdd",
+            "name": "Pinecone (Insert)",
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                -16,
+                128
+            ],
+            "credentials": {
+                "pineconeApi": {
+                    "id": "w23IfFOsnayIRmtw",
+                    "name": "Pinecone account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "id": "bcaaad2b-5928-4ebb-aff7-f03d122da4a3",
+            "name": "Embeddings OpenAI 1",
+            "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+            "typeVersion": 1.1,
+            "position": [
+                -64,
+                336
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "CqeQVnlFiniYcQFu",
+                    "name": "OpenAI account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "dataType": "binary",
+                "textSplittingMode": "custom",
+                "options": {}
+            },
+            "id": "0d9ddec2-fa63-452f-baf8-05d396d23049",
+            "name": "Default Data Loader",
+            "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+            "typeVersion": 1.1,
+            "position": [
+                96,
+                336
+            ]
+        },
+        {
+            "parameters": {
+                "chunkOverlap": 200,
+                "options": {}
+            },
+            "id": "9d1bbfec-9cf3-4c57-918d-6f9f81e5932f",
+            "name": "Recursive Character Text Splitter",
+            "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+            "typeVersion": 1,
+            "position": [
+                96,
+                496
+            ]
+        },
+        {
+            "parameters": {
+                "jsCode": "var text = $input.item.json.text || $input.item.json.data || '';\n\n// Extract ## and ### headings as topics\nvar topics = [];\nvar lines = text.split('\\n');\nfor (var i = 0; i < lines.length; i++) {\n  var line = lines[i].trim();\n  var match = line.match(/^#{1,3}\\s+(.+)$/);\n  if (match && match[1].length > 2) {\n    var topicName = match[1].replace(/\\[([^\\]]+)\\]\\([^)]+\\)/g, '$1').replace(/#/g, '').trim();\n    if (topicName && !topics.find(function(t) { return t.name === topicName; })) {\n      topics.push({ name: topicName, difficulty: 'medium', estimatedMinutes: 30 });\n    }\n  }\n}\n\n// Cap at 20 topics\nif (topics.length > 20) topics = topics.slice(0, 20);\n\n// Fallback if no headings found (e.g. plain PDF text)\nif (topics.length === 0) {\n  topics = [{ name: 'Document Content', difficulty: 'medium', estimatedMinutes: 30 }];\n}\n\nreturn { message: { content: JSON.stringify({ topics: topics }) } };"
+            },
+            "id": "37816ed5-fe5a-4e65-8318-4756e8f3aa25",
+            "name": "OpenAI Topic Extractor",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                -48,
+                688
+            ]
+        },
+        {
+            "parameters": {
+                "operation": "insert",
+                "collection": "Topics",
+                "fields": "={{ $json.message.content }}",
+                "options": {}
+            },
+            "id": "38c4ce1e-736f-46dc-929f-2147eb2b86cc",
+            "name": "MongoDB (Save Topics)",
+            "type": "n8n-nodes-base.mongoDb",
+            "typeVersion": 1,
+            "position": [
+                208,
+                688
+            ],
+            "credentials": {
+                "mongoDb": {
+                    "id": "U9Xo9CgJZYpQY8so",
+                    "name": "MongoDB account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "try {\n  // Read from Topic Extractor node directly — MongoDB output doesn't carry message.content\n  var topicNode = $('OpenAI Topic Extractor').item.json;\n  var rawContent = (topicNode.message && topicNode.message.content) ? topicNode.message.content : '{\"topics\": []}';\n  var extractedData = JSON.parse(rawContent);\n  var topics = extractedData.topics || [];\n  var roadmapNodes = topics.map(function(topic, index) {\n    return {\n      id: 'topic-' + index,\n      label: typeof topic === 'string' ? topic : (topic.name || 'Topic ' + (index + 1)),\n      status: 'unstarted',\n      position: { x: 250, y: index * 120 },\n      difficulty: topic.difficulty || 'medium',\n      estimatedMinutes: topic.estimatedMinutes || 30\n    };\n  });\n  return { topics: topics, roadmapNodes: roadmapNodes };\n} catch (error) {\n  return { topics: [], roadmapNodes: [], error: error.message };\n}"
+            },
+            "id": "7183aa84-9703-4072-ae70-1fca0b360cba",
+            "name": "Format Webhook Response",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                464,
+                688
+            ]
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ JSON.stringify($json) }}",
+                "options": {}
+            },
+            "id": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.1,
+            "position": [
+                704,
+                688
+            ]
+        },
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "ask-tutor",
+                "responseMode": "lastNode",
+                "options": {}
+            },
+            "id": "6457aa43-9a61-4eac-a7fc-0ef72eca4462",
+            "name": "Webhook (Ask Question)",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1.1,
+            "position": [
+                816,
+                208
+            ],
+            "webhookId": "6bc7f4ae-f173-42a9-b745-b0410d37fe47"
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "=User Query: {{ $json.body.question }}\nCurrent topic: {{ $json.body.topicName }}\nMastery Level: {{ $json.body.masteryLevel }}\nExplanation Level: {{ $json.body.explanationLevel }}",
+                "options": {
+                    "systemMessage": "You are NeuralNest, an adaptive AI tutor. You teach one concept at a time.\n\nRules:\n- NEVER dump the full topic. Teach in a single focused chunk.\n- Always end with exactly one comprehension check question.\n- If the user says they are confused, COMPLETELY CHANGE your explanation style.\n  Never repeat the same phrasing. Try: simpler language → analogy → step-by-step.\n- Use the provided mastery score (out of 10) to judge how deeply to go.\n\nExplanation Level Calibrations:\n  BEGINNER:\n  - Define every jargon term the moment you first use it.\n  - Use real-life examples for every concept.\n  - Use simple, conversational language.\n  - Assume the user knows nothing. Start from first principles.\n  INTERMEDIATE:\n  - Briefly define jargon only if domain-specific.\n  - Include one example per concept, can be technical.\n  - Do not over-explain basics they likely know.\n  ADVANCED:\n  - Use full technical jargon without defining it.\n  - Be concise and precise — study-notes style.\n  - No real-life analogies unless asked.\n  - Pack more information per sentence. Be accurate and complete.\n\nCRITICAL: You must output ONLY a raw JSON object (no markdown, no backticks). Do not include any text outside this JSON structure:\n{\n  \"explanation\": \"string — the teaching chunk\",\n  \"checkpoint_question\": \"string — comprehension check e.g. 'Did that click?'\",\n  \"doubt_prompt\": \"Do you have any doubts or questions before we move on?\",\n  \"next_action\": \"CONTINUE | GO_DEEPER | GO_SIMPLER | ANSWER_DOUBT\",\n  \"explanation_mode\": \"standard | simpler | analogy | step_by_step\"\n}"
+                }
+            },
+            "id": "09a8f091-d410-411b-9c9c-9174a2e26f22",
+            "name": "Tutor AI Agent",
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 1.6,
+            "position": [
+                1088,
+                208
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gpt-4o",
+                "options": {
+                    "temperature": 0.7
+                }
+            },
+            "id": "10ae74d6-5dc4-464a-819c-76d374fe6b08",
+            "name": "OpenAI Chat Model",
+            "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+            "typeVersion": 1.1,
+            "position": [
+                976,
+                416
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "CqeQVnlFiniYcQFu",
+                    "name": "OpenAI account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "sessionIdType": "customKey",
+                "sessionKey": "={{ $json.body.userId || 'default-session' }}",
+                "contextWindowLength": 5
+            },
+            "id": "39c70753-3be0-4c8b-91c8-b39da2cd3cf6",
+            "name": "Window Buffer Memory",
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.2,
+            "position": [
+                1184,
+                400
+            ]
+        },
+        {
+            "parameters": {
+                "options": {}
+            },
+            "id": "e352386a-eaae-4417-b91a-33bba9735659",
+            "name": "Embeddings OpenAI 2",
+            "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+            "typeVersion": 1.1,
+            "position": [
+                1408,
+                592
+            ],
+            "credentials": {
+                "openAiApi": {
+                    "id": "CqeQVnlFiniYcQFu",
+                    "name": "OpenAI account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "mode": "retrieve-as-tool",
+                "toolDescription": "Call this tool to search the uploaded syllabus documents for answers to the user's question.",
+                "pineconeIndex": {
+                    "__rl": true,
+                    "value": "neuralnest-os",
+                    "mode": "list",
+                    "cachedResultName": "neuralnest-os"
+                },
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+            "typeVersion": 1.3,
+            "position": [
+                1312,
+                416
+            ],
+            "id": "269211e7-dabf-4433-b805-803e17759621",
+            "name": "Pinecone Vector Store",
+            "credentials": {
+                "pineconeApi": {
+                    "id": "w23IfFOsnayIRmtw",
+                    "name": "Pinecone account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "jsCode": "try {\n  var raw = $input.item.json.output || '{}';\n  raw = raw.replace(/^```json\\s*/i, '').replace(/^```\\s*/i, '').replace(/\\s*```$/i, '').trim();\n  var parsed = JSON.parse(raw);\n  return {\n    explanation: parsed.explanation || '',\n    checkpoint_question: parsed.checkpoint_question || '',\n    doubt_prompt: parsed.doubt_prompt || 'Do you have any doubts?',\n    next_action: parsed.next_action || 'CONTINUE',\n    explanation_mode: parsed.explanation_mode || 'standard'\n  };\n} catch(e) {\n  return { error: 'Parse failed', raw: $input.item.json.output, details: e.message };\n}"
+            },
+            "id": "f1e2d3c4-b5a6-7890-cdef-012345678901",
+            "name": "Format Tutor Response",
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1360,
+                208
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook (File Upload)": {
+            "main": [
+                [
+                    {
+                        "node": "Extract Text",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Extract Text": {
+            "main": [
+                [
+                    {
+                        "node": "Pinecone (Insert)",
+                        "type": "main",
+                        "index": 0
+                    },
+                    {
+                        "node": "OpenAI Topic Extractor",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Embeddings OpenAI 1": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Pinecone (Insert)",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Default Data Loader": {
+            "ai_document": [
+                [
+                    {
+                        "node": "Pinecone (Insert)",
+                        "type": "ai_document",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Recursive Character Text Splitter": {
+            "ai_textSplitter": [
+                [
+                    {
+                        "node": "Default Data Loader",
+                        "type": "ai_textSplitter",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Topic Extractor": {
+            "main": [
+                [
+                    {
+                        "node": "MongoDB (Save Topics)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "MongoDB (Save Topics)": {
+            "main": [
+                [
+                    {
+                        "node": "Format Webhook Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Format Webhook Response": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Webhook (Ask Question)": {
+            "main": [
+                [
+                    {
+                        "node": "Tutor AI Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Tutor AI Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Format Tutor Response",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "OpenAI Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "Tutor AI Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Window Buffer Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "Tutor AI Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Embeddings OpenAI 2": {
+            "ai_embedding": [
+                [
+                    {
+                        "node": "Pinecone Vector Store",
+                        "type": "ai_embedding",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Pinecone Vector Store": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "Tutor AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
     },
-    {
-      "parameters": {
-        "options": {}
-      },
-      "id": "6cd9296f-3246-4766-bef8-e0e7a009592f",
-      "name": "Embeddings OpenAI 2",
-      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
-      "typeVersion": 1.1,
-      "position": [
-        -64,
-        -224
-      ]
+    "pinData": {},
+    "meta": {
+        "templateCredsSetupCompleted": true,
+        "instanceId": "2565f42edf886721a412c37586cfc18b01c46cebbe0dbb154a96503c85a9a495"
     }
-  ],
-  "connections": {
-    "Webhook (File Upload)": {
-      "main": [
-        [
-          {
-            "node": "Extract Text",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Extract Text": {
-      "main": [
-        [
-          {
-            "node": "Pinecone (Insert)",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "OpenAI Topic Extractor",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI 1": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Pinecone (Insert)",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Default Data Loader": {
-      "ai_document": [
-        [
-          {
-            "node": "Pinecone (Insert)",
-            "type": "ai_document",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Recursive Character Text Splitter": {
-      "ai_textSplitter": [
-        [
-          {
-            "node": "Default Data Loader",
-            "type": "ai_textSplitter",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Topic Extractor": {
-      "main": [
-        [
-          {
-            "node": "MongoDB (Save Topics)",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "MongoDB (Save Topics)": {
-      "main": [
-        [
-          {
-            "node": "Format Webhook Response",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Webhook (Ask Question)": {
-      "main": [
-        [
-          {
-            "node": "Tutor AI Agent",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "OpenAI Chat Model": {
-      "ai_languageModel": [
-        [
-          {
-            "node": "Tutor AI Agent",
-            "type": "ai_languageModel",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Window Buffer Memory": {
-      "ai_memory": [
-        [
-          {
-            "node": "Tutor AI Agent",
-            "type": "ai_memory",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Vector Store Tool": {
-      "ai_tool": [
-        [
-          {
-            "node": "Tutor AI Agent",
-            "type": "ai_tool",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Pinecone (Retrieve)": {
-      "ai_vectorStore": [
-        [
-          {
-            "node": "Vector Store Tool",
-            "type": "ai_vectorStore",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Embeddings OpenAI 2": {
-      "ai_embedding": [
-        [
-          {
-            "node": "Pinecone (Retrieve)",
-            "type": "ai_embedding",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
-  "pinData": {},
-  "meta": {
-    "templateCredsSetupCompleted": true,
-    "instanceId": "76bf537b00e10bf7471d8021f108fd4fec1bee2725101193c9332d4fc248c379"
-  }
 }
