@@ -1,0 +1,113 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "generate-quiz",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "bb57f47e-b78f-4aa4-a077-c2f8af938b48",
+      "name": "Webhook (Generate Quiz)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        656,
+        -688
+      ],
+      "webhookId": "quiz-generator-id-1234"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Topic: {{ $json.body.topicName }}\nConcepts Covered: {{ $json.body.conceptsCovered }}\nUser Mastery Level: {{ $json.body.userMasteryLevel }}\nPrevious Quiz Score: {{ $json.body.previousQuizScore }}\n\nGenerate the quiz now.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "type": "system",
+              "message": "You are a Quiz Generator AI Agent.\n\nGenerate exactly 5 multiple-choice questions based ONLY on the concepts covered in this session. Do not test general knowledge — test what was specifically taught.\n\nDifficulty calibration:\n- mastery 1-3: simple recall questions\n- mastery 4-6: application questions\n- mastery 7-10: analysis/edge-case questions\n- If previousQuizScore < 60: make this quiz SIMPLER than last time.\n\nEach question must have exactly 4 options, one correct answer (represented as the integer index 0-3), and a brief explanation of WHY the correct answer is right (used in the 'Explain' button).\n\nYour output must exactly match the JSON schema."
+            }
+          ]
+        }
+      },
+      "id": "9ca9c944-33f3-49d3-a5d4-54f7741fbf4c",
+      "name": "Quiz Generator Agent",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        928,
+        -688
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.5
+        }
+      },
+      "id": "70d8a78f-f191-4096-870f-db18eb1c7ac5",
+      "name": "OpenAI Model (Quiz)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        928,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"questions\": {\n      \"type\": \"array\",\n      \"items\": {\n        \"type\": \"object\",\n        \"properties\": {\n          \"question\": { \"type\": \"string\" },\n          \"options\": {\n            \"type\": \"array\",\n            \"items\": { \"type\": \"string\" }\n          },\n          \"correct\": { \"type\": \"number\" },\n          \"explanation\": { \"type\": \"string\" }\n        },\n        \"required\": [\"question\", \"options\", \"correct\", \"explanation\"]\n      }\n    }\n  },\n  \"required\": [\"questions\"]\n}"
+      },
+      "id": "8f33df9d-9156-4524-a56f-57b29cc9e0ee",
+      "name": "Structured Output Parser",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1,
+      "position": [
+        1104,
+        -496
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (Generate Quiz)": {
+      "main": [
+        [
+          {
+            "node": "Quiz Generator Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model (Quiz)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Quiz Generator Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Quiz Generator Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76bf537b00e10bf7471d8021f108fd4fec1bee2725101193c9332d4fc248c379"
+  }
+}

@@ -1,0 +1,113 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "track-progress",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "e61b40f0-db69-45d3-914e-18339546ea8d",
+      "name": "Webhook (Track Progress)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        1616,
+        -704
+      ],
+      "webhookId": "progress-tracker-id-5678"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Calculate the updated progress and study plan based on the following session data:\n\nUser ID: {{ $json.body.userId }}\nCurrent Topic: {{ $json.body.topicName }} (ID: {{ $json.body.topicId }})\nQuiz Results: Score {{ $json.body.quizResults.score }} out of {{ $json.body.quizResults.total }}. \nWrong Questions: {{ JSON.stringify($json.body.quizResults.wrongQuestions) }}\nSelf Rating Before: {{ $json.body.selfRatingBefore }}\nSelf Rating After: {{ $json.body.selfRatingAfter }}\nSession Duration: {{ $json.body.sessionDurationMinutes }} minutes\nExam Date: {{ $json.body.examDate }}\n\nAll Topic Masteries (for context on next topics):\n{{ JSON.stringify($json.body.allTopicMasteries) }}\n\nGenerate the structured update now.",
+        "hasOutputParser": true,
+        "messages": {
+          "messageValues": [
+            {
+              "type": "system",
+              "message": "You are a Progress Tracking and Study Planning AI.\n\nCalculate a mastery score (0–100) for this topic based on:\n- Quiz score (weight: 60%)\n- Self-rating after session (weight: 30%)\n- Session engagement time (weight: 10%)\n\nThen determine the next best topic to study using:\n- Lowest mastery score topics first\n- If examDate is set and < 7 days away: prioritize weakest topics\n- If examDate is set: regenerate the day-by-day rescue plan\n\nFor the rescue plan:\n- Assign 1-2 topics per day based on estimated study time\n- Weakest topics get more time per day\n- Final day = full mock exam (generate from all topics)\n\nYour output must exactly match the required JSON schema."
+            }
+          ]
+        }
+      },
+      "id": "0f4dbd11-46b3-4df0-9413-dc82217aebd2",
+      "name": "Progress & Planning Agent",
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.4,
+      "position": [
+        1872,
+        -704
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "cf6d260e-a254-4913-a4ba-b4f56a40c547",
+      "name": "OpenAI Model (Progress)",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1,
+      "position": [
+        1872,
+        -496
+      ]
+    },
+    {
+      "parameters": {
+        "jsonSchema": "{\n  \"type\": \"object\",\n  \"properties\": {\n    \"masteryScore\": { \"type\": \"number\" },\n    \"masteryDelta\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"before\": { \"type\": \"number\" },\n        \"after\": { \"type\": \"number\" }\n      },\n      \"required\": [\"before\", \"after\"]\n    },\n    \"nodeColorUpdate\": { \"type\": \"string\" },\n    \"nextTopicRecommendation\": {\n      \"type\": \"object\",\n      \"properties\": {\n        \"topicId\": { \"type\": \"string\" },\n        \"topicName\": { \"type\": \"string\" },\n        \"reason\": { \"type\": \"string\" }\n      },\n      \"required\": [\"topicId\", \"topicName\", \"reason\"]\n    },\n    \"studyPlanUpdate\": {\n      \"type\": \"object\",\n      \"additionalProperties\": {\n        \"type\": \"array\",\n        \"items\": { \"type\": \"string\" }\n      }\n    }\n  },\n  \"required\": [\"masteryScore\", \"masteryDelta\", \"nodeColorUpdate\", \"nextTopicRecommendation\", \"studyPlanUpdate\"]\n}"
+      },
+      "id": "332d45fd-ccad-48f8-a291-2ed9eb8e74ce",
+      "name": "Structured Output Parser (Progress)",
+      "type": "@n8n/n8n-nodes-langchain.outputParserStructured",
+      "typeVersion": 1,
+      "position": [
+        2080,
+        -496
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (Track Progress)": {
+      "main": [
+        [
+          {
+            "node": "Progress & Planning Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Model (Progress)": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Progress & Planning Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Structured Output Parser (Progress)": {
+      "ai_outputParser": [
+        [
+          {
+            "node": "Progress & Planning Agent",
+            "type": "ai_outputParser",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76bf537b00e10bf7471d8021f108fd4fec1bee2725101193c9332d4fc248c379"
+  }
+}

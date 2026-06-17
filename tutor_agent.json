@@ -1,0 +1,398 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "upload-document",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "dadff7a8-8888-47aa-8fd0-8c99de91ea17",
+      "name": "Webhook (File Upload)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -1952,
+        -640
+      ],
+      "webhookId": "6e2dc195-5093-4c60-ab87-aeb31c230d02"
+    },
+    {
+      "parameters": {
+        "operation": "extract"
+      },
+      "id": "87182aff-9338-4737-9bfd-a9631a1f2b99",
+      "name": "Extract Text",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        -1680,
+        -640
+      ]
+    },
+    {
+      "parameters": {
+        "mode": "insert",
+        "pineconeIndex": {
+          "value": "your-pinecone-index-name",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "02dc1ee5-ae40-4356-b7fe-7cd7cb80beb3",
+      "name": "Pinecone (Insert)",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -1344,
+        -896
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6a449e86-0e78-42be-89b1-7809c1388492",
+      "name": "Embeddings OpenAI 1",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        -1392,
+        -688
+      ]
+    },
+    {
+      "parameters": {
+        "dataType": "string",
+        "textSplittingMode": "custom",
+        "options": {}
+      },
+      "id": "0b8d87d2-a480-4692-aa86-cedd62c2a5c4",
+      "name": "Default Data Loader",
+      "type": "@n8n/n8n-nodes-langchain.documentDefaultDataLoader",
+      "typeVersion": 1.1,
+      "position": [
+        -1232,
+        -688
+      ]
+    },
+    {
+      "parameters": {
+        "chunkOverlap": 200,
+        "options": {}
+      },
+      "id": "7bbb2e0d-ed9a-4580-ac5d-6ceb2512dafa",
+      "name": "Recursive Character Text Splitter",
+      "type": "@n8n/n8n-nodes-langchain.textSplitterRecursiveCharacterTextSplitter",
+      "typeVersion": 1,
+      "position": [
+        -1232,
+        -528
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "chat",
+        "operation": "create",
+        "requestOptions": {}
+      },
+      "id": "7d0b21ef-3ac0-42d7-9190-7bcf0f8395fb",
+      "name": "OpenAI Topic Extractor",
+      "type": "n8n-nodes-base.openAi",
+      "typeVersion": 1.1,
+      "position": [
+        -1376,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "operation": "insert",
+        "collection": "Topics",
+        "fields": "={{ $json.message.content }}",
+        "options": {}
+      },
+      "id": "de681f41-67e6-4084-91ba-4e1c4d92b454",
+      "name": "MongoDB (Save Topics)",
+      "type": "n8n-nodes-base.mongoDb",
+      "typeVersion": 1,
+      "position": [
+        -1120,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "jsCode": "try {\n  const extractedData = JSON.parse($input.item.json.message.content || '{\"topics\":[]}');\n  return {\n    topics: extractedData.topics,\n    roadmapNodes: []\n  };\n} catch (error) {\n  return { topics: [], roadmapNodes: [], error: \"Failed to parse JSON\" };\n}"
+      },
+      "id": "cfe0715e-a872-4385-beb7-1daba6a1e171",
+      "name": "Format Webhook Response",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -864,
+        -336
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "ask-tutor",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "8fa482ab-bdd8-4a5c-a5cd-2e49d17f3aef",
+      "name": "Webhook (Ask Question)",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1.1,
+      "position": [
+        -512,
+        -816
+      ],
+      "webhookId": "6bc7f4ae-f173-42a9-b745-b0410d37fe47"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "User Query: {{ $json.body.question }}\nCurrent topic: {{ $json.body.topicName }}\nMastery Level: {{ $json.body.masteryLevel }}\nExplanation Level: {{ $json.body.explanationLevel }}",
+        "options": {
+          "systemMessage": "You are NeuralNest, an adaptive AI tutor. You teach one concept at a time.\n\nRules:\n- NEVER dump the full topic. Teach in a single focused chunk.\n- Always end with exactly one comprehension check question.\n- If the user says they are confused, COMPLETELY CHANGE your explanation style.\n  Never repeat the same phrasing. Try: simpler language → analogy → step-by-step.\n- Use the provided mastery score (out of 10) to judge how deeply to go.\n\nExplanation Level Calibrations:\n  BEGINNER:\n  - Define every jargon term the moment you first use it.\n  - Use real-life examples for every concept.\n  - Use simple, conversational language.\n  INTERMEDIATE:\n  - Briefly define jargon only if domain-specific.\n  - Include one example per concept, can be technical.\n  ADVANCED:\n  - Use full technical jargon without defining it.\n  - Be concise and precise — study-notes style.\n  - No real-life analogies unless asked.\n\nCRITICAL: You must output ONLY a raw JSON object (no markdown, no backticks). Do not include any text outside this JSON structure:\n{\n  \"explanation\": \"string — the teaching chunk\",\n  \"checkpoint_question\": \"string — comprehension check e.g. 'Did that click?'\",\n  \"doubt_prompt\": \"Do you have any doubts or questions before we move on?\",\n  \"next_action\": \"CONTINUE | GO_DEEPER | GO_SIMPLER | ANSWER_DOUBT\",\n  \"explanation_mode\": \"standard | simpler | analogy | step_by_step\"\n}"
+        }
+      },
+      "id": "287dda35-5eda-460e-bee9-9a6bdf565b02",
+      "name": "Tutor AI Agent",
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 1.6,
+      "position": [
+        -240,
+        -816
+      ]
+    },
+    {
+      "parameters": {
+        "model": "gpt-4o-mini",
+        "options": {
+          "temperature": 0.2
+        }
+      },
+      "id": "f77f9b7a-1df3-473f-9eac-6fedd4b40de6",
+      "name": "OpenAI Chat Model",
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        -240,
+        -624
+      ]
+    },
+    {
+      "parameters": {},
+      "id": "e64762fc-329c-4581-a1f4-d5c7d7bd967b",
+      "name": "Window Buffer Memory",
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.2,
+      "position": [
+        -144,
+        -624
+      ]
+    },
+    {
+      "parameters": {
+        "name": "syllabus_retriever",
+        "description": "Call this tool to search the uploaded syllabus documents for answers to the user's question."
+      },
+      "id": "c245d9d8-2af0-4051-a4d4-ee90836e89d2",
+      "name": "Vector Store Tool",
+      "type": "@n8n/n8n-nodes-langchain.toolVectorStore",
+      "typeVersion": 1,
+      "position": [
+        16,
+        -624
+      ]
+    },
+    {
+      "parameters": {
+        "pineconeIndex": {
+          "value": "your-pinecone-index-name",
+          "mode": "list"
+        },
+        "options": {}
+      },
+      "id": "8b9c2de5-91d2-4dff-aed2-d335454a49d8",
+      "name": "Pinecone (Retrieve)",
+      "type": "@n8n/n8n-nodes-langchain.vectorStorePinecone",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        -416
+      ]
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "6cd9296f-3246-4766-bef8-e0e7a009592f",
+      "name": "Embeddings OpenAI 2",
+      "type": "@n8n/n8n-nodes-langchain.embeddingsOpenAi",
+      "typeVersion": 1.1,
+      "position": [
+        -64,
+        -224
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook (File Upload)": {
+      "main": [
+        [
+          {
+            "node": "Extract Text",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Text": {
+      "main": [
+        [
+          {
+            "node": "Pinecone (Insert)",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "OpenAI Topic Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI 1": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone (Insert)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Default Data Loader": {
+      "ai_document": [
+        [
+          {
+            "node": "Pinecone (Insert)",
+            "type": "ai_document",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Recursive Character Text Splitter": {
+      "ai_textSplitter": [
+        [
+          {
+            "node": "Default Data Loader",
+            "type": "ai_textSplitter",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Topic Extractor": {
+      "main": [
+        [
+          {
+            "node": "MongoDB (Save Topics)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "MongoDB (Save Topics)": {
+      "main": [
+        [
+          {
+            "node": "Format Webhook Response",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook (Ask Question)": {
+      "main": [
+        [
+          {
+            "node": "Tutor AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Tutor AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Window Buffer Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "Tutor AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Vector Store Tool": {
+      "ai_tool": [
+        [
+          {
+            "node": "Tutor AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Pinecone (Retrieve)": {
+      "ai_vectorStore": [
+        [
+          {
+            "node": "Vector Store Tool",
+            "type": "ai_vectorStore",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Embeddings OpenAI 2": {
+      "ai_embedding": [
+        [
+          {
+            "node": "Pinecone (Retrieve)",
+            "type": "ai_embedding",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "76bf537b00e10bf7471d8021f108fd4fec1bee2725101193c9332d4fc248c379"
+  }
+}
