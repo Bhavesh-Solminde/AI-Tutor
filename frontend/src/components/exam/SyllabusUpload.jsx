@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
-import { Upload, CheckCircle2 } from 'lucide-react';
+import { Upload, CheckCircle2, AlertCircle } from 'lucide-react';
+
+const ALLOWED = ['.pdf', '.docx', '.txt', '.md'];
+const isAllowed = (file) => ALLOWED.includes('.' + file.name.split('.').pop().toLowerCase());
 
 const SyllabusUpload = ({ file, onFileChange, onSkip }) => {
   const [dragActive, setDragActive] = useState(false);
+  const [typeError, setTypeError] = useState('');
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -18,16 +22,19 @@ const SyllabusUpload = ({ file, onFileChange, onSkip }) => {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
-    
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      onFileChange(e.dataTransfer.files[0]);
-    }
+    const f = e.dataTransfer.files?.[0];
+    if (!f) return;
+    if (!isAllowed(f)) { setTypeError(`"${f.name}" is not supported. Use PDF, DOCX, TXT, or MD.`); return; }
+    setTypeError('');
+    onFileChange(f);
   };
 
   const handleFileInput = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      onFileChange(e.target.files[0]);
-    }
+    const f = e.target.files?.[0];
+    if (!f) return;
+    if (!isAllowed(f)) { setTypeError(`"${f.name}" is not supported. Use PDF, DOCX, TXT, or MD.`); return; }
+    setTypeError('');
+    onFileChange(f);
   };
 
   return (
@@ -55,7 +62,7 @@ const SyllabusUpload = ({ file, onFileChange, onSkip }) => {
         <input
           type="file"
           id="syllabus-file-input"
-          accept=".pdf"
+          accept=".pdf,.docx,.txt,.md,text/plain,text/markdown"
           className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
           onChange={handleFileInput}
         />
@@ -82,13 +89,19 @@ const SyllabusUpload = ({ file, onFileChange, onSkip }) => {
                 Drag and drop your syllabus file here
               </p>
               <p className="text-xs text-text-muted-light dark:text-text-muted-dark mt-1">
-                Supports PDF up to 25MB.
+                Supports PDF, DOCX, TXT, MD — up to 10MB.
               </p>
             </div>
           </>
         )}
       </div>
 
+      {typeError && (
+        <div className="flex items-start space-x-2 text-red-500 mt-2">
+          <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+          <p className="text-xs font-semibold">{typeError}</p>
+        </div>
+      )}
       {!file && (
         <button
           type="button"
