@@ -14,6 +14,7 @@ import Onboarding from './pages/Onboarding';
 import Roadmap from './pages/Roadmap';
 import Tutor from './pages/Tutor';
 import Quiz from './pages/Quiz';
+import QuizResultView from './pages/QuizResultView';
 import Dashboard from './pages/Dashboard';
 import ExamMode from './pages/ExamMode';
 import ActiveQuizzes from './pages/ActiveQuizzes';
@@ -89,6 +90,7 @@ function App() {
             <Route path="/roadmap" element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
             <Route path="/tutor/:topicId" element={<ProtectedRoute><Tutor /></ProtectedRoute>} />
             <Route path="/quiz/:topicId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+            <Route path="/quiz-result/:resultId" element={<ProtectedRoute><QuizResultView /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/exam" element={<ProtectedRoute><ExamMode /></ProtectedRoute>} />
             <Route path="/active-quizzes" element={<ProtectedRoute><ActiveQuizzes /></ProtectedRoute>} />

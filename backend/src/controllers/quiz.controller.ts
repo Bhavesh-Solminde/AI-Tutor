@@ -232,3 +232,27 @@ export async function getActiveQuizzes(req: AuthRequest, res: Response, next: Ne
     next(err);
   }
 }
+
+// GET /api/quiz/result/:resultId
+export async function getQuizResult(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { resultId } = req.params;
+    const userId = req.userId!;
+
+    const result = await QuizResult.findOne({ _id: resultId, userId }).lean();
+    if (!result) {
+      return next(new NotFoundError("Quiz result not found"));
+    }
+
+    // Populate topic name
+    const topic = await Topic.findById(result.topicId).lean();
+    const resultWithTopic = {
+      ...result,
+      topicName: topic ? topic.name : "Unknown Topic",
+    };
+
+    res.json({ result: resultWithTopic });
+  } catch (err) {
+    next(err);
+  }
+}

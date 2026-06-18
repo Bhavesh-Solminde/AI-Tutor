@@ -83,6 +83,19 @@ const useQuizStore = create(
         } catch {}
       },
 
+      fetchQuizResult: async (resultId) => {
+        set({ loading: true, error: null });
+        try {
+          const { data } = await api.get(`/api/quiz/result/${resultId}`);
+          set({ loading: false });
+          return data.result;
+        } catch (err) {
+          const msg = err.userMessage || err.message || "Failed to load quiz results.";
+          set({ loading: false, error: msg });
+          throw err;
+        }
+      },
+
       clearResult: () => set({ result: null }),
     }),
     {
