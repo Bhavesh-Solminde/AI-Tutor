@@ -1,0 +1,46 @@
+import mongoose, { Document, Schema } from "mongoose";
+
+export interface ITopic extends Document {
+  sessionId: mongoose.Types.ObjectId;
+  userId: mongoose.Types.ObjectId;
+  name: string;
+  difficulty: "easy" | "medium" | "hard";
+  estimatedMinutes: number;
+  masteryScore: number;
+  selfRatingBefore: number;
+  selfRatingAfter: number;
+  status: "unstarted" | "learning" | "mastered";
+  lastStudiedAt?: Date;
+  roadmapPosition: { x: number; y: number };
+  createdAt: Date;
+}
+
+const TopicSchema = new Schema<ITopic>(
+  {
+    sessionId: { type: Schema.Types.ObjectId, ref: "Session", required: true },
+    userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    name: { type: String, required: true },
+    difficulty: {
+      type: String,
+      enum: ["easy", "medium", "hard"],
+      default: "medium",
+    },
+    estimatedMinutes: { type: Number, default: 30 },
+    masteryScore: { type: Number, default: 0, min: 0, max: 100 },
+    selfRatingBefore: { type: Number, default: 0, min: 0, max: 10 },
+    selfRatingAfter: { type: Number, default: 0, min: 0, max: 10 },
+    status: {
+      type: String,
+      enum: ["unstarted", "learning", "mastered"],
+      default: "unstarted",
+    },
+    lastStudiedAt: { type: Date },
+    roadmapPosition: {
+      x: { type: Number, default: 0 },
+      y: { type: Number, default: 0 },
+    },
+  },
+  { timestamps: true }
+);
+
+export const Topic = mongoose.model<ITopic>("Topic", TopicSchema);
