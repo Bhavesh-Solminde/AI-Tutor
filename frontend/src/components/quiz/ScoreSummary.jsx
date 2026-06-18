@@ -1,7 +1,19 @@
 import React from 'react';
 import { CheckCircle, ArrowUpRight } from 'lucide-react';
 
-const ScoreSummary = ({ score, total, xp, onRetry, onBack }) => {
+const ScoreSummary = ({ score, total, xp, masteryDelta, passed, onRetry, onBack }) => {
+  const beforeMastery = masteryDelta?.before ?? null;
+  const afterMastery = masteryDelta?.after ?? null;
+  const masteryChange = beforeMastery !== null && afterMastery !== null ? afterMastery - beforeMastery : null;
+  const masteryLabel = passed ? 'Mastered' : 'In Progress';
+  const bannerClassName = passed
+    ? 'bg-emerald-500/5 border-emerald-500/20'
+    : 'bg-amber-500/5 border-amber-500/20';
+  const labelClassName = passed
+    ? 'text-emerald-600 dark:text-emerald-400'
+    : 'text-amber-600 dark:text-amber-400';
+  const valueClassName = passed ? 'text-emerald-500' : 'text-amber-500';
+
   return (
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-8 shadow-sm text-center max-w-lg mx-auto space-y-6">
       <div className="h-16 w-16 mx-auto rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
@@ -25,17 +37,17 @@ const ScoreSummary = ({ score, total, xp, onRetry, onBack }) => {
       </div>
 
       {/* Mastery Delta Banner */}
-      <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 flex justify-between items-center">
+      <div className={`p-4 rounded-xl ${bannerClassName} flex justify-between items-center`}>
         <div className="text-left">
           <p className="text-xs font-mono text-slate-400 uppercase">Topic Mastery</p>
-          <p className="text-sm font-bold text-emerald-600 dark:text-emerald-400 flex items-center mt-0.5">
-            Mastered (+60% delta)
+          <p className={`text-sm font-bold ${labelClassName} flex items-center mt-0.5`}>
+            {masteryLabel}{masteryChange !== null ? ` (${masteryChange >= 0 ? '+' : ''}${masteryChange}% delta)` : ''}
           </p>
         </div>
         <div className="flex items-baseline space-x-1">
-          <span className="text-sm line-through text-slate-400">30%</span>
+          <span className="text-sm line-through text-slate-400">{beforeMastery !== null ? `${beforeMastery}%` : '—'}</span>
           <ArrowUpRight className="h-3 w-3 text-emerald-500" />
-          <span className="text-xl font-bold text-emerald-500">90%</span>
+          <span className={`text-xl font-bold ${valueClassName}`}>{afterMastery !== null ? `${afterMastery}%` : '—'}</span>
         </div>
       </div>
 

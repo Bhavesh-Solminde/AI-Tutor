@@ -17,6 +17,7 @@ import { MasteryRingSkeleton, TopicTableSkeleton, CardSkeleton } from '../compon
 import { InlineErrorFallback } from '../components/ui/ErrorFallback';
 import EmptyState from '../components/ui/EmptyState';
 import { BarChart2 } from 'lucide-react';
+import { getStudyStreakDays } from '../utils/userStats';
 
 const Dashboard = () => {
   const { user } = useAuthStore();
@@ -42,11 +43,7 @@ const Dashboard = () => {
   const continueTopic = topics.find((t) => t.status === 'learning' && t.masteryScore > 0);
 
   // Weekly study streak from user.studyDays
-  const studyDaysThisWeek = user?.studyDays?.filter((d) => {
-    const day = new Date(d);
-    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
-    return day >= weekAgo;
-  }).length || 0;
+  const studyDaysThisWeek = getStudyStreakDays(user?.studyDays);
 
   return (
     <MainLayout>
