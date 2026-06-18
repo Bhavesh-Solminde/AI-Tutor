@@ -114,67 +114,15 @@ npm install
 
 #### 2b. Create the `.env` file
 
+A `.env.example` file is included with all required variables and descriptions. Copy it and fill in your values:
+
 ```bash
-cp .env.example .env   # if available, or create manually
+cp .env.example .env
 ```
 
-Create `backend/.env` with the following variables:
+Then open `backend/.env` and fill in each value. See the comments inside `.env.example` for where to get each key.
 
-```env
-# ── Server ─────────────────────────────────────────────────────────────────
-PORT=5000
-NODE_ENV=development
-
-# ── MongoDB ─────────────────────────────────────────────────────────────────
-# Get your URI from MongoDB Atlas → Connect → Drivers
-MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/neuralnest?retryWrites=true&w=majority
-
-# ── JWT ──────────────────────────────────────────────────────────────────────
-# Generate a strong random secret: node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-JWT_SECRET=your_super_secret_jwt_key
-
-# ── Google OAuth ─────────────────────────────────────────────────────────────
-# From Google Cloud Console → APIs & Services → Credentials → OAuth 2.0 Client IDs
-# Add authorized redirect URI: http://localhost:5000/api/auth/google/callback
-GOOGLE_CLIENT_ID=your_google_client_id
-GOOGLE_CLIENT_SECRET=your_google_client_secret
-
-# ── GitHub OAuth ─────────────────────────────────────────────────────────────
-# From GitHub → Settings → Developer Settings → OAuth Apps
-# Add callback URL: http://localhost:5000/api/auth/github/callback
-GITHUB_CLIENT_ID=your_github_client_id
-GITHUB_CLIENT_SECRET=your_github_client_secret
-
-# ── OpenAI ───────────────────────────────────────────────────────────────────
-OPENAI_API_KEY=sk-...
-
-# ── Cohere ───────────────────────────────────────────────────────────────────
-COHERE_API_KEY=your_cohere_api_key
-
-# ── Pinecone ─────────────────────────────────────────────────────────────────
-# Create an index named "neuralnest-os" with dimension 1024 (Cohere embed-english-v3.0)
-PINECONE_API_KEY=your_pinecone_api_key
-PINECONE_INDEX=neuralnest-os
-
-# ── Cloudinary ───────────────────────────────────────────────────────────────
-CLOUDINARY_CLOUD_NAME=your_cloud_name
-CLOUDINARY_API_KEY=your_cloudinary_api_key
-CLOUDINARY_API_SECRET=your_cloudinary_api_secret
-
-# ── Tavily (web search) ───────────────────────────────────────────────────────
-TAVILY_API_KEY=your_tavily_api_key
-
-# ── LangSmith (optional — for tracing AI agent runs) ─────────────────────────
-LANGCHAIN_TRACING_V2=true
-LANGCHAIN_API_KEY=your_langsmith_api_key
-LANGCHAIN_PROJECT=neuralnest-os
-
-# ── URLs ─────────────────────────────────────────────────────────────────────
-FRONTEND_URL=http://localhost:3000
-BACKEND_URL=http://localhost:5000
-```
-
-> **Tip:** Generate a JWT secret quickly with:
+> **Tip:** Generate a strong JWT secret with:
 > ```bash
 > node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 > ```
@@ -229,11 +177,13 @@ npm install
 
 #### 3b. Create the `.env` file
 
-Create `frontend/.env`:
+A `.env.example` file is included. Copy it and you're ready to go:
 
-```env
-REACT_APP_API_URL=http://localhost:5000/api
+```bash
+cp .env.example .env
 ```
+
+The only variable is `REACT_APP_API_URL` — it should point to your running backend (default: `http://localhost:5000`).
 
 #### 3c. Start the frontend dev server
 
