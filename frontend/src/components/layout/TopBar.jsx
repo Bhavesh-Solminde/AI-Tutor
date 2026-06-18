@@ -2,10 +2,10 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Search, Bell } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
-import { useAuth } from '../../context/AuthContext';
+import useAuthStore from '../../stores/useAuthStore';
 
 const TopBar = () => {
-  const { user } = useAuth();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
 
   return (
