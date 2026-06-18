@@ -1,74 +1,164 @@
-import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout';
-import { useAuth } from '../context/AuthContext';
+import useAuthStore from '../stores/useAuthStore';
+import useTutorStore from '../stores/useTutorStore';
+import useChatHistoryStore from '../stores/useChatHistoryStore';
+import useSessionStore from '../stores/useSessionStore';
+import api from '../lib/axiosClient';
 
-// Components
 import TutorChatPanel from '../components/tutor/TutorChatPanel';
 import MaterialsModal from '../components/tutor/MaterialsModal';
+import QuickActionCards from '../components/tutor/QuickActionCards';
 
 const Tutor = () => {
   const { topicId } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { user } = useAuth();
-
-  const isNewSession = topicId === 'new';
-
-  const [messages, setMessages] = useState([]);
+  const { user } = useAuthStore();
+  const { currentSession } = useSessionStore();
+  const {
+    messages, isStreaming, currentTopic, chatHistoryId, error,
+    sendMessage, clearMessages, setCurrentTopic, setChatHistoryId, loadMessages, retryLastMessage,
+  } = useTutorStore();
+  const { findChatByTopicId, createChat, fetchChatHistory } = useChatHistoryStore();
 
   const [inputVal, setInputVal] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
   const [showDoubtBox, setShowDoubtBox] = useState(false);
   const [showMaterialsModal, setShowMaterialsModal] = useState(false);
   const [attachedMaterials, setAttachedMaterials] = useState([]);
+  const [resolving, setResolving] = useState(false); // true while fetching topic name
 
-  const handleSend = (textToSend) => {
+  const isNewSession = !topicId || topicId === 'new';
+
+  // Determine which section this chat belongs to:
+  // ?section=exam → exam, ?section=roadmap → roadmap, default for open-mode → other
+  const sectionFromQuery = searchParams.get('section');
+  const chatSection = isNewSession
+    ? (sectionFromQuery || 'other')
+    : (sectionFromQuery || 'roadmap');
+
+  // On mount: resolve topic name from API, reuse existing chat if possible
+  useEffect(() => {
+    // React StrictMode mounts twice — use a cancelled flag so only one run proceeds
+    let cancelled = false;
+
+    // Reset messages & topic, but NOT chatHistoryId —
+    // the Sidebar's "New Session" button may have pre-created a chat and set it already.
+    clearMessages();
+    setCurrentTopic(null);
+
+    if (isNewSession) {
+      // Open-mode: user can type anything.
+      // Don't reset chatHistoryId here — Sidebar may have already set one.
+      setCurrentTopic({ _id: null, name: 'New Study Chat' });
+      return () => { cancelled = true; };
+    }
+
+    // Topic-mode: clear any open-mode chat ID so we resolve/create the right one
+    setChatHistoryId(null);
+
+    const init = async () => {
+      setResolving(true);
+      try {
+        // 1. Fetch the real topic from the API to get its name
+        const { data: topicData } = await api.get(`/api/topics/${topicId}`, { _silent: true }).catch(() => ({ data: null }));
+        if (cancelled) return;
+        const resolvedName = topicData?.name || topicData?.topic?.name || topicId;
+        setCurrentTopic({ _id: topicId, name: resolvedName });
+
+        // 2. Check if an existing chat exists for this topic — reuse it
+        const existingChat = await findChatByTopicId(topicId);
+        if (cancelled) return;
+
+        if (existingChat) {
+          setChatHistoryId(existingChat._id);
+          await loadMessages(existingChat._id);   // ← restore messages
+        } else {
+          // Create a new chat entry with the real topic name as title
+          // The backend uses findOrCreate so concurrent calls won't produce duplicates
+          const chat = await createChat({
+            sessionId: currentSession?._id,
+            topicId,
+            section: chatSection,
+            title: resolvedName,
+          });
+          if (cancelled) return;
+          if (chat) {
+            setChatHistoryId(chat._id);
+            // Refresh sidebar so it shows this new chat immediately
+            if (user?._id) fetchChatHistory(user._id);
+          }
+        }
+      } catch (err) {
+        if (cancelled) return;
+        // Fallback: show topicId as name, let user continue
+        setCurrentTopic({ _id: topicId, name: 'Study Session' });
+      } finally {
+        if (!cancelled) setResolving(false);
+      }
+    };
+
+    init();
+
+    // Cleanup: mark as cancelled so any in-flight async work is discarded
+    return () => { cancelled = true; };
+  }, [topicId]);
+
+  const handleSend = async (textToSend) => {
     const text = textToSend || inputVal;
-    if (!text.trim()) return;
-
-    setMessages(prev => [...prev, { sender: 'user', text: text }]);
+    if (!text.trim() || isStreaming) return;
     if (!textToSend) setInputVal('');
 
-    setIsTyping(true);
-    setTimeout(() => {
-      setIsTyping(false);
-      
-      const isDoubt = text.toLowerCase().includes('why') || text.toLowerCase().includes('how') || text.toLowerCase().includes('explain');
-      let responseText = '';
-      
-      if (isDoubt) {
-        responseText = `Excellent doubt! When we analyze FCFS waiting times, we calculate: \n\n*Waiting Time = Start Time - Arrival Time*. \n\nIf process A takes 30ms, and process B arrives at 1ms but takes only 2ms to complete, B has to wait 29ms! That is the Convoy Effect in action. Does this make sense?`;
-      } else {
-        responseText = `Awesome. Since you clicked **Understood**, let's move on to the next algorithm: **Shortest Job First (SJF)**.\n\nHere, the CPU scheduler selects the process with the shortest execution time next. While this is mathematically optimal for minimizing average waiting times, the challenge is *predicting* how long a process will run before execution starts.`;
+    // Lazily create a chat entry for open-mode on the very first message,
+    // so conversations are always saved and appear in the sidebar.
+    let activeChatId = chatHistoryId;
+    if (isNewSession && !activeChatId) {
+      const newChat = await createChat({
+        sessionId: currentSession?._id,
+        topicId: null,
+        section: chatSection,
+        title: text.length > 40 ? text.slice(0, 40) + '…' : text,
+      });
+      if (newChat?._id) {
+        setChatHistoryId(newChat._id);
+        activeChatId = newChat._id;
+        // Refresh sidebar immediately so this new chat appears
+        if (user?._id) fetchChatHistory(user._id);
       }
+    }
 
-      setMessages(prev => [
-        ...prev,
-        {
-          sender: 'ai',
-          text: responseText,
-          type: isDoubt ? 'doubt_answer' : 'teach',
-          showChips: true
-        }
-      ]);
-    }, 1200);
+    await sendMessage({
+      topicId: isNewSession ? null : topicId,
+      message: text,
+      type: text.toLowerCase().includes('why') || text.toLowerCase().includes('how') || text.toLowerCase().includes('explain') ? 'doubt' : 'teach',
+      chatHistoryId: activeChatId,
+      materialSessionIds: attachedMaterials.map((m) => m._id),
+      onChatCreated: (newId) => {
+        // Backend auto-created a chat — refresh sidebar
+        if (user?._id) fetchChatHistory(user._id);
+      },
+    });
   };
 
   const handleChipClick = (chipType) => {
-    setMessages(prev => prev.map(m => ({ ...m, showChips: false })));
-    
-    let choiceText = '';
-    if (chipType === 'understood') choiceText = "Understood! Let's proceed.";
-    if (chipType === 'help') choiceText = "I need more help / a simpler explanation.";
-    if (chipType === 'deeper') choiceText = "Let's go deeper into this concept.";
-
-    handleSend(choiceText);
+    const texts = {
+      understood: "Understood! Let's proceed.",
+      help: "I need more help — can you explain it more simply?",
+      deeper: "Let's go deeper into this concept.",
+    };
+    handleSend(texts[chipType] || "Let's continue.");
   };
 
-  const handleConfirmMaterials = (selected) => {
-    setAttachedMaterials(selected);
-  };
+  const topicName = currentTopic?.name
+    ? currentTopic.name.charAt(0).toUpperCase() + currentTopic.name.slice(1)
+    : resolving ? '…' : isNewSession ? 'New Study Chat' : 'Study Session';
+
+  // What message to send when user clicks "Start Teaching"
+  const startTeachingText = isNewSession
+    ? "Let's start learning something new!"
+    : `Start teaching me about ${topicName} from the beginning.`;
 
   return (
     <MainLayout>
@@ -84,26 +174,59 @@ const Tutor = () => {
               </button>
               <div>
                 <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-primary dark:text-accent">Active Session</span>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  {isNewSession ? 'New Study Chat' : topicId === 'demo' ? 'CPU Scheduling' : 'Virtual Memory & Paging'}
-                </h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{topicName}</h2>
               </div>
             </div>
-            
+            <div className="flex items-center space-x-2">
+              {error && (
+                <button
+                  onClick={retryLastMessage}
+                  className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/30 rounded-xl hover:bg-amber-500/10 transition"
+                >
+                  <RefreshCw className="h-3.5 w-3.5" />
+                  <span>Retry</span>
+                </button>
+              )}
+              {/* Hide quiz button for open-mode — no topicId to quiz on */}
+              {!isNewSession && (
+                <button
+                  onClick={() => navigate(`/quiz/${topicId}`)}
+                  className="flex items-center space-x-2 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-all duration-300"
+                >
+                  <span>Proceed to Quiz</span>
+                  <ArrowRight className="h-4 w-4" />
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Empty state: show Quick Action Cards when no messages */}
+        {messages.length === 0 && (
+          <div className="flex-1 flex flex-col items-center justify-center space-y-6">
+            <div className="text-center space-y-2">
+              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
+                {isNewSession ? 'What do you want to learn?' : `Ready to study ${topicName}?`}
+              </h2>
+              <p className="text-sm text-slate-500 dark:text-slate-400">
+                {isNewSession ? 'Start a conversation or pick a quick action.' : `Ask a question or click "Start Teaching" to begin.`}
+              </p>
+            </div>
+            <QuickActionCards onActionClick={handleSend} />
             <button
-              onClick={() => navigate(`/quiz/${isNewSession ? 'demo' : topicId}`)}
-              className="flex items-center space-x-2 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-all duration-300"
+              onClick={() => handleSend(startTeachingText)}
+              disabled={resolving || isStreaming}
+              className="px-6 py-3 bg-primary dark:bg-accent hover:bg-primary-hover dark:hover:bg-accent/90 text-white font-bold rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span>Proceed to Quiz</span>
-              <ArrowRight className="h-4 w-4" />
+              {resolving ? 'Loading…' : 'Start Teaching →'}
             </button>
           </div>
         )}
 
-        <div className="flex-1 overflow-hidden min-h-0 w-full">
+        <div className={`${messages.length === 0 ? 'hidden' : 'flex-1 overflow-hidden min-h-0 w-full'}`}>
           <TutorChatPanel
             messages={messages}
-            isTyping={isTyping}
+            isTyping={isStreaming}
             inputVal={inputVal}
             setInputVal={setInputVal}
             onSend={handleSend}
@@ -116,11 +239,10 @@ const Tutor = () => {
           />
         </div>
 
-        {/* Materials selector modal */}
         <MaterialsModal
           isOpen={showMaterialsModal}
           onClose={() => setShowMaterialsModal(false)}
-          onConfirm={handleConfirmMaterials}
+          onConfirm={(selected) => setAttachedMaterials(selected)}
         />
       </div>
     </MainLayout>
