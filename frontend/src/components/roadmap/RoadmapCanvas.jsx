@@ -1,72 +1,131 @@
-import React, { useEffect } from 'react';
-import ReactFlow, { Background, Controls, MarkerType, useNodesState, useEdgesState } from 'reactflow';
+import React, { useEffect, useCallback } from 'react';
+import ReactFlow, {
+  Background,
+  Controls,
+  MiniMap,
+  MarkerType,
+  useNodesState,
+  useEdgesState,
+  useReactFlow,
+  Panel,
+  ReactFlowProvider,
+} from 'reactflow';
+import dagre from '@dagrejs/dagre';
 import 'reactflow/dist/style.css';
 import TopicNode from './TopicNode';
 import TopicPopupCard from './TopicPopupCard';
 
-const nodeTypes = {
-  customTopicNode: TopicNode,
-};
+// ── Node dimensions (must match the rendered card) ───────────────────────────
+const NODE_WIDTH  = 208; // w-52 = 208px
+const NODE_HEIGHT = 160; // approximate card height
 
-const getLayoutedElements = (topics, onNodeClick) => {
-  const initialNodes = topics.map((topic, index) => ({
-    id: topic.id,
-    type: 'customTopicNode',
-    position: { x: topic.x !== undefined ? topic.x : index * 220 + 50, y: topic.y !== undefined ? topic.y : 150 },
-    data: { topic, onClick: onNodeClick },
-  }));
+const nodeTypes = { customTopicNode: TopicNode };
 
-  const initialEdges = [];
-
-  const addEdge = (src, tgt) => {
-    const isCompletedPath = src.status === 'mastered' && tgt.status !== 'unstarted';
-    initialEdges.push({
-      id: `edge-${src.id}-${tgt.id}`,
-      source: src.id,
-      target: tgt.id,
-      type: 'smoothstep',
-      animated: tgt.status === 'learning' || tgt.status === 'mastered',
-      style: {
-        stroke: isCompletedPath ? '#10B981' : tgt.status === 'learning' ? '#FBBF24' : '#CBD5E1',
-        strokeWidth: 3,
-      },
-      markerEnd: {
-        type: MarkerType.ArrowClosed,
-        color: isCompletedPath ? '#10B981' : tgt.status === 'learning' ? '#FBBF24' : '#CBD5E1',
-        width: 15,
-        height: 15,
-      },
-    });
-  };
-
-  topics.forEach((current, index) => {
-    if (current.connectedTo) {
-      const next = topics.find(t => t.id === current.connectedTo);
-      if (next) {
-        addEdge(current, next);
-      }
-    } else if (index < topics.length - 1 && !current.noSequentialEdge) {
-      const next = topics[index + 1];
-      addEdge(current, next);
-    }
+// ── Dagre auto-layout ─────────────────────────────────────────────────────────
+const getLayoutedElements = (topics, edges, direction = 'LR') => {
+  const g = new dagre.graphlib.Graph();
+  g.setDefaultEdgeLabel(() => ({}));
+  g.setGraph({
+    rankdir: direction,    // LR = left-to-right
+    nodesep: 60,           // vertical gap between nodes in same rank
+    ranksep: 100,          // horizontal gap between ranks
+    marginx: 40,
+    marginy: 40,
   });
 
-  return { nodes: initialNodes, edges: initialEdges };
+  topics.forEach((t) => {
+    g.setNode(t.id, { width: NODE_WIDTH, height: NODE_HEIGHT });
+  });
+
+  edges.forEach((e) => {
+    g.setEdge(e.source, e.target);
+  });
+
+  dagre.layout(g);
+
+  const layoutedNodes = topics.map((t, index) => {
+    const pos = g.node(t.id);
+    return {
+      id: t.id,
+      type: 'customTopicNode',
+      position: { x: pos.x - NODE_WIDTH / 2, y: pos.y - NODE_HEIGHT / 2 },
+      data: { topic: t, onClick: t._onClick, index },
+    };
+  });
+
+  return layoutedNodes;
 };
 
-const RoadmapCanvas = ({ topics, onNodeClick, selectedTopic, onClosePopup, onStartTopic, onQuizTopic }) => {
+// ── Build edges from topic list ───────────────────────────────────────────────
+const buildEdges = (topics) =>
+  topics.slice(0, -1).map((t, i) => ({
+    id: `e-${t.id}-${topics[i + 1].id}`,
+    source: t.id,
+    target: topics[i + 1].id,
+    type: 'smoothstep',
+    animated: topics[i + 1].status === 'learning',
+    style: {
+      stroke:
+        t.status === 'mastered' && topics[i + 1].status !== 'unstarted'
+          ? '#10B981'
+          : topics[i + 1].status === 'learning'
+          ? '#FBBF24'
+          : '#CBD5E1',
+      strokeWidth: 2.5,
+      strokeDasharray: topics[i + 1].status === 'unstarted' ? '6 3' : undefined,
+    },
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      width: 14,
+      height: 14,
+      color:
+        t.status === 'mastered' && topics[i + 1].status !== 'unstarted'
+          ? '#10B981'
+          : topics[i + 1].status === 'learning'
+          ? '#FBBF24'
+          : '#CBD5E1',
+    },
+  }));
+
+// ── Inner component (needs ReactFlowProvider context) ────────────────────────
+const RoadmapCanvasInner = ({
+  topics,
+  onNodeClick,
+  selectedTopic,
+  onClosePopup,
+  onStartTopic,
+  onQuizTopic,
+}) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
+  const { fitView } = useReactFlow();
+
+  const layout = useCallback(
+    (topicList) => {
+      if (!topicList?.length) {
+        setNodes([]);
+        setEdges([]);
+        return;
+      }
+      // Attach click handler via a temp field
+      const enriched = topicList.map((t) => ({ ...t, _onClick: onNodeClick }));
+      const rawEdges  = buildEdges(enriched);
+      const lnodes    = getLayoutedElements(enriched, rawEdges);
+      setNodes(lnodes);
+      setEdges(rawEdges);
+      // Fit view after a tick to ensure layout is applied to DOM
+      setTimeout(() => fitView({ padding: 0.08, maxZoom: 1.1, duration: 400 }), 50);
+    },
+    [onNodeClick, setNodes, setEdges, fitView]
+  );
 
   useEffect(() => {
-    const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(topics, onNodeClick);
-    setNodes(layoutedNodes);
-    setEdges(layoutedEdges);
-  }, [topics, onNodeClick, setNodes, setEdges]);
+    layout(topics);
+  }, [topics, layout]);
 
   return (
-    <div className="flex-1 min-h-[500px] rounded-2xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark relative overflow-hidden shadow-inner flex flex-col">
-      <div className="flex-grow relative z-0 h-[500px]">
+    <div className="flex-1 min-h-[520px] rounded-2xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark relative overflow-hidden shadow-inner flex flex-col">
+      <div className="flex-grow relative z-0 h-[520px]">
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -74,31 +133,57 @@ const RoadmapCanvas = ({ topics, onNodeClick, selectedTopic, onClosePopup, onSta
           onEdgesChange={onEdgesChange}
           nodeTypes={nodeTypes}
           fitView
-          fitViewOptions={{ padding: 0.2 }}
-          minZoom={0.5}
-          maxZoom={1.5}
-          zoomOnScroll={false}
+          fitViewOptions={{ padding: 0.08, maxZoom: 1.1 }}
+          defaultViewport={{ x: 40, y: 40, zoom: 0.9 }}
+          minZoom={0.2}
+          maxZoom={1.8}
+          zoomOnScroll={true}
           panOnScroll={false}
           zoomOnDoubleClick={false}
           selectNodesOnDrag={false}
           panOnDrag={true}
           nodesDraggable={true}
           className="w-full h-full"
+          proOptions={{ hideAttribution: true }}
         >
-          <Background 
-            color="currentColor" 
-            className="text-slate-200/50 dark:text-zinc-800/50" 
-            gap={20} 
-            size={1} 
+          {/* Subtle dot grid background */}
+          <Background
+            color="currentColor"
+            className="text-slate-200 dark:text-slate-800"
+            gap={24}
+            size={1.5}
+            style={{ opacity: 0.6 }}
           />
-          <Controls 
-            showInteractive={false} 
-            className="bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark text-slate-800 dark:text-white rounded-lg shadow-md"
+
+          {/* Controls */}
+          <Controls
+            showInteractive={false}
+            className="bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark text-slate-800 dark:text-white rounded-xl shadow-md overflow-hidden"
           />
+
+          {/* Mini-map */}
+          <MiniMap
+            nodeColor={(n) => {
+              const s = n.data?.topic?.status;
+              return s === 'mastered' ? '#10B981' : s === 'learning' ? '#FBBF24' : '#CBD5E1';
+            }}
+            maskColor="rgba(0,0,0,0.04)"
+            className="rounded-xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark shadow-md overflow-hidden"
+            style={{ bottom: 12, right: 12 }}
+          />
+
+          {/* Legend */}
+          <Panel position="top-right">
+            <div className="flex items-center space-x-3 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur border border-slate-200/60 dark:border-slate-700/40 shadow-sm text-[10px] font-semibold text-slate-500">
+              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /><span>Mastered</span></span>
+              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /><span>Active</span></span>
+              <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 inline-block" /><span>Locked</span></span>
+            </div>
+          </Panel>
         </ReactFlow>
       </div>
 
-      {/* Popup details card */}
+      {/* Topic popup */}
       {selectedTopic && (
         <TopicPopupCard
           topic={selectedTopic}
@@ -110,5 +195,12 @@ const RoadmapCanvas = ({ topics, onNodeClick, selectedTopic, onClosePopup, onSta
     </div>
   );
 };
+
+// ── Outer component wraps in ReactFlowProvider ────────────────────────────────
+const RoadmapCanvas = (props) => (
+  <ReactFlowProvider>
+    <RoadmapCanvasInner {...props} />
+  </ReactFlowProvider>
+);
 
 export default RoadmapCanvas;

@@ -1,8 +1,23 @@
 import React, { useState } from 'react';
-import { Upload, CheckCircle2 } from 'lucide-react';
+import { Upload, CheckCircle2, AlertCircle } from 'lucide-react';
+
+const ALLOWED_TYPES = ['.pdf', '.docx', '.txt', '.md'];
+const ALLOWED_MIME = [
+  'application/pdf',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'text/plain',
+  'text/markdown',
+  'text/x-markdown',
+];
+
+const isAllowed = (file) => {
+  const ext = '.' + file.name.split('.').pop().toLowerCase();
+  return ALLOWED_TYPES.includes(ext) || ALLOWED_MIME.includes(file.type) || file.type === '';
+};
 
 const DropZone = ({ onFileSelected, selectedFileName }) => {
   const [isDragActive, setIsDragActive] = useState(false);
+  const [typeError, setTypeError] = useState('');
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -18,15 +33,25 @@ const DropZone = ({ onFileSelected, selectedFileName }) => {
     e.preventDefault();
     e.stopPropagation();
     setIsDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-      onFileSelected(e.dataTransfer.files[0]);
+    const file = e.dataTransfer.files?.[0];
+    if (!file) return;
+    if (!isAllowed(file)) {
+      setTypeError(`"${file.name}" is not supported. Please upload a PDF, DOCX, TXT, or Markdown (.md) file.`);
+      return;
     }
+    setTypeError('');
+    onFileSelected(file);
   };
 
   const handleFileInput = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      onFileSelected(e.target.files[0]);
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!isAllowed(file)) {
+      setTypeError(`"${file.name}" is not supported. Please upload a PDF, DOCX, TXT, or Markdown (.md) file.`);
+      return;
     }
+    setTypeError('');
+    onFileSelected(file);
   };
 
   return (
@@ -45,7 +70,7 @@ const DropZone = ({ onFileSelected, selectedFileName }) => {
     >
       <input
         type="file"
-        accept=".pdf,.docx,.txt"
+        accept=".pdf,.docx,.txt,.md,text/markdown,text/x-markdown"
         className="hidden"
         id="file-upload-input"
         onChange={handleFileInput}
@@ -60,11 +85,17 @@ const DropZone = ({ onFileSelected, selectedFileName }) => {
         </div>
         <div>
           <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
-            {selectedFileName ? `Selected: ${selectedFileName}` : 'Drag & drop your syllabus PDF here'}
+            {selectedFileName ? `Selected: ${selectedFileName}` : 'Drag & drop your syllabus here'}
           </p>
-          <p className="text-xs text-slate-400 mt-1">Accepts PDF, DOCX, TXT up to 10MB</p>
+          <p className="text-xs text-slate-400 mt-1">Accepts PDF, DOCX, TXT, MD — up to 10MB</p>
         </div>
       </label>
+      {typeError && (
+        <div className="mt-3 flex items-start space-x-2 text-red-500">
+          <AlertCircle className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+          <p className="text-xs font-semibold">{typeError}</p>
+        </div>
+      )}
     </div>
   );
 };

@@ -25,7 +25,7 @@ const QuizCard = ({
           Question {currQ + 1} of {totalQs}
         </span>
         <h3 className="text-xl font-bold text-slate-950 dark:text-white leading-snug">
-          {question.q}
+          {question.question}
         </h3>
       </div>
 
