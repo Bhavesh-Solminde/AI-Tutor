@@ -1,66 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Brain } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout';
 import useTimer from '../hooks/useTimer';
+import useQuizStore from '../stores/useQuizStore';
+import useAuthStore from '../stores/useAuthStore';
+import useExamStore from '../stores/useExamStore';
 
-// Components
 import LivesBar from '../components/quiz/LivesBar';
 import QuizCard from '../components/quiz/QuizCard';
 import ScoreSummary from '../components/quiz/ScoreSummary';
 import QuizSteps from '../components/quiz/QuizSteps';
 import QuizTimer from '../components/quiz/QuizTimer';
+import { QuizSkeleton } from '../components/ui/LoadingSkeleton';
 
 const Quiz = () => {
   const { topicId } = useParams();
   const navigate = useNavigate();
-
-  const questions = [
-    {
-      q: "Which CPU scheduling algorithm is non-preemptive and can suffer from the Convoy Effect?",
-      options: [
-        "Round Robin (RR)",
-        "First-Come, First-Served (FCFS)",
-        "Shortest Remaining Time First (SRTF)",
-        "Priority Scheduling (Preemptive)"
-      ],
-      optionsTags: ["A", "B", "C", "D"], // added tags support
-      correct: 1,
-      explanation: "FCFS executes processes in the exact order they arrive. If a long process runs first, smaller processes are queued behind it, creating a Convoy Effect."
-    },
-    {
-      q: "What is the primary formula used to calculate a process's waiting time in a FIFO queue?",
-      options: [
-        "Waiting Time = Start Time - Arrival Time",
-        "Waiting Time = Burst Time + Response Time",
-        "Waiting Time = Turnaround Time + Arrival Time",
-        "Waiting Time = Finish Time - Burst Time"
-      ],
-      optionsTags: ["A", "B", "C", "D"],
-      correct: 0,
-      explanation: "Waiting time is the total duration a process waits in the ready queue before execution starts: Waiting Time = Start Time - Arrival Time."
-    },
-    {
-      q: "Which metric is critical to minimize in interactive operating systems?",
-      options: [
-        "Throughput",
-        "CPU Utilization",
-        "Response Time",
-        "Turnaround Time"
-      ],
-      optionsTags: ["A", "B", "C", "D"],
-      correct: 2,
-      explanation: "Response time is the duration from command submission to first output. Interactive systems must minimize response time to feel snappy to users."
-    }
-  ];
-
-  const MAX_SECONDS = 180; // 3 minutes
-
-  const handleTimeExpired = () => {
-    setQuizFinished(true);
-  };
-
-  const { seconds, pause, reset: resetTimer, formatTime } = useTimer(MAX_SECONDS, handleTimeExpired);
+  const { user } = useAuthStore();
+  const { exam } = useExamStore();
+  const {
+    questions, timeLimit, loading, submitting, error, result,
+    generateQuiz, submitQuiz, clearResult,
+  } = useQuizStore();
 
   const [currQ, setCurrQ] = useState(0);
   const [selectedOpt, setSelectedOpt] = useState(null);
@@ -72,72 +34,124 @@ const Quiz = () => {
   const [showExplanation, setShowExplanation] = useState(false);
   const [quizFinished, setQuizFinished] = useState(false);
   const [answers, setAnswers] = useState({});
+  const [startTime] = useState(Date.now());
+
+  const handleTimeExpired = () => setQuizFinished(true);
+  const { seconds, pause, reset: resetTimer, formatTime } = useTimer(timeLimit || 600, handleTimeExpired);
+
+  // Generate questions on mount
+  useEffect(() => {
+    clearResult();
+    setCurrQ(0); setSelectedOpt(null); setIsAnswered(false);
+    setLives(5); setScore(0); setXp(0);
+    setQuizFinished(false); setAnswers({});
+
+    generateQuiz(topicId).catch(() => {
+      // Error already handled by store and toast
+    });
+  }, [topicId]);
+
+  // Reset timer when questions load
+  useEffect(() => {
+    if (timeLimit) resetTimer(timeLimit);
+  }, [timeLimit]);
+
+  // Auto-finish when lives run out
+  useEffect(() => {
+    if (lives <= 0) { setQuizFinished(true); pause(); }
+  }, [lives]);
 
   const handleOptionSelect = (idx) => {
     if (isAnswered) return;
     setSelectedOpt(idx);
     setIsAnswered(true);
-
-    const isCorrect = idx === questions[currQ].correct;
-    
-    setAnswers(prev => ({
-      ...prev,
-      [currQ]: { selected: idx, isCorrect }
-    }));
-
+    const isCorrect = idx === questions[currQ]?.correct;
+    setAnswers((prev) => ({ ...prev, [currQ]: { selected: idx, isCorrect } }));
     if (isCorrect) {
-      setScore(prev => prev + 1);
-      setXp(prev => prev + 20);
+      setScore((p) => p + 1);
+      setXp((p) => p + 20);
       setShowXpPopup(true);
       setTimeout(() => setShowXpPopup(false), 1200);
     } else {
-      setLives(prev => Math.max(0, prev - 1));
+      setLives((p) => Math.max(0, p - 1));
     }
   };
 
   const handleNext = () => {
-    setSelectedOpt(null);
-    setIsAnswered(false);
-    setShowExplanation(false);
-    
+    setSelectedOpt(null); setIsAnswered(false); setShowExplanation(false);
     if (currQ < questions.length - 1) {
-      setCurrQ(prev => prev + 1);
+      setCurrQ((p) => p + 1);
     } else {
-      setQuizFinished(true);
-      pause();
+      handleFinish();
     }
+  };
+
+  const handleFinish = async () => {
+    pause();
+    setQuizFinished(true);
+    const timeTaken = Math.round((Date.now() - startTime) / 60000);
+    await submitQuiz({
+      topicId,
+      answers,
+      questions,
+      selfRatingAfter: Math.round((score / Math.max(questions.length, 1)) * 10),
+      examDate: exam?.examDate,
+      timeTaken,
+    });
   };
 
   const handleRestart = () => {
-    setCurrQ(0);
-    setSelectedOpt(null);
-    setIsAnswered(false);
-    setLives(5);
-    setScore(0);
-    setXp(0);
-    setQuizFinished(false);
-    setShowExplanation(false);
-    setAnswers({});
-    resetTimer(MAX_SECONDS);
+    clearResult();
+    setCurrQ(0); setSelectedOpt(null); setIsAnswered(false);
+    setLives(5); setScore(0); setXp(0);
+    setQuizFinished(false); setShowExplanation(false); setAnswers({});
+    generateQuiz(topicId);
   };
 
-  useEffect(() => {
-    if (lives <= 0) {
-      setQuizFinished(true);
-      pause();
-    }
-  }, [lives, pause]);
+  // Loading state
+  if (loading) {
+    return (
+      <MainLayout>
+        <div className="h-full flex flex-col space-y-6">
+          <div className="flex items-center space-x-3 pb-4 border-b border-border-light dark:border-border-dark">
+            <button onClick={() => navigate(`/tutor/${topicId}`)} className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 transition">
+              <ArrowLeft className="h-4 w-4" />
+            </button>
+            <div>
+              <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-emerald-500">Practice Module</span>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Generating Quiz...</h2>
+            </div>
+          </div>
+          <QuizSkeleton />
+        </div>
+      </MainLayout>
+    );
+  }
+
+  // Error state
+  if (error && questions.length === 0) {
+    return (
+      <MainLayout>
+        <div className="h-full flex flex-col items-center justify-center space-y-4 text-center">
+          <Brain className="h-12 w-12 text-slate-400" />
+          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">{error}</p>
+          <button onClick={() => generateQuiz(topicId)} className="px-4 py-2 bg-primary dark:bg-accent text-white text-sm font-bold rounded-xl">
+            Try Again
+          </button>
+          <button onClick={() => navigate(`/tutor/${topicId}`)} className="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+            Back to lesson
+          </button>
+        </div>
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout>
       <div className="h-full flex flex-col justify-between text-left">
-        {/* Header bar */}
         <div className="flex items-center justify-between border-b border-border-light dark:border-border-dark pb-4 mb-6">
           <div className="flex items-center space-x-3">
-            <button
-              onClick={() => navigate(`/tutor/${topicId}`)}
-              className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 transition"
-            >
+            <button onClick={() => navigate(`/tutor/${topicId}`)} className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 transition">
               <ArrowLeft className="h-4 w-4" />
             </button>
             <div>
@@ -145,36 +159,22 @@ const Quiz = () => {
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">Topic Mastery Quiz</h2>
             </div>
           </div>
-
           {!quizFinished && (
             <div className="flex items-center space-x-4">
-              <QuizTimer 
-                seconds={seconds} 
-                maxSeconds={MAX_SECONDS} 
-                formattedTime={formatTime()} 
-              />
-              <LivesBar
-                lives={lives}
-                xp={xp}
-              />
+              <QuizTimer seconds={seconds} maxSeconds={timeLimit || 600} formattedTime={formatTime()} />
+              <LivesBar lives={lives} xp={xp} />
             </div>
           )}
         </div>
 
-        {/* Main Grid content */}
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6 min-h-0 items-start">
-          {!quizFinished && (
+          {!quizFinished && questions.length > 0 && (
             <div className="lg:col-span-3">
-              <QuizSteps
-                totalQuestions={questions.length}
-                currentIdx={currQ}
-                answers={answers}
-              />
+              <QuizSteps totalQuestions={questions.length} currentIdx={currQ} answers={answers} />
             </div>
           )}
-
           <div className={`${quizFinished ? 'lg:col-span-12' : 'lg:col-span-9'} space-y-6`}>
-            {!quizFinished ? (
+            {!quizFinished && questions.length > 0 ? (
               <QuizCard
                 question={questions[currQ]}
                 selectedOpt={selectedOpt}
@@ -187,15 +187,17 @@ const Quiz = () => {
                 totalQs={questions.length}
                 showXpPopup={showXpPopup}
               />
-            ) : (
+            ) : quizFinished ? (
               <ScoreSummary
                 score={score}
                 total={questions.length}
-                xp={xp}
+                xp={result?.xpEarned || xp}
+                passed={result?.passed}
+                masteryDelta={result?.masteryDelta}
                 onRetry={handleRestart}
                 onBack={() => navigate('/roadmap')}
               />
-            )}
+            ) : null}
           </div>
         </div>
       </div>
