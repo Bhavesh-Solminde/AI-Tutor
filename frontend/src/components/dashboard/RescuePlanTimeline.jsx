@@ -32,8 +32,8 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
         {/* Left vertical timeline bar */}
         <div className="absolute left-[23px] top-2 bottom-2 w-0.5 bg-slate-100 dark:bg-border-dark -z-0" />
 
-        {timelineSteps.map((step) => (
-          <div key={step.id} className="relative flex items-start space-x-4 z-10">
+        {timelineSteps.map((step, idx) => (
+          <div key={step._id || step.id || idx} className="relative flex items-start space-x-4 z-10">
             {/* Dot node */}
             <div className={`h-5 w-5 rounded-full flex items-center justify-center border flex-shrink-0 transition-all duration-300 ${getDotStyles(step.status)}`}>
               {step.status === 'completed' && <Check className="h-3 w-3" />}

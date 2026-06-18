@@ -2,7 +2,7 @@ import React from 'react';
 import { PlayCircle } from 'lucide-react';
 
 const TopicMasteryTable = ({ topics, onStudyClick }) => {
-  const getDifficultyStyles = (difficulty) => {
+  const getDifficultyStyles = (difficulty = 'medium') => {
     const diff = difficulty.toLowerCase();
     if (diff === 'easy') {
       return 'bg-emerald-500/10 text-emerald-500 dark:text-emerald-400';
@@ -40,37 +40,43 @@ const TopicMasteryTable = ({ topics, onStudyClick }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-border-light/20 dark:divide-border-dark/20">
-            {topics.map((t) => (
-              <tr key={t.id} className="hover:bg-slate-50/30 dark:hover:bg-slate-900/10 transition">
-                <td className="p-4 font-semibold text-slate-800 dark:text-text-primary-dark">{t.name}</td>
-                <td className="p-4">
-                  <span className={`px-3 py-1 rounded-full text-[10px] font-bold capitalize ${getDifficultyStyles(t.difficulty)}`}>
-                    {t.difficulty.toLowerCase()}
-                  </span>
-                </td>
-                <td className="p-4 font-mono text-xs text-text-muted-light dark:text-text-muted-dark">{t.time}</td>
-                <td className="p-4">
-                  <div className="flex items-center space-x-3">
-                    <div className="w-48 h-1.5 rounded-full bg-slate-100 dark:bg-border-dark overflow-hidden">
-                      <div
-                        style={{ width: `${t.progress}%` }}
-                        className={`h-full rounded-full ${getProgressColor(t.progress)}`}
-                      />
+            {topics.map((t) => {
+              const topicId = t._id || t.id;
+              const difficulty = t.difficulty || 'medium';
+              const progress = t.masteryScore ?? t.progress ?? 0;
+              const estTime = t.estimatedMinutes ? `${t.estimatedMinutes}m` : (t.time || '—');
+              return (
+                <tr key={topicId} className="hover:bg-slate-50/30 dark:hover:bg-slate-900/10 transition">
+                  <td className="p-4 font-semibold text-slate-800 dark:text-text-primary-dark">{t.name}</td>
+                  <td className="p-4">
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold capitalize ${getDifficultyStyles(difficulty)}`}>
+                      {difficulty.toLowerCase()}
+                    </span>
+                  </td>
+                  <td className="p-4 font-mono text-xs text-text-muted-light dark:text-text-muted-dark">{estTime}</td>
+                  <td className="p-4">
+                    <div className="flex items-center space-x-3">
+                      <div className="w-48 h-1.5 rounded-full bg-slate-100 dark:bg-border-dark overflow-hidden">
+                        <div
+                          style={{ width: `${progress}%` }}
+                          className={`h-full rounded-full ${getProgressColor(progress)}`}
+                        />
+                      </div>
+                      <span className="font-mono text-xs font-semibold text-text-muted-light dark:text-text-muted-dark">{progress}%</span>
                     </div>
-                    <span className="font-mono text-xs font-semibold text-text-muted-light dark:text-text-muted-dark">{t.progress}%</span>
-                  </div>
-                </td>
-                <td className="p-4 text-right">
-                  <button
-                    onClick={() => onStudyClick(t.id)}
-                    className="p-1 rounded-full text-[#3B6BFF] hover:opacity-80 transition"
-                    title="Start study session"
-                  >
-                    <PlayCircle className="h-5.5 w-5.5" />
-                  </button>
-                </td>
-              </tr>
-            ))}
+                  </td>
+                  <td className="p-4 text-right">
+                    <button
+                      onClick={() => onStudyClick(topicId)}
+                      className="p-1 rounded-full text-[#3B6BFF] hover:opacity-80 transition"
+                      title="Start study session"
+                    >
+                      <PlayCircle className="h-5.5 w-5.5" />
+                    </button>
+                  </td>
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
