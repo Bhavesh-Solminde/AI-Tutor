@@ -1,47 +1,63 @@
-import React from 'react';
-import { MessageSquare } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { MessageSquare, PlusCircle } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import useChatHistoryStore from '../../stores/useChatHistoryStore';
+import useAuthStore from '../../stores/useAuthStore';
+import { ChatHistorySkeleton } from '../ui/LoadingSkeleton';
 
 const ChatHistoryList = ({ category }) => {
-  // Mock data matching the category
-  const historyData = {
-    exam: [
-      { id: '1', title: 'OS Prep: CPU Scheduling', date: '2h ago' },
-      { id: '2', title: 'Exam Outline Review', date: 'Yesterday' }
-    ],
-    roadmap: [
-      { id: '3', title: 'Virtual Memory Basics', date: '1d ago' },
-      { id: '4', title: 'Deadlock Exercises', date: '3d ago' }
-    ],
-    other: [
-      { id: '5', title: 'Operating Systems Intro', date: 'Jun 12' }
-    ]
-  };
+  const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const { chatHistory, loading, fetchChatHistory } = useChatHistoryStore();
 
-  const items = historyData[category.toLowerCase()] || [];
+  useEffect(() => {
+    if (user?._id) fetchChatHistory(user._id);
+  }, [user?._id]);
+
+  const items = chatHistory[category?.toLowerCase()] || [];
+
+  if (loading) return <ChatHistorySkeleton />;
 
   if (items.length === 0) {
-    return <p className="text-[11px] text-text-muted-light dark:text-text-muted-dark italic px-2 py-1">No chats</p>;
+    return (
+      <div className="text-center py-2 space-y-1">
+        <p className="text-[11px] text-text-muted-light dark:text-text-muted-dark italic">No chats yet</p>
+        <button
+          onClick={() => navigate('/tutor/new')}
+          className="inline-flex items-center space-x-1 text-[10px] font-semibold text-primary dark:text-accent hover:underline"
+        >
+          <PlusCircle className="h-3 w-3" />
+          <span>Start a session</span>
+        </button>
+      </div>
+    );
   }
 
   return (
     <ul className="space-y-1">
-      {items.map((item) => (
-        <li key={item.id}>
-          <Link
-            to={`/tutor/${item.id}`}
-            className="flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-elevated-dark text-xs text-text-muted-light dark:text-text-muted-dark hover:text-text-base-light dark:hover:text-text-base-dark transition-colors duration-200"
-          >
-            <div className="flex items-center space-x-2 truncate">
-              <MessageSquare className="h-3.5 w-3.5 flex-shrink-0" />
-              <span className="truncate">{item.title}</span>
-            </div>
-            <span className="text-[9px] font-mono text-text-muted-light/70 dark:text-text-muted-dark/60 ml-1 flex-shrink-0">
-              {item.date}
-            </span>
-          </Link>
-        </li>
-      ))}
+      {items.map((item) => {
+        // Navigate to the topic if available, otherwise fall back to the chat's own ID
+        const destination = item.topicId
+          ? `/tutor/${item.topicId}`
+          : `/tutor/new`;
+
+        return (
+          <li key={item._id}>
+            <button
+              onClick={() => navigate(destination)}
+              className="w-full flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-elevated-dark text-xs text-text-muted-light dark:text-text-muted-dark hover:text-text-base-light dark:hover:text-text-base-dark transition-colors duration-200 text-left"
+            >
+              <div className="flex items-center space-x-2 truncate min-w-0">
+                <MessageSquare className="h-3.5 w-3.5 flex-shrink-0" />
+                <span className="truncate">{item.title || 'Untitled Chat'}</span>
+              </div>
+              <span className="text-[9px] font-mono text-text-muted-light/70 dark:text-text-muted-dark/60 ml-1 flex-shrink-0">
+                {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
+              </span>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 };
