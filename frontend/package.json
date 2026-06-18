@@ -8,6 +8,7 @@
     "axios": "^1.18.0",
     "elkjs": "^0.11.1",
     "framer-motion": "^11.3.2",
+    "katex": "^0.17.0",
     "lucide-react": "^0.400.0",
     "postcss": "^8.4.49",
     "react": "^18.3.1",
@@ -18,7 +19,9 @@
     "react-router-dom": "^7.0.2",
     "react-scripts": "^5.0.1",
     "reactflow": "^11.11.4",
+    "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
     "tailwindcss": "^3.4.17",
     "zustand": "^5.0.14"
   },

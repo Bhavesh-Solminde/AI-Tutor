@@ -119,11 +119,11 @@ export async function submitQuiz(req: AuthRequest, res: Response, next: NextFunc
       log.warn("progressTrackerNode failed — using fallback calculation", { progressErr });
       // Fallback: simple pass/fail based on score without LLM
       const pct = total > 0 ? Math.round((score / total) * 100) : 0;
-      const passed = pct >= 60;
+      const passed = score >= 6;
       progressResult = {
         masteryDelta: { before: topic.masteryScore, after: Math.min(100, topic.masteryScore + (passed ? 20 : 5)) },
         nodeColorUpdate: passed ? "mastered" : "learning",
-        xpEarned: passed ? 50 : 10,
+        xpEarned: score * 20,
         passed,
         nextTopicRecommendation: { topicId: "", topicName: "", reason: "" },
         studyPlanUpdate: {},
@@ -228,6 +228,30 @@ export async function getActiveQuizzes(req: AuthRequest, res: Response, next: Ne
       totalQuestions: 10,
     }));
     res.json({ active });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/quiz/result/:resultId
+export async function getQuizResult(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { resultId } = req.params;
+    const userId = req.userId!;
+
+    const result = await QuizResult.findOne({ _id: resultId, userId }).lean();
+    if (!result) {
+      return next(new NotFoundError("Quiz result not found"));
+    }
+
+    // Populate topic name
+    const topic = await Topic.findById(result.topicId).lean();
+    const resultWithTopic = {
+      ...result,
+      topicName: topic ? topic.name : "Unknown Topic",
+    };
+
+    res.json({ result: resultWithTopic });
   } catch (err) {
     next(err);
   }

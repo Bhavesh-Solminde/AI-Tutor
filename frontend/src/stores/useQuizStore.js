@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../lib/axiosClient';
 import toast from 'react-hot-toast';
+import useAuthStore from './useAuthStore';
+import useProgressStore from './useProgressStore';
+import useSessionStore from './useSessionStore';
 
 const useQuizStore = create(
   persist(
@@ -44,6 +47,15 @@ const useQuizStore = create(
             topicId, answers, questions, selfRatingAfter, sessionDurationMinutes, examDate, timeTaken,
           });
           set({ result: data, submitting: false });
+
+          const userId = useAuthStore.getState().user?._id;
+          const sessionId = useSessionStore.getState().currentSession?._id;
+
+          await Promise.allSettled([
+            userId ? useProgressStore.getState().fetchProgress(userId) : Promise.resolve(),
+            sessionId ? useSessionStore.getState().fetchRoadmap(sessionId) : Promise.resolve(),
+          ]);
+
           // XP toast
           if (data.xpEarned) {
             toast.success(`+${data.xpEarned} XP earned! ${data.passed ? '🎉 Topic mastered!' : '📚 Keep studying!'}`, { duration: 4000 });
@@ -69,6 +81,19 @@ const useQuizStore = create(
           const { data } = await api.get(`/api/quiz/active/${userId}`);
           set({ activeQuizzes: data.active || [] });
         } catch {}
+      },
+
+      fetchQuizResult: async (resultId) => {
+        set({ loading: true, error: null });
+        try {
+          const { data } = await api.get(`/api/quiz/result/${resultId}`);
+          set({ loading: false });
+          return data.result;
+        } catch (err) {
+          const msg = err.userMessage || err.message || "Failed to load quiz results.";
+          set({ loading: false, error: msg });
+          throw err;
+        }
       },
 
       clearResult: () => set({ result: null }),

@@ -1,5 +1,6 @@
 import React from 'react';
 import { CheckCircle } from 'lucide-react';
+import MathMarkdown from '../ui/MathMarkdown';
 
 const AnswerOptionButton = ({ opt, idx, isSelected, isCorrect, isAnswered, onSelect }) => {
   let optClasses = 'w-full text-left p-4 rounded-xl border font-medium text-sm transition-all duration-200 ';
@@ -21,8 +22,10 @@ const AnswerOptionButton = ({ opt, idx, isSelected, isCorrect, isAnswered, onSel
       onClick={() => onSelect(idx)}
       className={optClasses}
     >
-      <div className="flex justify-between items-center">
-        <span>{opt}</span>
+      <div className="flex justify-between items-center w-full">
+        <div className="flex-grow text-left">
+          <MathMarkdown content={opt} />
+        </div>
         {isAnswered && isCorrect && <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0 ml-2" />}
       </div>
     </button>

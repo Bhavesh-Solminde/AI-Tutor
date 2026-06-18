@@ -1,6 +1,5 @@
 import React from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
+import MathMarkdown from '../ui/MathMarkdown';
 
 /**
  * If the AI accidentally streams the raw JSON object instead of just the
@@ -80,12 +79,10 @@ const MessageBubble = ({ msg, children }) => {
         ) : (
           // AI messages — render markdown
           <div className="prose-sm max-w-none">
-            <ReactMarkdown
-              remarkPlugins={[remarkGfm]}
+            <MathMarkdown
+              content={displayText || ''}
               components={markdownComponents}
-            >
-              {displayText || ''}
-            </ReactMarkdown>
+            />
             {/* Blinking cursor while streaming */}
             {msg.isStreaming && (
               <span className="inline-block w-0.5 h-4 bg-slate-400 dark:bg-slate-500 ml-0.5 animate-pulse align-middle" />

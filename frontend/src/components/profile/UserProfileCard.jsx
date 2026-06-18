@@ -1,14 +1,14 @@
 import React from 'react';
 import { Zap, Flame, CheckCircle } from 'lucide-react';
 
-const UserProfileCard = ({ user }) => {
+const UserProfileCard = ({ user, totalXP: totalXPProp, streakDays: streakDaysProp, topicsDone: topicsDoneProp }) => {
   const name = user?.name || 'Guest Scholar';
   const email = user?.email || 'aryan.sharma@college.edu';
   
   // Custom stats matching mockup Profile.png
-  const totalXP = user?.totalXP || 2840;
-  const streakDays = user?.streakDays || 4;
-  const topicsDone = user?.topicsDone || 12;
+  const totalXP = totalXPProp ?? user?.totalXp ?? user?.totalXP ?? 0;
+  const streakDays = streakDaysProp ?? user?.streakDays ?? 0;
+  const topicsDone = topicsDoneProp ?? user?.topicsDone ?? 0;
 
   return (
     <div className="flex flex-col items-center justify-center text-center py-6">

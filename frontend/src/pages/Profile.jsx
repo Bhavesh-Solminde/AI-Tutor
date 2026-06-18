@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import useAuthStore from '../stores/useAuthStore';
 import useExamStore from '../stores/useExamStore';
+import useProgressStore from '../stores/useProgressStore';
 import api from '../lib/axiosClient';
 import toast from 'react-hot-toast';
 import UserProfileCard from '../components/profile/UserProfileCard';
 import MasteryHeatmap from '../components/profile/MasteryHeatmap';
 import { CardSkeleton } from '../components/ui/LoadingSkeleton';
+import { getCompletedTopicsCount, getStudyStreakDays } from '../utils/userStats';
 
 const Profile = () => {
   const { user, updateUser, logout } = useAuthStore();
   const { exam, fetchExam } = useExamStore();
+  const { mastered, topics, fetchProgress } = useProgressStore();
 
   const [explanationLevel, setExplanationLevel] = useState(user?.explanationLevel || 'intermediate');
   const [examDate, setExamDate] = useState('');
@@ -20,6 +23,10 @@ const Profile = () => {
 
   useEffect(() => {
     if (user?._id) fetchExam(user._id);
+  }, [user?._id]);
+
+  useEffect(() => {
+    if (user?._id) fetchProgress(user._id);
   }, [user?._id]);
 
   useEffect(() => {
@@ -72,6 +79,9 @@ const Profile = () => {
     return studyDaysSet.has(d.toDateString()) ? 3 : 0;
   });
 
+  const streakDays = getStudyStreakDays(user?.studyDays);
+  const topicsDone = getCompletedTopicsCount({ mastered, topics });
+
   if (!user) {
     return (
       <MainLayout>
@@ -86,7 +96,12 @@ const Profile = () => {
   return (
     <MainLayout>
       <div className="space-y-6 text-left max-w-2xl mx-auto py-4">
-        <UserProfileCard user={{ ...user, explanationLevel }} />
+        <UserProfileCard
+          user={{ ...user, explanationLevel }}
+          totalXP={user?.totalXp || 0}
+          streakDays={streakDays}
+          topicsDone={topicsDone}
+        />
         <MasteryHeatmap heatmapDays={heatmapDays} />
 
         <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark divide-y divide-slate-100 dark:divide-border-dark overflow-hidden shadow-sm">

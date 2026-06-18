@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertTriangle, HelpCircle, ArrowRight, Sparkles, CheckCircle } from 'lucide-react';
 import AnswerOptionButton from './AnswerOptionButton';
 import XPPopup from './XPPopup';
+import MathMarkdown from '../ui/MathMarkdown';
 
 const QuizCard = ({
   question,
@@ -24,9 +25,9 @@ const QuizCard = ({
         <span className="text-xs font-mono text-slate-400">
           Question {currQ + 1} of {totalQs}
         </span>
-        <h3 className="text-xl font-bold text-slate-950 dark:text-white leading-snug">
-          {question.question}
-        </h3>
+        <div className="text-xl font-bold text-slate-950 dark:text-white leading-snug">
+          <MathMarkdown content={question.question} />
+        </div>
       </div>
 
       {/* Options */}
@@ -85,7 +86,9 @@ const QuizCard = ({
             <Sparkles className="h-3.5 w-3.5" />
             <span>Adaptive Tutor Explanation</span>
           </p>
-          <p className="text-slate-600 dark:text-slate-400">{question.explanation}</p>
+          <div className="text-slate-600 dark:text-slate-400">
+            <MathMarkdown content={question.explanation} />
+          </div>
         </div>
       )}
     </div>
