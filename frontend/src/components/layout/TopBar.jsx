@@ -21,7 +21,7 @@ const TopBar = () => {
           />
         </div>
 
-        <button 
+        <button
           onClick={() => navigate('/tutor/new')}
           className="flex items-center px-6 py-2 text-sm font-bold bg-cta hover:bg-cta-hover text-white rounded-full shadow-md transition-all duration-300"
         >
@@ -32,17 +32,17 @@ const TopBar = () => {
       {/* Right controls: Bell, ThemeToggle, User Profile (Name only) */}
       <div className="flex items-center space-x-6">
         {/* 🔔 Borderless Notification Bell */}
-        <button className="text-slate-500 dark:text-text-muted-dark hover:text-slate-800 dark:hover:text-text-primary-dark transition-colors duration-200 focus:outline-none relative flex items-center justify-center">
+        {/* <button className="text-slate-500 dark:text-text-muted-dark hover:text-slate-800 dark:hover:text-text-primary-dark transition-colors duration-200 focus:outline-none relative flex items-center justify-center">
           <Bell className="h-5 w-5" />
           <span className="absolute -top-0.5 -right-0.5 h-2 w-2 rounded-full bg-red-500 animate-pulse"></span>
-        </button>
+        </button> */}
 
         {/* 🌙 Borderless Theme Toggle */}
         <ThemeToggle />
 
         {/* User Profile (Avatar circle & Name only) */}
         {user && (
-          <div 
+          <div
             onClick={() => navigate('/profile')}
             className="flex items-center space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
             title="View Profile"
