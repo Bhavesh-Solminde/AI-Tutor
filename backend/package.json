@@ -8,7 +8,8 @@
     "build": "tsc",
     "start": "node dist/index.js",
     "lint": "tsc --noEmit",
-    "delete:user": "tsx scripts/deleteUser.ts"
+    "delete:user": "tsx scripts/deleteUser.ts",
+    "test": "tsx --test src/utils/masteryCalculator.test.ts"
   },
   "dependencies": {
     "@langchain/cohere": "^1.0.5",

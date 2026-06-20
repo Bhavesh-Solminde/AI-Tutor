@@ -10,7 +10,6 @@ const ScoreSummary = ({ score, total, xp, onRetry, onBack }) => {
 
       <div className="space-y-2">
         <h3 className="text-2xl font-extrabold text-slate-950 dark:text-white">Quiz Completed!</h3>
-        <p className="text-sm text-slate-500 dark:text-slate-400">Excellent progress made on CPU Scheduling.</p>
       </div>
 
       <div className="grid grid-cols-2 gap-4 py-4 border-y border-border-light/40 dark:border-border-dark/40 font-mono">

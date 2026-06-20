@@ -111,11 +111,10 @@ const Onboarding = () => {
                   const Icon = tab.icon;
                   return (
                     <button key={tab.id} onClick={() => { setInputType(tab.id); setLocalError(''); }}
-                      className={`flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
-                        inputType === tab.id
+                      className={`flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${inputType === tab.id
                           ? 'bg-white dark:bg-elevated-dark text-primary dark:text-primary shadow-sm border border-slate-200 dark:border-border-dark'
                           : 'text-slate-500 dark:text-text-muted-dark hover:text-slate-800 dark:hover:text-text-primary-dark'
-                      }`}>
+                        }`}>
                       <Icon className="h-4 w-4" />
                       <span className="hidden sm:inline">{tab.label}</span>
                     </button>
@@ -186,7 +185,7 @@ const Onboarding = () => {
             <div className="space-y-6 text-left">
               <div>
                 <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Step 3: What do you already know?</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Rate your baseline familiarity (1–10). Adjusts starting difficulty.</p>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Rate your baseline familiarity (1–3). Adjusts starting difficulty.</p>
               </div>
 
               {/* Processing banner — shown while o4-mini extracts topics in background */}
