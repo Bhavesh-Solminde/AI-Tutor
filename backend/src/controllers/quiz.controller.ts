@@ -119,7 +119,7 @@ export async function submitQuiz(req: AuthRequest, res: Response, next: NextFunc
       log.warn("progressTrackerNode failed — using fallback calculation", { progressErr });
       // Fallback: simple pass/fail based on score without LLM
       const pct = total > 0 ? Math.round((score / total) * 100) : 0;
-      const passed = pct >= 60;
+      const passed = pct >= 70;
       progressResult = {
         masteryDelta: { before: topic.masteryScore, after: Math.min(100, topic.masteryScore + (passed ? 20 : 5)) },
         nodeColorUpdate: passed ? "mastered" : "learning",

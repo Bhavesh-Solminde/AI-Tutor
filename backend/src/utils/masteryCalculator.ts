@@ -33,7 +33,7 @@ export function calculateMastery(input: MasteryInput): MasteryOutput {
 
   const passed = quizScore >= 0.7;
   const nodeColor: MasteryOutput["nodeColor"] =
-    calculatedMastery >= 70 ? "mastered" : "learning";
+    passed && calculatedMastery >= 70 ? "mastered" : "learning";
   const xpEarned = input.quizResults.score * 20;
 
   return {
