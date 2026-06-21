@@ -45,7 +45,7 @@ const ChatHistoryList = ({ category }) => {
                 <MessageSquare className="h-3.5 w-3.5 flex-shrink-0" />
                 <span className="truncate">{item.title || 'Untitled Chat'}</span>
               </div>
-              <span className="text-[9px] font-mono text-text-muted-light/70 dark:text-text-muted-dark/60 ml-1 flex-shrink-0">
+              <span className="text-[9px] font-sans text-text-muted-light/70 dark:text-text-muted-dark/60 ml-1 flex-shrink-0">
                 {item.createdAt ? new Date(item.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
               </span>
             </button>

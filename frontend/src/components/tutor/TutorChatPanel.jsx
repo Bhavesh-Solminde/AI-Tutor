@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react';
-import { Paperclip, Brain, Globe, MessageSquare, Layers, ArrowUp } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Paperclip, Brain, Globe, MessageSquare, Layers, ArrowUp, AlertCircle } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import ComprehensionChips from './ComprehensionChips';
 import QuickActionCards from './QuickActionCards';
@@ -20,6 +20,7 @@ const TutorChatPanel = ({
   topicName
 }) => {
   const chatEndRef = useRef(null);
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -85,7 +86,7 @@ const TutorChatPanel = ({
               <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
               <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
               <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-              <span className="text-xs font-mono">Tutor is teaching...</span>
+              <span className="text-xs font-sans">Tutor is teaching...</span>
             </div>
           )}
           <div ref={chatEndRef} />
@@ -119,8 +120,13 @@ const TutorChatPanel = ({
               </button>
 
               <button
-                className="hover:text-primary dark:hover:text-accent transition-colors p-1"
-                title="Search the web"
+                onClick={() => setWebSearchEnabled(!webSearchEnabled)}
+                className={`transition-colors p-1 ${
+                  webSearchEnabled
+                    ? 'text-primary dark:text-accent'
+                    : 'hover:text-primary dark:hover:text-accent'
+                }`}
+                title={webSearchEnabled ? 'Web Search: ON' : 'Web Search: OFF'}
               >
                 <Globe className="h-4.5 w-4.5" />
               </button>
@@ -136,7 +142,7 @@ const TutorChatPanel = ({
               {/* Materials Badge */}
               <button
                 onClick={onAttachClick}
-                className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-elevated-dark text-slate-600 dark:text-slate-300 text-[10px] font-bold font-mono flex items-center space-x-1 hover:bg-slate-200 transition-colors"
+                className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-elevated-dark text-slate-600 dark:text-slate-300 text-[10px] font-bold font-sans flex items-center space-x-1 hover:bg-slate-200 transition-colors"
               >
                 <Layers className="h-3.5 w-3.5" />
                 <span>{materialsCount} materials</span>
@@ -145,8 +151,8 @@ const TutorChatPanel = ({
 
             {/* Right side actions */}
             <div className="flex items-center space-x-3">
-              <span className="text-[10px] text-slate-400 font-mono hidden sm:inline">
-                Mode: {explanationLevel}
+              <span className="text-[10px] text-slate-400 font-sans hidden sm:inline">
+                Mode: {explanationLevel}{webSearchEnabled ? ' · 🔍 Web' : ''}
               </span>
 
 
@@ -167,7 +173,8 @@ const TutorChatPanel = ({
           <div className="w-full mt-2.5">
             <div className="p-3.5 rounded-2xl bg-amber-500/5 dark:bg-amber-500/10 border border-amber-500/20 text-xs text-left">
               <p className="font-bold text-amber-600 dark:text-amber-400 flex items-center space-x-1">
-                <span>✦ Q&A Doubt Mode Active</span>
+                <AlertCircle className="h-3.5 w-3.5" />
+                <span>Q&A Doubt Mode Active</span>
               </p>
               <p className="text-slate-500 dark:text-slate-400 mt-1">
                 The tutor will focus on answering your immediate queries or equations before resuming lessons.

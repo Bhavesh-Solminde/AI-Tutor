@@ -1,5 +1,5 @@
 import React from 'react';
-import { Clock, BarChart2, Target } from 'lucide-react';
+import { Clock, BarChart2, Target, X } from 'lucide-react';
 
 const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
   const isMastered = topic.status === 'mastered';
@@ -32,18 +32,18 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
       <div className="grid grid-cols-3 gap-3">
         {/* Time */}
         <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
+          <span className="text-[10px] font-sans font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
             <Clock className="h-3 w-3 mr-1" />
             <span>Time</span>
           </span>
-          <span className="text-xs font-bold text-slate-800 dark:text-white font-mono">
+          <span className="text-xs font-bold text-slate-800 dark:text-white">
             {topic.timeEst || '2h 45m'}
           </span>
         </div>
 
         {/* Level */}
         <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
+          <span className="text-[10px] font-sans font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
             <BarChart2 className="h-3 w-3 mr-1" />
             <span>Level</span>
           </span>
@@ -54,11 +54,11 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
 
         {/* Mastery */}
         <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
+          <span className="text-[10px] font-sans font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
             <Target className="h-3.5 w-3.5 mr-1" />
             <span>Mastery</span>
           </span>
-          <span className="text-xs font-bold text-emerald-500 font-mono">
+          <span className="text-xs font-bold text-emerald-500">
             {topic.mastery}%
           </span>
         </div>
@@ -83,9 +83,10 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
       {/* Close button at top corner or underneath */}
       <button 
         onClick={onClose}
-        className="absolute top-2 right-4 text-xs font-mono font-bold text-slate-300 hover:text-slate-500 focus:outline-none"
+        className="absolute top-3 right-3 p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-elevated-dark transition-colors focus:outline-none"
+        aria-label="Close"
       >
-        [x]
+        <X className="h-4 w-4" />
       </button>
     </div>
   );

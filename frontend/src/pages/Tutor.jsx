@@ -191,7 +191,7 @@ const Tutor = () => {
                 <ArrowLeft className="h-4 w-4" />
               </button>
               <div>
-                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-primary dark:text-accent">Active Session</span>
+                <span className="text-[10px] font-sans tracking-wider uppercase text-primary dark:text-accent">Active Session</span>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">{topicName}</h2>
               </div>
             </div>
@@ -243,9 +243,10 @@ const Tutor = () => {
             <button
               onClick={() => handleSend(startTeachingText)}
               disabled={isStreaming}
-              className="px-6 py-3 bg-primary dark:bg-accent hover:bg-primary-hover dark:hover:bg-accent/90 text-white font-bold rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-6 py-3 bg-primary dark:bg-accent hover:bg-primary-hover dark:hover:bg-accent/90 text-white font-bold rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
             >
-              Start Teaching →
+              <span>Start Teaching</span>
+              <ArrowRight className="h-4 w-4" />
             </button>
           </div>
         )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { UploadCloud, FileText, FileCode2 } from 'lucide-react';
+import { UploadCloud, FileText, FileCode2, Paperclip } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import api from '../../lib/axiosClient';
 import useAuthStore from '../../stores/useAuthStore';
@@ -46,9 +46,12 @@ const NotesList = () => {
         <p className="text-[11px] text-text-muted-light dark:text-text-muted-dark italic px-1">
           No reference materials yet
         </p>
-        <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark px-1 leading-snug">
-          Attach materials in any chat using the{' '}
-          <span className="font-mono font-bold">📎</span> button to add context for the AI tutor.
+        <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark px-1 leading-snug flex items-center gap-1">
+          Attach materials in any chat using the
+          <span className="inline-flex items-center">
+            <Paperclip className="h-3 w-3" />
+          </span>
+          button to add context for the AI tutor.
         </p>
       </div>
     );

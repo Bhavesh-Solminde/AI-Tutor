@@ -60,6 +60,8 @@ const Profile = () => {
     try {
       await api.patch(`/api/exam/${user._id}`, { examDate });
       setIsEditingDate(false);
+      // Re-fetch exam from backend so the displayed date is in sync
+      await fetchExam(user._id);
       toast.success('Exam date updated!');
     } catch {
       // Error handled by axiosClient
@@ -139,7 +141,7 @@ const Profile = () => {
                   <button onClick={() => setIsEditingDate(false)} className="text-[10px] text-slate-400 hover:text-slate-600">Cancel</button>
                 </div>
               ) : (
-                <p className="text-xs text-slate-500 font-mono">{formatDate(examDate)}</p>
+                <p className="text-xs text-slate-500">{formatDate(examDate)}</p>
               )}
             </div>
             {!isEditingDate && (

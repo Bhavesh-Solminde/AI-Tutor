@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
-import { Calendar, Sparkles, CheckCircle, Clock, Trash2, AlertTriangle, ChevronDown, BookOpen } from 'lucide-react';
+import { Calendar, Sparkles, CheckCircle, Clock, Trash2, AlertTriangle, ChevronDown, BookOpen, Target, FileText } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/useAuthStore';
 import useExamStore from '../stores/useExamStore';
@@ -81,7 +81,7 @@ const ExamMode = () => {
           <div className="space-y-6 flex flex-col h-full min-h-0">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
-                <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-primary dark:text-accent">Exam rescue plan</span>
+                <span className="text-[10px] font-bold font-sans tracking-wider uppercase text-primary dark:text-accent">Exam rescue plan</span>
                 <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
                   {exam?.subject || 'Your Exam'} Roadmap
                 </h1>
@@ -91,19 +91,19 @@ const ExamMode = () => {
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 {daysLeft !== null && (
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-semibold text-xs font-mono">
+                  <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-semibold text-xs">
                     <Calendar className="h-4 w-4" />
                     <span>{daysLeft} Days Left</span>
                   </div>
                 )}
                 {mastered > 0 && (
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-xl font-semibold text-xs font-mono">
+                  <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-xl font-semibold text-xs">
                     <CheckCircle className="h-4 w-4" />
                     <span>{mastered}/{topics.length} Mastered</span>
                   </div>
                 )}
                 {active > 0 && (
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl font-semibold text-xs font-mono">
+                  <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl font-semibold text-xs">
                     <Sparkles className="h-4 w-4" />
                     <span>{active} Active</span>
                   </div>
@@ -191,19 +191,24 @@ const ExamMode = () => {
                           >
                             <div className="flex items-center gap-2">
                               <div className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
-                              <span className={`text-xs font-mono font-bold uppercase ${
+                              <span className={`text-xs font-sans font-bold uppercase ${
                                 block.completed ? 'text-emerald-700 dark:text-emerald-300'
                                 : block.isMockExam ? 'text-purple-700 dark:text-purple-300'
                                 : 'text-slate-700 dark:text-slate-200'
                               }`}>
-                                {block.isMockExam ? '🎯 Mock Exam' : `Day ${block.dayNumber} Plan`}
+                               {block.isMockExam
+                                ? <span className="flex items-center gap-1">
+                                    <Target className="h-3 w-3" />
+                                    Mock Exam
+                                  </span>
+                                : `Day ${block.dayNumber} Plan`}
                               </span>
                               {block.completed && (
                                 <CheckCircle className="h-3 w-3 text-emerald-500" />
                               )}
                             </div>
                             <div className="flex items-center gap-2">
-                              <span className="text-[10px] font-mono text-text-muted-light dark:text-text-muted-dark">
+                              <span className="text-[10px] font-sans text-text-muted-light dark:text-text-muted-dark">
                                 {block.date ? new Date(block.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
                               </span>
                               <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
@@ -240,8 +245,9 @@ const ExamMode = () => {
                                 ))
                               )}
                               {block.isMockExam && (
-                                <p className="text-xs text-purple-600 dark:text-purple-300 font-medium pt-1">
-                                  📝 Full mock exam from past papers.
+                                <p className="text-xs text-purple-600 dark:text-purple-300 font-medium pt-1 flex items-center gap-1">
+                                  <FileText className="h-3.5 w-3.5" />
+                                  Full mock exam from past papers.
                                 </p>
                               )}
                             </div>
