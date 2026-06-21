@@ -81,12 +81,17 @@ const Landing = () => {
           ))}
         </div>
 
-        {/* Dashboard Mockup */}
+        {/* Demo Video */}
         <div className="mt-16 relative w-full max-w-5xl mx-auto">
-          <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#0B0F19] via-transparent to-transparent z-10 top-1/2" />
-          <div className="rounded-2xl border border-slate-200 dark:border-white/10 p-2 bg-slate-50 dark:bg-white/5 shadow-2xl overflow-hidden relative">
-            <img src="/light.png" alt="NeuralNest Dashboard Light" className="w-full h-auto rounded-xl object-cover border border-slate-200 dark:hidden" />
-            <img src="/dark.png" alt="NeuralNest Dashboard Dark" className="hidden dark:block w-full h-auto rounded-xl object-cover border border-white/10" />
+          <div className="absolute inset-0 bg-gradient-to-t from-white dark:from-[#0B0F19] via-transparent to-transparent z-10 pointer-events-none top-[80%]" />
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 p-2 bg-slate-50 dark:bg-white/5 shadow-2xl overflow-hidden relative aspect-video">
+            <iframe 
+              src="https://drive.google.com/file/d/1Z32E8lrqm4SCYfVUQ7fnG572J5BIucNA/preview" 
+              className="w-full h-full rounded-xl border-none"
+              allow="autoplay"
+              allowFullScreen
+              title="NeuralNest Demo Video"
+            ></iframe>
           </div>
         </div>
       </section>
