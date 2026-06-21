@@ -1,14 +1,12 @@
 import React from 'react';
 import { Zap, Flame, CheckCircle } from 'lucide-react';
 
-const UserProfileCard = ({ user }) => {
+const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
   const name = user?.name || 'Guest Scholar';
   const email = user?.email || 'aryan.sharma@college.edu';
   
-  // Custom stats matching mockup Profile.png
-  const totalXP = user?.totalXP || 2840;
-  const streakDays = user?.streakDays || 4;
-  const topicsDone = user?.topicsDone || 12;
+  // Use real fields from the DB — user.xp is the actual field name
+  const totalXP = user?.xp ?? user?.totalXp ?? 0;
 
   return (
     <div className="flex flex-col items-center justify-center text-center py-6">

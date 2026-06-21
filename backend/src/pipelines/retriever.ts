@@ -36,6 +36,35 @@ export async function retrieveContext(
 }
 
 /**
+ * RAG retrieval using a pre-built Pinecone namespace string.
+ * Use this when the namespace is already known (e.g. from materialNamespaces array)
+ * to avoid incorrect namespace re-derivation from userId + sessionId.
+ */
+export async function retrieveContextByNamespace(
+  query: string,
+  namespace: string,
+  topK: number = 5
+): Promise<string> {
+  const pineconeIndex = getPineconeIndex();
+
+  const vectorStore = await PineconeStore.fromExistingIndex(cohereEmbeddings, {
+    pineconeIndex,
+    namespace,
+  });
+
+  const docs = await vectorStore.similaritySearch(query, topK);
+
+  if (docs.length === 0) {
+    return "No relevant context found in the uploaded materials.";
+  }
+
+  return docs
+    .map((doc, i) => `[Chunk ${i + 1}]\n${doc.pageContent}`)
+    .join("\n\n---\n\n");
+}
+
+
+/**
  * Multi-namespace RAG retrieval.
  * Queries multiple Pinecone namespaces in parallel (topic session + attached materials),
  * merges results, and returns a combined context string.

@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { AgentStateType } from "../state";
 import { TUTOR_SYSTEM_PROMPT } from "../prompts/tutorPrompt";
-import { retrieveContext, retrieveFromMultipleNamespaces } from "../../pipelines/retriever";
+import { retrieveContext, retrieveContextByNamespace, retrieveFromMultipleNamespaces } from "../../pipelines/retriever";
 import { env } from "../../config/env";
 
 /**
@@ -27,7 +27,9 @@ export async function tutorNode(
   if (allNamespaces.length > 1) {
     ragContext = await retrieveFromMultipleNamespaces(state.message, allNamespaces);
   } else if (allNamespaces.length === 1) {
-    ragContext = await retrieveContext(state.message, state.userId, state.sessionId);
+    // Use the pre-built namespace directly — avoids incorrect re-derivation
+    // from userId + sessionId when sessionId is empty (open-mode with materials)
+    ragContext = await retrieveContextByNamespace(state.message, allNamespaces[0]);
   }
 
   // 2. Build system prompt (chat history summary for context summary only)

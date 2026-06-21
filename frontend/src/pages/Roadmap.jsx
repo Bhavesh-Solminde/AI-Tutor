@@ -24,6 +24,17 @@ const Roadmap = () => {
     }
   }, [currentSession?._id]);
 
+  // Re-fetch when the user returns to this tab (e.g. navigating back from quiz page)
+  useEffect(() => {
+    const onVisible = () => {
+      if (!document.hidden && currentSession?._id) {
+        fetchRoadmap(currentSession._id);
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [currentSession?._id]);
+
   // Normalize: API returns `label`; TopicNode expects `name`
   const normalizedNodes = (roadmapNodes || []).map((n) => ({
     ...n,

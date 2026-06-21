@@ -2,6 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import api from '../lib/axiosClient';
 import toast from 'react-hot-toast';
+import useSessionStore from './useSessionStore';
+import useProgressStore from './useProgressStore';
+import useAuthStore from './useAuthStore';
 
 const useQuizStore = create(
   persist(
@@ -44,7 +47,17 @@ const useQuizStore = create(
             topicId, answers, questions, selfRatingAfter, sessionDurationMinutes, examDate, timeTaken,
           });
           set({ result: data, submitting: false });
-          // XP toast
+
+          // Invalidate roadmap so mastery % updates immediately when user navigates back
+          const { fetchRoadmap, currentSession } = useSessionStore.getState();
+          if (currentSession?._id) {
+            fetchRoadmap(currentSession._id).catch(() => {});
+          }
+          // Also refresh progress store so Dashboard stays in sync
+          const { fetchProgress } = useProgressStore.getState();
+          const { user } = useAuthStore.getState();
+          if (user?._id) fetchProgress(user._id).catch(() => {});
+
           if (data.xpEarned) {
             toast.success(`+${data.xpEarned} XP earned! ${data.passed ? '🎉 Topic mastered!' : '📚 Keep studying!'}`, { duration: 4000 });
           }

@@ -149,7 +149,15 @@ export async function uploadPYQ(req: AuthRequest, res: Response, next: NextFunct
     // Extract text regardless of file type
     const rawText = await extractTextFromFile(req.file.buffer, req.file.originalname);
     const topicNames = (await Topic.find({ userId })).map((t) => t.name);
-    const frequencies = await analyzePYQ(rawText, topicNames);
+
+    // analyzePYQ is best-effort — any failure falls back to empty frequencies.
+    // The PYQ is still marked as uploaded so the roadmap generates normally.
+    let frequencies: Record<string, number> = {};
+    try {
+      frequencies = await analyzePYQ(rawText, topicNames);
+    } catch (pyqErr: any) {
+      log.error("PYQ analysis failed — continuing with empty frequencies", { error: pyqErr?.message, userId });
+    }
 
     await Exam.findByIdAndUpdate(exam._id, {
       pyqUploaded: true,

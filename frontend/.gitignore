@@ -37,3 +37,6 @@ coverage/
 # Misc
 *.pem
 thumbs.db
+
+
+.DS_Store

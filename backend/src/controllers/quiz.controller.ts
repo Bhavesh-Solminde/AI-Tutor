@@ -8,6 +8,7 @@ import { quizGeneratorNode } from "../agents/nodes/quizGeneratorNode";
 import { progressTrackerNode } from "../agents/nodes/progressTrackerNode";
 import { AgentState } from "../agents/state";
 import { NotFoundError } from "../utils/AppError";
+import { calculateMastery } from "../utils/masteryCalculator";
 import { createLogger } from "../config/logger";
 
 const log = createLogger("controller:quiz");
@@ -117,14 +118,19 @@ export async function submitQuiz(req: AuthRequest, res: Response, next: NextFunc
       } as any);
     } catch (progressErr) {
       log.warn("progressTrackerNode failed — using fallback calculation", { progressErr });
-      // Fallback: simple pass/fail based on score without LLM
-      const pct = total > 0 ? Math.round((score / total) * 100) : 0;
-      const passed = pct >= 70;
+      // Fallback: use the canonical calculateMastery() so results are always consistent
+      const masteryResult = calculateMastery({
+        quizResults: { score, total },
+        selfRatingAfter,
+        sessionDurationMinutes,
+        estimatedMinutes: topic.estimatedMinutes,
+        previousMasteryScore: topic.masteryScore,
+      });
       progressResult = {
-        masteryDelta: { before: topic.masteryScore, after: Math.min(100, topic.masteryScore + (passed ? 20 : 5)) },
-        nodeColorUpdate: passed ? "mastered" : "learning",
-        xpEarned: passed ? 50 : 10,
-        passed,
+        masteryDelta: { before: topic.masteryScore, after: Math.min(100, masteryResult.calculatedMastery) },
+        nodeColorUpdate: masteryResult.nodeColor,
+        xpEarned: masteryResult.xpEarned,
+        passed: masteryResult.passed,
         nextTopicRecommendation: { topicId: "", topicName: "", reason: "" },
         studyPlanUpdate: {},
       };

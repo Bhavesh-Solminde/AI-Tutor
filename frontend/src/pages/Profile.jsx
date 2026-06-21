@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import MainLayout from '../components/layout/MainLayout';
 import useAuthStore from '../stores/useAuthStore';
 import useExamStore from '../stores/useExamStore';
+import useProgressStore from '../stores/useProgressStore';
 import api from '../lib/axiosClient';
 import toast from 'react-hot-toast';
 import UserProfileCard from '../components/profile/UserProfileCard';
@@ -11,6 +12,14 @@ import { CardSkeleton } from '../components/ui/LoadingSkeleton';
 const Profile = () => {
   const { user, updateUser, logout } = useAuthStore();
   const { exam, fetchExam } = useExamStore();
+  const { mastered: topicsDone, fetchProgress } = useProgressStore();
+
+  // Compute weekly streak the same way Dashboard does — single source of truth
+  const studyDaysThisWeek = user?.studyDays?.filter((d) => {
+    const day = new Date(d);
+    const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
+    return day >= weekAgo;
+  }).length || 0;
 
   const [explanationLevel, setExplanationLevel] = useState(user?.explanationLevel || 'intermediate');
   const [examDate, setExamDate] = useState('');
@@ -19,7 +28,10 @@ const Profile = () => {
   const [savingDate, setSavingDate] = useState(false);
 
   useEffect(() => {
-    if (user?._id) fetchExam(user._id);
+    if (user?._id) {
+      fetchExam(user._id);
+      fetchProgress(user._id);
+    }
   }, [user?._id]);
 
   useEffect(() => {
@@ -86,7 +98,7 @@ const Profile = () => {
   return (
     <MainLayout>
       <div className="space-y-6 text-left max-w-2xl mx-auto py-4">
-        <UserProfileCard user={{ ...user, explanationLevel }} />
+        <UserProfileCard user={{ ...user, explanationLevel }} streakDays={studyDaysThisWeek} topicsDone={topicsDone} />
         <MasteryHeatmap heatmapDays={heatmapDays} />
 
         <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark divide-y divide-slate-100 dark:divide-border-dark overflow-hidden shadow-sm">

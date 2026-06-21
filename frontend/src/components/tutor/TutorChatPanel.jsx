@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { Paperclip, Brain, Globe, MessageSquare, Layers, Mic, ArrowUp } from 'lucide-react';
+import { Paperclip, Brain, Globe, MessageSquare, Layers, ArrowUp } from 'lucide-react';
 import MessageBubble from './MessageBubble';
 import ComprehensionChips from './ComprehensionChips';
 import QuickActionCards from './QuickActionCards';
@@ -146,12 +146,7 @@ const TutorChatPanel = ({
                 Mode: {explanationLevel}
               </span>
 
-              <button
-                className="text-slate-400 dark:text-slate-500 hover:text-primary dark:hover:text-accent transition-colors p-1"
-                title="Voice input"
-              >
-                <Mic className="h-4.5 w-4.5" />
-              </button>
+
 
               <button
                 onClick={() => onSend()}
