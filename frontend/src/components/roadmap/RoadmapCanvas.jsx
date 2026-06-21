@@ -16,7 +16,7 @@ import TopicNode from './TopicNode';
 import TopicPopupCard from './TopicPopupCard';
 
 // ── Node dimensions (must match the rendered card) ───────────────────────────
-const NODE_WIDTH  = 208; // w-52 = 208px
+const NODE_WIDTH = 208; // w-52 = 208px
 const NODE_HEIGHT = 160; // approximate card height
 
 const nodeTypes = { customTopicNode: TopicNode };
@@ -71,8 +71,8 @@ const styleEdges = (rawEdges) =>
         e.sourceStatus === 'mastered' && e.targetStatus !== 'unstarted'
           ? '#10B981'
           : e.targetStatus === 'learning'
-          ? '#FBBF24'
-          : '#CBD5E1',
+            ? '#FBBF24'
+            : '#CBD5E1',
       strokeWidth: 2.5,
       strokeDasharray: e.targetStatus === 'unstarted' ? '6 3' : undefined,
     },
@@ -84,8 +84,8 @@ const styleEdges = (rawEdges) =>
         e.sourceStatus === 'mastered' && e.targetStatus !== 'unstarted'
           ? '#10B981'
           : e.targetStatus === 'learning'
-          ? '#FBBF24'
-          : '#CBD5E1',
+            ? '#FBBF24'
+            : '#CBD5E1',
     },
   }));
 
@@ -118,7 +118,7 @@ const RoadmapCanvasInner = ({
         target: e.target,
       }));
       const styledEdges = styleEdges(rawServerEdges);
-      const lnodes      = getLayoutedElements(enriched, edgesForDagre);
+      const lnodes = getLayoutedElements(enriched, edgesForDagre);
       setNodes(lnodes);
       setEdges(styledEdges);
       // Fit view after a tick to ensure layout is applied to DOM

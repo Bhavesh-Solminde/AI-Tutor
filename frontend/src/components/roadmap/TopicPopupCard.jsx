@@ -23,8 +23,15 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
         <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight pr-2">
           {topic.name}
         </h3>
-        <div className="flex-shrink-0">
+        <div className="flex flex-shrink-0 items-center space-x-4">
           {getStatusBadge()}
+          <button 
+            onClick={onClose}
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-elevated-dark transition-colors focus:outline-none"
+            aria-label="Close"
+          >
+            <X className="h-5 w-5" />
+          </button>
         </div>
       </div>
 
@@ -32,33 +39,33 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
       <div className="grid grid-cols-3 gap-3">
         {/* Time */}
         <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[10px] font-sans font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
-            <Clock className="h-3 w-3 mr-1" />
+          <span className="text-[11px] font-sans font-bold text-slate-500 dark:text-slate-400 flex items-center mb-1">
+            <Clock className="h-4 w-4 mr-1.5 text-blue-500/70 dark:text-blue-400/80" />
             <span>Time</span>
           </span>
-          <span className="text-xs font-bold text-slate-800 dark:text-white">
+          <span className="text-sm font-bold text-slate-800 dark:text-white">
             {topic.timeEst || '2h 45m'}
           </span>
         </div>
 
         {/* Level */}
         <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[10px] font-sans font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
-            <BarChart2 className="h-3 w-3 mr-1" />
+          <span className="text-[11px] font-sans font-bold text-slate-500 dark:text-slate-400 flex items-center mb-1">
+            <BarChart2 className="h-4 w-4 mr-1.5 text-purple-500/70 dark:text-purple-400/80" />
             <span>Level</span>
           </span>
-          <span className="text-xs font-bold text-slate-800 dark:text-white">
+          <span className="text-sm font-bold text-slate-800 dark:text-white">
             {topic.difficulty || 'Medium'}
           </span>
         </div>
 
         {/* Mastery */}
         <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[10px] font-sans font-bold text-slate-400 dark:text-slate-500 flex items-center mb-1">
-            <Target className="h-3.5 w-3.5 mr-1" />
+          <span className="text-[11px] font-sans font-bold text-slate-500 dark:text-slate-400 flex items-center mb-1">
+            <Target className="h-4 w-4 mr-1.5 text-emerald-500/70 dark:text-emerald-400/80" />
             <span>Mastery</span>
           </span>
-          <span className="text-xs font-bold text-emerald-500">
+          <span className="text-sm font-bold text-emerald-500">
             {topic.mastery}%
           </span>
         </div>
@@ -79,15 +86,6 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
           Test my Skills
         </button>
       </div>
-
-      {/* Close button at top corner or underneath */}
-      <button 
-        onClick={onClose}
-        className="absolute top-3 right-3 p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-elevated-dark transition-colors focus:outline-none"
-        aria-label="Close"
-      >
-        <X className="h-4 w-4" />
-      </button>
     </div>
   );
 };
