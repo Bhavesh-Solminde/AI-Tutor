@@ -16,6 +16,12 @@ export interface IUser extends Document {
   totalXp: number;
   createdAt: Date;
   updatedAt: Date;
+  // ─── Learning Profile (written by gradeNode, read by tutor on next session) ─
+  learningProfile?: {
+    conceptsStruggled: Map<string, number>;   // topicName → confusion count
+    preferredExplanationStyle: "analogy" | "step_by_step" | "visual" | "standard";
+    lastSessionSummary: string;
+  };
 }
 
 const UserSchema = new Schema<IUser>(
@@ -41,6 +47,19 @@ const UserSchema = new Schema<IUser>(
     streak: { type: Number, default: 0 },
     studyDays: [{ type: Date }],
     onboarded: { type: Boolean, default: false },
+    learningProfile: {
+      conceptsStruggled: {
+        type: Map,
+        of: Number,
+        default: () => new Map(),
+      },
+      preferredExplanationStyle: {
+        type: String,
+        enum: ["analogy", "step_by_step", "visual", "standard"],
+        default: "standard",
+      },
+      lastSessionSummary: { type: String, default: "" },
+    },
   },
   { timestamps: true }
 );

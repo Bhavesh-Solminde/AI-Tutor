@@ -91,6 +91,37 @@ export const AgentState = Annotation.Root({
     default: () => "standard",
   }),
 
+  // ─── Grade Output (written by gradeNode) ──────────────────────────────────
+  // Classification of the student's comprehension after each explanation chunk.
+  gradeClassification: Annotation<"UNDERSTOOD" | "CONFUSED" | "PARTIAL" | "DOUBT">({
+    reducer: (_, next) => next,
+    default: () => "UNDERSTOOD",
+  }),
+  gradeReasoning: Annotation<string>({
+    reducer: (_, next) => next,
+    default: () => "",
+  }),
+  // Loop counter — incremented by tutorNode each time it runs.
+  // gradeNode uses this to prevent infinite re-explanation cycles (cap at 3).
+  loopCount: Annotation<number>({
+    reducer: (_, next) => next,
+    default: () => 0,
+  }),
+
+  // ─── Batch 2: Personalisation Inputs ──────────────────────────────────────
+  // Pre-formatted learning profile string for prompt injection.
+  // Built in tutor.controller.ts from user.learningProfile.
+  learningProfile: Annotation<string>({
+    reducer: (_, next) => next,
+    default: () => "",
+  }),
+  // Student's self-confidence rating for this topic (1–10), from Topic.selfRatingBefore.
+  // Used to detect overconfidence / anxiety and calibrate tutor tone.
+  selfRatingBefore: Annotation<number>({
+    reducer: (_, next) => next,
+    default: () => 0,
+  }),
+
   // ─── Quiz Output ────────────────────────────────────────────────────────────
   questions: Annotation<
     Array<{

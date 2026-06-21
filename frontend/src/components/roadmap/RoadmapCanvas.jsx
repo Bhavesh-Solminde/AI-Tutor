@@ -56,32 +56,34 @@ const getLayoutedElements = (topics, edges, direction = 'LR') => {
   return layoutedNodes;
 };
 
-// ── Build edges from topic list ───────────────────────────────────────────────
-const buildEdges = (topics) =>
-  topics.slice(0, -1).map((t, i) => ({
-    id: `e-${t.id}-${topics[i + 1].id}`,
-    source: t.id,
-    target: topics[i + 1].id,
+// ── Style server-provided edges ───────────────────────────────────────────────
+// Replaces the old buildEdges() which created a sequential chain client-side.
+// Now we receive real prerequisite edges from the API and just apply visual styling.
+const styleEdges = (rawEdges) =>
+  (rawEdges || []).map((e) => ({
+    id: e.id || `e-${e.source}-${e.target}`,
+    source: e.source,
+    target: e.target,
     type: 'smoothstep',
-    animated: topics[i + 1].status === 'learning',
+    animated: e.targetStatus === 'learning',
     style: {
       stroke:
-        t.status === 'mastered' && topics[i + 1].status !== 'unstarted'
+        e.sourceStatus === 'mastered' && e.targetStatus !== 'unstarted'
           ? '#10B981'
-          : topics[i + 1].status === 'learning'
+          : e.targetStatus === 'learning'
           ? '#FBBF24'
           : '#CBD5E1',
       strokeWidth: 2.5,
-      strokeDasharray: topics[i + 1].status === 'unstarted' ? '6 3' : undefined,
+      strokeDasharray: e.targetStatus === 'unstarted' ? '6 3' : undefined,
     },
     markerEnd: {
       type: MarkerType.ArrowClosed,
       width: 14,
       height: 14,
       color:
-        t.status === 'mastered' && topics[i + 1].status !== 'unstarted'
+        e.sourceStatus === 'mastered' && e.targetStatus !== 'unstarted'
           ? '#10B981'
-          : topics[i + 1].status === 'learning'
+          : e.targetStatus === 'learning'
           ? '#FBBF24'
           : '#CBD5E1',
     },
@@ -90,6 +92,7 @@ const buildEdges = (topics) =>
 // ── Inner component (needs ReactFlowProvider context) ────────────────────────
 const RoadmapCanvasInner = ({
   topics,
+  serverEdges,       // ← real prerequisite edges from /api/roadmap/:sessionId
   onNodeClick,
   selectedTopic,
   onClosePopup,
@@ -101,7 +104,7 @@ const RoadmapCanvasInner = ({
   const { fitView } = useReactFlow();
 
   const layout = useCallback(
-    (topicList) => {
+    (topicList, rawServerEdges) => {
       if (!topicList?.length) {
         setNodes([]);
         setEdges([]);
@@ -109,10 +112,15 @@ const RoadmapCanvasInner = ({
       }
       // Attach click handler via a temp field
       const enriched = topicList.map((t) => ({ ...t, _onClick: onNodeClick }));
-      const rawEdges  = buildEdges(enriched);
-      const lnodes    = getLayoutedElements(enriched, rawEdges);
+      // Pass plain {source, target} edges to dagre so layout respects dependencies
+      const edgesForDagre = (rawServerEdges || []).map((e) => ({
+        source: e.source,
+        target: e.target,
+      }));
+      const styledEdges = styleEdges(rawServerEdges);
+      const lnodes      = getLayoutedElements(enriched, edgesForDagre);
       setNodes(lnodes);
-      setEdges(rawEdges);
+      setEdges(styledEdges);
       // Fit view after a tick to ensure layout is applied to DOM
       setTimeout(() => fitView({ padding: 0.08, maxZoom: 1.1, duration: 400 }), 50);
     },
@@ -120,8 +128,8 @@ const RoadmapCanvasInner = ({
   );
 
   useEffect(() => {
-    layout(topics);
-  }, [topics, layout]);
+    layout(topics, serverEdges);
+  }, [topics, serverEdges, layout]);
 
   return (
     <div className="flex-1 min-h-[520px] rounded-2xl border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark relative overflow-hidden shadow-inner flex flex-col">

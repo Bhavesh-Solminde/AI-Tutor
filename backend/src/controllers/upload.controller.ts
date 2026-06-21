@@ -23,7 +23,15 @@ async function extractAndSaveTopics(
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     try {
       log.info("Background: topic extraction started", { sessionId, attempt });
-      const extractedTopics = await extractTopicsFromText(rawText);
+      const { topics: extractedTopics, edges } = await extractTopicsFromText(rawText);
+
+      // Build prerequisite map: topicName → [prerequisite names]
+      const prereqMap = new Map<string, string[]>();
+      for (const edge of edges) {
+        if (!prereqMap.has(edge.to)) prereqMap.set(edge.to, []);
+        prereqMap.get(edge.to)!.push(edge.from);
+      }
+
       await Topic.insertMany(
         extractedTopics.map((t, index) => ({
           sessionId: new mongoose.Types.ObjectId(sessionId),
@@ -32,11 +40,13 @@ async function extractAndSaveTopics(
           difficulty: t.difficulty,
           estimatedMinutes: t.estimatedMinutes,
           roadmapPosition: { x: 250, y: index * 150 },
+          prerequisites: prereqMap.get(t.name) || [],
         }))
       );
       log.info("Background: topics saved", {
         sessionId,
         topicCount: extractedTopics.length,
+        edgeCount: edges.length,
         topicNames: extractedTopics.map((t) => t.name),
       });
       return; // Success — exit retry loop

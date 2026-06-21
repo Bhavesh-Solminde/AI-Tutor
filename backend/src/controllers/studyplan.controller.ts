@@ -2,6 +2,7 @@ import { Response, NextFunction } from "express";
 import { AuthRequest } from "../types";
 import { StudyPlan } from "../models/StudyPlan";
 import { Topic } from "../models/Topic";
+import { Exam } from "../models/Exam";
 import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 import { env } from "../config/env";
@@ -41,15 +42,35 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
       return;
     }
 
+    // Read PYQ frequencies from the Exam doc (if available)
+    const exam = await Exam.findOne({ userId });
+    const pyqFrequencies: Record<string, number> = exam?.topicFrequencies
+      ? Object.fromEntries(exam.topicFrequencies as any)
+      : {};
+    const hasPYQData = Object.keys(pyqFrequencies).length > 0;
+
     const daysLeft = Math.ceil((new Date(examDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
     log.info("Generating study plan", { userId, sessionId, topicCount: topics.length, daysLeft });
 
     // ── Edge case: Exam is today or in the past ──
+    // Weighted priority: lower mastery = higher priority, higher PYQ frequency = higher priority
+    const weightedSort = (a: any, b: any) => {
+      const aFreq = pyqFrequencies[a.name] || 0;
+      const bFreq = pyqFrequencies[b.name] || 0;
+      // Score: high frequency + low mastery = highest priority
+      // Numerical topics get a 1.3x boost (they need more practice)
+      const aTypeBoost = a.topicType === "numerical" ? 1.3 : a.topicType === "mixed" ? 1.15 : 1.0;
+      const bTypeBoost = b.topicType === "numerical" ? 1.3 : b.topicType === "mixed" ? 1.15 : 1.0;
+      const aScore = ((100 - a.masteryScore) + aFreq * 15) * aTypeBoost;
+      const bScore = ((100 - b.masteryScore) + bFreq * 15) * bTypeBoost;
+      return bScore - aScore; // descending
+    };
+
     if (daysLeft <= 0) {
       // Generate a rapid review plan for today only
       const weakestTopics = topics
-        .sort((a, b) => a.masteryScore - b.masteryScore)
+        .sort(weightedSort)
         .slice(0, 5); // Focus on 5 weakest topics
       
       const plan = await StudyPlan.findOneAndUpdate(
@@ -78,7 +99,7 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
 
     // ── Edge case: Only 1 day left ──
     if (daysLeft === 1) {
-      const sortedTopics = topics.sort((a, b) => a.masteryScore - b.masteryScore);
+      const sortedTopics = topics.sort(weightedSort);
       const totalMinutes = 8 * 60; // Assume 8 hours max study time
       let allocatedMinutes = 0;
       const selectedTopics = [];
@@ -124,7 +145,9 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
     const model = new ChatOpenAI({ model: "gpt-4o", temperature: 0.2, apiKey: env.OPENAI_API_KEY });
     const structured = model.withStructuredOutput(studyPlanSchema);
 
-    const topicSummary = topics.map((t) => `${t.name} (mastery: ${t.masteryScore}%, est: ${t.estimatedMinutes}min)`).join("\n");
+    const topicSummary = topics.map((t) => 
+      `${t.name} (mastery: ${t.masteryScore}%, est: ${t.estimatedMinutes}min, type: ${(t as any).topicType || 'theory'}${pyqFrequencies[t.name] ? `, PYQ freq: ${pyqFrequencies[t.name]}` : ''})`
+    ).join("\n");
 
     const result = await structured.invoke([
       {
@@ -135,7 +158,11 @@ CRITICAL CONSTRAINTS:
 - Maximum ${maxTopicsPerDay} topics per day
 - Maximum ${maxStudyHoursPerDay} hours of study per day
 - Assign weakest topics (lowest mastery) to earliest days
+- PRIORITIZE topics with high PYQ frequency — these are most likely to appear in the exam
+- Topics marked as "numerical" need ~1.5x more time than theory topics of the same difficulty
+- Topics marked as "mixed" need ~1.2x more time
 - If days are very limited (${daysLeft} days), PRIORITIZE: skip topics with mastery > 80%
+${hasPYQData ? '- PYQ frequency data is available — weight scheduling by exam appearance frequency' : '- No PYQ data available — weight by difficulty and mastery only'}
 - Final day should include revision + mock exam practice
 - Each day's total estimated study time must not exceed ${maxStudyHoursPerDay * 60} minutes
 - Return dates as ISO strings starting from tomorrow`,
@@ -180,8 +207,22 @@ CRITICAL CONSTRAINTS:
       { upsert: true, new: true }
     );
 
+    const totalTopics = topics.length;
+    const coveredTopicNames = new Set(days.flatMap((d: any) => d.topics.map((t: any) => t.topicName)));
+    const droppedTopics = topics.filter((t) => !coveredTopicNames.has(t.name));
+    const warnings: string[] = [];
+
+    if (daysLeft <= 2 && droppedTopics.length > 0) {
+      warnings.push(
+        `⚠️ With only ${daysLeft} day(s) left, ${droppedTopics.length} topics were deprioritized: ${droppedTopics.map(t => t.name).join(', ')}`
+      );
+    }
+    if (daysLeft <= 1) {
+      warnings.push("⏰ Focus on high-frequency PYQ topics and your weakest areas. You won't cover everything — that's OK.");
+    }
+
     log.info("Study plan generated", { userId, planId: plan._id, dayCount: days.length });
-    res.json({ plan });
+    res.json({ plan, warnings });
   } catch (err) {
     next(err);
   }

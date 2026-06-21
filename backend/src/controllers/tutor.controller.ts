@@ -73,6 +73,14 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       log.debug("Material namespaces resolved", { count: materialNamespaces.length, namespaces: materialNamespaces });
     }
 
+    // ── Build learning profile string for prompt injection ─────────────────
+    let profileStr = "No learning profile yet (new student — use defaults).";
+    if (user.learningProfile) {
+      const lp = user.learningProfile;
+      profileStr = lp.lastSessionSummary ||
+        `Preferred explanation style: ${lp.preferredExplanationStyle}.`;
+    }
+
     // Run LangGraph tutor graph
     const result = await runTutorGraph({
       userId,
@@ -86,6 +94,9 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       sessionId: topic?.sessionId?.toString() || "",
       materialNamespaces,
       currentDateTime: new Date().toISOString(),
+      loopCount: 0, // Reset loop counter for each new user message
+      learningProfile: profileStr,                      // ← ADD
+      selfRatingBefore: topic?.selfRatingBefore ?? 0,   // ← ADD
     });
 
     // Stream the response in rapid batches of ~10 words with 5ms delay
@@ -104,6 +115,7 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       doubtPrompt: result.doubtPrompt,
       nextAction: result.nextAction,
       explanationMode: result.explanationMode,
+      gradeClassification: result.gradeClassification ?? "UNDERSTOOD",
     })}\n\n`);
     res.write("data: [DONE]\n\n");
 
@@ -185,6 +197,20 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
     const today = new Date();
     today.setHours(0, 0, 0, 0);
     await User.findByIdAndUpdate(userId, { $addToSet: { studyDays: today } });
+
+    // ── Update learning profile (fire-and-forget, never blocks SSE) ────────
+    if (result.gradeClassification && result.gradeClassification !== "UNDERSTOOD" || 
+        result.gradeClassification === "UNDERSTOOD" && result.explanationMode !== "standard") {
+      const { updateLearningProfile } = await import("../utils/learningProfileUpdater");
+      updateLearningProfile({
+        userId,
+        topicName: topic?.name || "General Study",
+        gradeClassification: result.gradeClassification as "UNDERSTOOD" | "CONFUSED" | "PARTIAL" | "DOUBT",
+        explanationMode: result.explanationMode,
+      }).catch((err: any) =>
+        log.error("Learning profile update failed silently", { error: err.message })
+      );
+    }
 
     log.info("Tutor chat complete", { chatId: resolvedChatId, topicId, nextAction: result.nextAction });
     res.end();

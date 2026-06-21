@@ -15,7 +15,8 @@ const ExamMode = () => {
   const { user } = useAuthStore();
   const {
     exam, topics, daysLeft, rescuePlan, setupComplete, loading,
-    fetchExam, fetchStudyPlan, setSetupComplete, deleteExam,
+    examSessionId, examRoadmapNodes, examRoadmapEdges,
+    fetchExam, fetchStudyPlan, fetchExamRoadmap, setSetupComplete, deleteExam,
   } = useExamStore();
 
   const [selectedTopic, setSelectedTopic] = React.useState(null);
@@ -45,7 +46,14 @@ const ExamMode = () => {
     }
   }, [user?._id]);
 
-  const normalizedTopics = (topics || []).map((t) => ({
+  // Fetch roadmap edges when we know the exam's sessionId
+  useEffect(() => {
+    if (examSessionId) fetchExamRoadmap(examSessionId);
+  }, [examSessionId]);
+
+  // Prefer roadmap API nodes (have position data + edges) over flat topic list
+  const roadmapSource = examRoadmapNodes?.length > 0 ? examRoadmapNodes : topics;
+  const normalizedTopics = (roadmapSource || []).map((t) => ({
     ...t,
     id: t.id || t._id,
     name: t.name || t.label || 'Untitled Topic',
@@ -138,6 +146,7 @@ const ExamMode = () => {
                 {loading ? <RoadmapSkeleton /> : normalizedTopics.length > 0 ? (
                   <RoadmapCanvas
                     topics={normalizedTopics}
+                    serverEdges={examRoadmapEdges || []}
                     onNodeClick={setSelectedTopic}
                     selectedTopic={selectedTopic}
                     onClosePopup={() => setSelectedTopic(null)}

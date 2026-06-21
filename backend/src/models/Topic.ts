@@ -10,9 +10,12 @@ export interface ITopic extends Document {
   selfRatingBefore: number;
   selfRatingAfter: number;
   status: "unstarted" | "learning" | "mastered";
+  topicType: "theory" | "numerical" | "mixed";
   lastStudiedAt?: Date;
   roadmapPosition: { x: number; y: number };
   archived: boolean;
+  prerequisites: string[]; // names of topics that must be completed first (strings, not ObjectIds)
+  pyqFrequency: number;   // how many times this topic appeared in PYQs (0 = never/unknown)
   createdAt: Date;
 }
 
@@ -41,6 +44,9 @@ const TopicSchema = new Schema<ITopic>(
       y: { type: Number, default: 0 },
     },
     archived: { type: Boolean, default: false },
+    prerequisites: [{ type: String }],
+    pyqFrequency: { type: Number, default: 0 },
+    topicType: { type: String, enum: ["theory", "numerical", "mixed"], default: "theory" },
   },
   { timestamps: true }
 );

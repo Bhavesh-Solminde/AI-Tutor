@@ -53,7 +53,10 @@ const ExamSetupWizard = ({ onComplete }) => {
         try {
           const fd = new FormData();
           fd.append('file', pyqFile);
-          await uploadPYQ(fd);
+          const pyqResult = await uploadPYQ(fd);
+          if (pyqResult?.recalibrated) {
+            toast.success('Past papers analyzed and study plan recalibrated!');
+          }
         } catch {
           return;
         }
@@ -132,7 +135,14 @@ const ExamSetupWizard = ({ onComplete }) => {
           <SyllabusUpload file={syllabusFile} onFileChange={setSyllabusFile} onSkip={() => setStep(3)} />
         )}
         {step === 3 && (
-          <PYQUpload file={pyqFile} onFileChange={setPyqFile} onSkip={handleNext} />
+          <PYQUpload 
+          file={pyqFile} 
+          onFileChange={setPyqFile} 
+          onSkip={() => {
+            toast('Skipping PYQ — searching online for past papers...', { icon: '🔍', duration: 3000 });
+            handleNext();
+          }} 
+        />
         )}
       </div>
 

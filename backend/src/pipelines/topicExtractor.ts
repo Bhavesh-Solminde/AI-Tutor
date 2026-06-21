@@ -11,8 +11,25 @@ const topicSchema = z.object({
       name: z.string().describe("Short, specific topic name — 2 to 6 words max"),
       difficulty: z.enum(["easy", "medium", "hard"]),
       estimatedMinutes: z.number().int().min(5).max(120),
+      topicType: z.enum(["theory", "numerical", "mixed"]).describe(
+        "theory = conceptual/definitional, numerical = requires solving problems/calculations, mixed = both"
+      ),
     })
   ),
+  edges: z
+    .array(
+      z.object({
+        from: z
+          .string()
+          .describe("Name of the prerequisite topic — MUST exactly match a name in the topics array"),
+        to: z
+          .string()
+          .describe("Name of the dependent topic — MUST exactly match a name in the topics array"),
+      })
+    )
+    .describe(
+      "Prerequisite edges: 'from' must be studied before 'to'. All names must exactly match topic names above."
+    ),
 });
 
 /**
@@ -22,9 +39,10 @@ const topicSchema = z.object({
  * Upgraded from gpt-4o (max 20 topics, 8k chars) to o4-mini (30–60 topics, full text)
  * because node creation is a one-time operation and accuracy is critical.
  */
-export async function extractTopicsFromText(
-  rawText: string
-): Promise<Array<{ name: string; difficulty: "easy" | "medium" | "hard"; estimatedMinutes: number }>> {
+export async function extractTopicsFromText(rawText: string): Promise<{
+  topics: Array<{ name: string; difficulty: "easy" | "medium" | "hard"; estimatedMinutes: number; topicType: "theory" | "numerical" | "mixed" }>;
+  edges: Array<{ from: string; to: string }>;
+}> {
 
   // Use up to 60k chars — enough for any syllabus/PDF without hitting context limits
   const fullText = rawText.slice(0, 60_000);
@@ -57,14 +75,24 @@ Your task is to extract a COMPREHENSIVE, GRANULAR list of study topics from the 
 3. Each topic node should represent approximately 15–45 minutes of focused study.
 4. Expand every section, sub-section, algorithm, data structure, and named concept into its own node.
 5. Include both theoretical concepts AND practical problem-solving topics (e.g. "Banker's Algorithm Numericals").
-6. Assign difficulty honestly:
+6. For each topic, classify topicType:
+   - "theory" = reading, memorization, conceptual understanding
+   - "numerical" = solving problems, calculations, algorithm tracing
+   - "mixed" = requires both theory understanding and problem-solving
+   Numerical topics need ~1.5x more study time than theory topics of the same difficulty.
+7. Assign difficulty honestly:
    - easy: definitional, introductory, or conceptual (e.g., "What is an OS?")
    - medium: requires understanding relationships or moderate math (e.g., "TLB and Effective Access Time")
    - hard: requires heavy calculation, proofs, or advanced design (e.g., "Banker's Algorithm", "Page Replacement Numericals")
 7. estimatedMinutes should reflect depth: easy = 10–20 min, medium = 20–40 min, hard = 30–60 min.
 8. Use concise, exam-ready topic names (2–6 words). These become node labels on the roadmap.
 9. Preserve the logical order of topics as they appear in the material.
-10. Do NOT merge related topics together — keep them separate nodes.`;
+10. Do NOT merge related topics together — keep them separate nodes.
+11. PREREQUISITE EDGES: For each topic, identify which other topics in YOUR list must be understood first.
+    - Use the EXACT topic names you defined above (copy-paste — no paraphrasing).
+    - Build a realistic DAG, NOT a linear chain. Most topics should have 0–2 prerequisites.
+    - Foundational/intro topics ("What is an OS?", "Introduction to...") must have NO prerequisites.
+    - When in doubt, omit the edge rather than creating a wrong dependency.`;
 
   const userPrompt = `Analyze this educational material thoroughly and extract ALL granular study topics for a complete learning roadmap.
 
@@ -83,8 +111,9 @@ Now extract every distinct learnable concept as a separate topic node.`;
 
   log.info("extractTopicsFromText complete", {
     topicCount: result.topics.length,
+    edgeCount: result.edges.length,
     topicNames: result.topics.map((t) => t.name),
   });
 
-  return result.topics;
+  return { topics: result.topics, edges: result.edges };
 }

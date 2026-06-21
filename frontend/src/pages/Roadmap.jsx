@@ -15,7 +15,7 @@ import YoutubeSuggestions from '../components/tutor/YoutubeSuggestions';
 const Roadmap = () => {
   const navigate = useNavigate();
   const {
-    currentSession, allSessions, roadmapNodes, fetchRoadmap,
+    currentSession, allSessions, roadmapNodes, roadmapEdges, fetchRoadmap,
     fetchUserSessions, switchSession, deleteCurrentSession, loading, error,
   } = useSessionStore();
   const { daysLeft } = useExamStore();
@@ -271,6 +271,7 @@ const Roadmap = () => {
           ) : (
             <RoadmapCanvas
               topics={normalizedNodes}
+              serverEdges={roadmapEdges || []}
               onNodeClick={(t) => setSelectedTopic(t)}
               selectedTopic={selectedTopic}
               onClosePopup={() => setSelectedTopic(null)}

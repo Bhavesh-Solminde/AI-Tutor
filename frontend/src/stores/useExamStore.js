@@ -9,6 +9,8 @@ const useExamStore = create(
       exam: null,
       examSessionId: null,
       topics: [],
+      examRoadmapNodes: [],
+      examRoadmapEdges: [],
       daysLeft: null,
       rescuePlan: null,
       setupComplete: false,
@@ -94,6 +96,32 @@ const useExamStore = create(
         }
       },
 
+      fetchExamRoadmap: async (sessionId) => {
+        if (!sessionId) return;
+        try {
+          const { data } = await api.get(`/api/roadmap/${sessionId}`);
+          set({
+            examRoadmapNodes: data.nodes || [],
+            examRoadmapEdges: data.edges || [],
+          });
+        } catch (err) {
+          console.warn('Failed to fetch exam roadmap', err);
+        }
+      },
+
+      recalibrateExam: async () => {
+        set({ loading: true, error: null });
+        try {
+          const { data } = await api.post('/api/exam/recalibrate');
+          set({ rescuePlan: data.plan, loading: false });
+          toast.success('Study plan recalibrated with PYQ data! 🎯');
+          return data;
+        } catch (err) {
+          set({ loading: false });
+          toast.error('Failed to recalibrate plan.');
+        }
+      },
+
       fetchStudyPlan: async (userId) => {
         try {
           const { data } = await api.get(`/api/studyplan/${userId}`);
@@ -120,7 +148,7 @@ const useExamStore = create(
       },
 
       setSetupComplete: (val) => set({ setupComplete: val }),
-      clearExam: () => set({ exam: null, examSessionId: null, topics: [], daysLeft: null, rescuePlan: null, setupComplete: false }),
+      clearExam: () => set({ exam: null, examSessionId: null, topics: [], examRoadmapNodes: [], examRoadmapEdges: [], daysLeft: null, rescuePlan: null, setupComplete: false }),
 
       // DELETE exam + study plan so user can restart from scratch
       deleteExam: async (userId) => {

@@ -12,6 +12,8 @@ import pdfParse from "pdf-parse";
 import { Session } from "../models/Session";
 import { NotFoundError, ValidationError, FileError } from "../utils/AppError";
 import { createLogger } from "../config/logger";
+import { generateStudyPlan } from "./studyplan.controller";
+import mongoose from "mongoose";
 
 const log = createLogger("controller:exam");
 
@@ -131,6 +133,26 @@ export async function uploadSyllabus(req: AuthRequest, res: Response, next: Next
       topics = topicDocs.map((t) => ({ _id: t._id, name: t.name, difficulty: t.difficulty, estimatedMinutes: t.estimatedMinutes, status: t.status }));
       roadmapNodes = topicDocs.map((t) => ({ id: t._id.toString(), label: t.name, status: "unstarted", position: t.roadmapPosition, difficulty: t.difficulty, estimatedMinutes: t.estimatedMinutes }));
       log.info("Syllabus from web search complete", { sessionId, topicCount: topics.length });
+
+      // Best-effort: search for PYQs online too
+      try {
+        const pyqSearch = new TavilySearch({ maxResults: 3 });
+        const pyqResults = await pyqSearch.invoke({
+          query: `${exam.subject} previous year question paper site:*.edu OR site:*.ac.in`,
+        });
+        if (pyqResults && JSON.stringify(pyqResults).length > 100) {
+          const topicNames = topics.map((t: any) => t.name);
+          const freq = await analyzePYQ(JSON.stringify(pyqResults), topicNames);
+          if (Object.keys(freq).length > 0) {
+            await Exam.findByIdAndUpdate(exam._id, { pyqUploaded: true, topicFrequencies: freq });
+            log.info("PYQ web search found frequencies", { freqCount: Object.keys(freq).length });
+          } else {
+            log.info("PYQ web search returned no usable frequencies");
+          }
+        }
+      } catch (pyqErr: any) {
+        log.warn("PYQ web search failed — continuing without PYQ data", { error: pyqErr?.message });
+      }
     }
 
     log.info("Syllabus upload complete", { sessionId, topicCount: topics.length });
@@ -169,7 +191,16 @@ export async function uploadPYQ(req: AuthRequest, res: Response, next: NextFunct
       topicFrequencies: frequencies,
     });
 
-    res.json({ topicFrequencies: frequencies });
+    // Auto-recalibrate the study plan if one already exists
+    const existingPlan = await StudyPlan.findOne({ userId });
+    let recalibrated = false;
+    if (existingPlan && Object.keys(frequencies).length > 0) {
+      // Update topic estimated minutes based on PYQ frequency
+      await recalibrateTopicsFromPYQ(userId, exam.sessionId, frequencies);
+      recalibrated = true;
+    }
+
+    res.json({ topicFrequencies: frequencies, recalibrated });
   } catch (err) {
     next(err);
   }
@@ -203,6 +234,71 @@ export async function deleteExam(req: AuthRequest, res: Response, next: NextFunc
     ]);
     log.info("Exam deleted", { userId });
     res.json({ success: true });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// Boost estimatedMinutes for high-frequency PYQ topics; reduce for never-asked ones
+async function recalibrateTopicsFromPYQ(
+  userId: string,
+  sessionId: mongoose.Types.ObjectId | undefined,
+  frequencies: Record<string, number>
+): Promise<void> {
+  const query: any = { userId };
+  if (sessionId) query.sessionId = sessionId;
+  const topics = await Topic.find(query);
+  const maxFreq = Math.max(...Object.values(frequencies), 1);
+
+  const bulkOps = topics.map((t) => {
+    const freq = frequencies[t.name] || 0;
+    const freqRatio = freq / maxFreq; // 0.0 – 1.0
+    // High-frequency topics get up to 50% more time; zero-frequency lose 20%
+    const multiplier = freq > 0 ? 1.0 + (freqRatio * 0.5) : 0.8;
+    const adjustedMinutes = Math.round(t.estimatedMinutes * multiplier);
+    // Also bump difficulty if appeared > 60% of max frequency
+    const bumpDifficulty = freqRatio > 0.6 && t.difficulty === "easy" ? "medium" : t.difficulty;
+
+    return {
+      updateOne: {
+        filter: { _id: t._id },
+        update: {
+          $set: {
+            estimatedMinutes: Math.max(10, Math.min(adjustedMinutes, 90)),
+            difficulty: bumpDifficulty,
+            pyqFrequency: freq,
+          },
+        },
+      },
+    };
+  });
+
+  if (bulkOps.length > 0) {
+    await Topic.bulkWrite(bulkOps);
+    log.info("Topics recalibrated from PYQ", { topicCount: bulkOps.length, userId });
+  }
+}
+
+export async function recalibrateExam(
+  req: AuthRequest, res: Response, next: NextFunction
+): Promise<void> {
+  try {
+    const userId = req.userId!;
+    const exam = await Exam.findOne({ userId });
+    if (!exam) return next(new NotFoundError("Exam setup"));
+
+    // Re-fetch updated topics (with PYQ-adjusted times)
+    const query: any = { userId };
+    if (exam.sessionId) query.sessionId = exam.sessionId;
+    const topics = await Topic.find(query);
+
+    // Delegate to generateStudyPlan logic by calling it internally
+    const sessionId = exam.sessionId?.toString();
+    const examDate = exam.examDate.toISOString();
+
+    // Forward to the existing generate endpoint handler
+    req.body = { sessionId, examDate, pyqFrequencies: exam.topicFrequencies };
+    return generateStudyPlan(req, res, next);
   } catch (err) {
     next(err);
   }

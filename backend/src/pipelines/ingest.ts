@@ -133,7 +133,14 @@ export async function ingestPDF(
   log.info("Step 4: Pinecone upsert complete", { namespace, chunkCount: chunks.length });
 
   // 6. Extract topics using GPT-4o (LangSmith traces this)
-  const extractedTopics = await extractTopicsFromText(rawText);
+  const { topics: extractedTopics, edges } = await extractTopicsFromText(rawText);
+
+  // Build prerequisite map: topicName → [prerequisite names]
+  const prereqMap = new Map<string, string[]>();
+  for (const edge of edges) {
+    if (!prereqMap.has(edge.to)) prereqMap.set(edge.to, []);
+    prereqMap.get(edge.to)!.push(edge.from);
+  }
 
   // 7. Save topics to MongoDB
   const topicDocs = await Topic.insertMany(
@@ -143,11 +150,14 @@ export async function ingestPDF(
       name: t.name,
       difficulty: t.difficulty,
       estimatedMinutes: t.estimatedMinutes,
+      topicType: t.topicType || "theory",
       roadmapPosition: { x: 250, y: index * 150 },
+      prerequisites: prereqMap.get(t.name) || [],
     }))
   );
   log.info("Step 5: Topics saved to MongoDB", {
     topicCount: topicDocs.length,
+    edgeCount: edges.length,
     topicNames: topicDocs.map((d) => d.name),
   });
 
@@ -202,7 +212,15 @@ export async function ingestText(
   });
   log.info("Pinecone upsert complete", { namespace, chunkCount: chunks.length });
 
-  const extractedTopics = await extractTopicsFromText(rawText); // LangSmith traces this
+  const { topics: extractedTopics, edges } = await extractTopicsFromText(rawText); // LangSmith traces this
+
+  // Build prerequisite map: topicName → [prerequisite names]
+  const prereqMap = new Map<string, string[]>();
+  for (const edge of edges) {
+    if (!prereqMap.has(edge.to)) prereqMap.set(edge.to, []);
+    prereqMap.get(edge.to)!.push(edge.from);
+  }
+
   const topicDocs = await Topic.insertMany(
     extractedTopics.map((t, index) => ({
       sessionId: new mongoose.Types.ObjectId(sessionId),
@@ -210,10 +228,16 @@ export async function ingestText(
       name: t.name,
       difficulty: t.difficulty,
       estimatedMinutes: t.estimatedMinutes,
+      topicType: t.topicType || "theory",
       roadmapPosition: { x: 250, y: index * 150 },
+      prerequisites: prereqMap.get(t.name) || [],
     }))
   );
-  log.info("Topics saved to MongoDB", { topicCount: topicDocs.length, topicNames: topicDocs.map((d) => d.name) });
+  log.info("Topics saved to MongoDB", {
+    topicCount: topicDocs.length,
+    edgeCount: edges.length,
+    topicNames: topicDocs.map((d) => d.name),
+  });
 
   const roadmapNodes = topicDocs.map((doc) => ({
     id: doc._id.toString(),
