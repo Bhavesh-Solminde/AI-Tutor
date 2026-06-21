@@ -7,6 +7,7 @@ const useExamStore = create(
   persist(
     (set, get) => ({
       exam: null,
+      examSessionId: null,
       topics: [],
       daysLeft: null,
       rescuePlan: null,
@@ -32,7 +33,7 @@ const useExamStore = create(
           const { data } = await api.post('/api/exam/upload-syllabus', formData, {
             headers: { 'Content-Type': 'multipart/form-data' },
           });
-          set({ topics: data.topics || [], loading: false });
+          set({ topics: data.topics || [], examSessionId: data.sessionId || null, loading: false });
           toast.success('Syllabus processed! Your exam roadmap is being built.');
           return data;
         } catch (err) {
@@ -66,6 +67,7 @@ const useExamStore = create(
             exam: data.exam,
             topics: data.topics || [],
             daysLeft: data.daysLeft,
+            examSessionId: data.exam?.sessionId || null,
             loading: false,
           });
           return data;
@@ -79,9 +81,10 @@ const useExamStore = create(
         }
       },
 
-      generateStudyPlan: async ({ sessionId, examDate }) => {
+      generateStudyPlan: async ({ sessionId: explicitSessionId, examDate }) => {
         set({ loading: true, error: null });
         try {
+          const sessionId = explicitSessionId || get().examSessionId;
           const { data } = await api.post('/api/studyplan/generate', { sessionId, examDate });
           set({ rescuePlan: data.plan, loading: false, setupComplete: true });
           return data;
@@ -117,13 +120,13 @@ const useExamStore = create(
       },
 
       setSetupComplete: (val) => set({ setupComplete: val }),
-      clearExam: () => set({ exam: null, topics: [], daysLeft: null, rescuePlan: null, setupComplete: false }),
+      clearExam: () => set({ exam: null, examSessionId: null, topics: [], daysLeft: null, rescuePlan: null, setupComplete: false }),
 
       // DELETE exam + study plan so user can restart from scratch
       deleteExam: async (userId) => {
         try {
           await api.delete(`/api/exam/${userId}`);
-          set({ exam: null, topics: [], daysLeft: null, rescuePlan: null, setupComplete: false });
+          set({ exam: null, examSessionId: null, topics: [], daysLeft: null, rescuePlan: null, setupComplete: false });
         } catch (err) {
           throw err;
         }
@@ -131,7 +134,7 @@ const useExamStore = create(
     }),
     {
       name: 'neuralnest-exam',
-      partialize: (state) => ({ exam: state.exam, setupComplete: state.setupComplete }),
+      partialize: (state) => ({ exam: state.exam, examSessionId: state.examSessionId, setupComplete: state.setupComplete }),
     }
   )
 );

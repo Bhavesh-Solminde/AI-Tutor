@@ -14,7 +14,7 @@ const ExamSetupWizard = ({ onComplete }) => {
   const [pyqFile, setPyqFile] = useState(null);
   const [localError, setLocalError] = useState('');
 
-  const { setupExam, uploadSyllabus, uploadPYQ, generateStudyPlan, loading } = useExamStore();
+  const { setupExam, uploadSyllabus, uploadPYQ, generateStudyPlan, examSessionId, loading } = useExamStore();
 
   const handleNext = async () => {
     setLocalError('');
@@ -60,7 +60,7 @@ const ExamSetupWizard = ({ onComplete }) => {
       }
       // Generate the study plan
       try {
-        await generateStudyPlan({ examDate });
+        await generateStudyPlan({ sessionId: examSessionId, examDate });
         toast.success('Your rescue plan is ready!');
         onComplete();
       } catch {

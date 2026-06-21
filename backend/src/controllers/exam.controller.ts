@@ -92,12 +92,12 @@ export async function uploadSyllabus(req: AuthRequest, res: Response, next: Next
       let result;
       if (ext === ".pdf") {
         result = await ingestPDF(req.file.buffer, req.file.originalname, userId, sessionId);
-        await Exam.findByIdAndUpdate(exam._id, { syllabusSource: "upload", syllabusFileUrl: result.fileUrl });
+        await Exam.findByIdAndUpdate(exam._id, { syllabusSource: "upload", syllabusFileUrl: result.fileUrl, sessionId: session._id });
       } else {
         // .md / .txt / .docx — extract text, then ingest
         const rawText = await extractTextFromFile(req.file.buffer, req.file.originalname);
         result = await ingestText(rawText, userId, sessionId);
-        await Exam.findByIdAndUpdate(exam._id, { syllabusSource: "upload" });
+        await Exam.findByIdAndUpdate(exam._id, { syllabusSource: "upload", sessionId: session._id });
       }
       topics = result.topics;
       roadmapNodes = result.roadmapNodes;
@@ -121,6 +121,7 @@ export async function uploadSyllabus(req: AuthRequest, res: Response, next: Next
         examDate: exam.examDate,
       });
       sessionId = session._id.toString();
+      await Exam.findByIdAndUpdate(exam._id, { sessionId: session._id });
       const topicDocs = await Topic.insertMany(
         parsed.topics.map((name: string, i: number) => ({
           sessionId, userId, name, difficulty: "medium", estimatedMinutes: 30,
@@ -149,7 +150,10 @@ export async function uploadPYQ(req: AuthRequest, res: Response, next: NextFunct
 
     // Extract text regardless of file type
     const rawText = await extractTextFromFile(req.file.buffer, req.file.originalname);
-    const topicNames = (await Topic.find({ userId })).map((t) => t.name);
+    
+    const topicQuery: any = { userId };
+    if (exam.sessionId) topicQuery.sessionId = exam.sessionId;
+    const topicNames = (await Topic.find(topicQuery)).map((t) => t.name);
 
     // analyzePYQ is best-effort — any failure falls back to empty frequencies.
     // The PYQ is still marked as uploaded so the roadmap generates normally.
@@ -177,7 +181,11 @@ export async function getExam(req: AuthRequest, res: Response, next: NextFunctio
     const userId = req.userId!;
     const exam = await Exam.findOne({ userId });
     if (!exam) { res.status(404).json({ error: "No exam configured yet." }); return; }
-    const topics = await Topic.find({ userId });
+    
+    const query: any = { userId };
+    if (exam.sessionId) query.sessionId = exam.sessionId;
+    const topics = await Topic.find(query);
+    
     const daysLeft = Math.ceil((exam.examDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     res.json({ exam, topics, daysLeft });
   } catch (err) {

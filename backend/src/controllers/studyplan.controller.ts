@@ -6,6 +6,7 @@ import { ChatOpenAI } from "@langchain/openai";
 import { z } from "zod";
 import { env } from "../config/env";
 import { createLogger } from "../config/logger";
+import { ValidationError } from "../utils/AppError";
 
 const log = createLogger("controller:studyplan");
 
@@ -23,7 +24,23 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
   try {
     const { sessionId, examDate } = req.body;
     const userId = req.userId!;
-    const topics = await Topic.find({ sessionId, userId });
+
+    // Scope to the exam session's topics when sessionId is available.
+    // Fall back to all user topics (non-archived) so a plan is never generated with 0 topics.
+    let topics;
+    if (sessionId) {
+      topics = await Topic.find({ sessionId, userId, archived: { $ne: true } });
+    }
+    if (!topics || topics.length === 0) {
+      log.warn("generateStudyPlan: no topics for sessionId, falling back to all user topics", { sessionId, userId });
+      topics = await Topic.find({ userId, archived: { $ne: true } }).sort({ createdAt: -1 });
+    }
+
+    if (topics.length === 0) {
+      next(new ValidationError("No topics found. Please upload a syllabus before generating a study plan."));
+      return;
+    }
+
     const daysLeft = Math.ceil((new Date(examDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
 
     log.info("Generating study plan", { userId, sessionId, topicCount: topics.length, daysLeft });
@@ -45,11 +62,11 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
       topics: d.topicNames.map((name: string) => {
         const nameLower = name.toLowerCase().trim();
         // 1. Try exact lowercase match
-        let t = topics.find((topic) => topic.name.toLowerCase().trim() === nameLower);
+        let t = topics.find((topic: typeof topics[0]) => topic.name.toLowerCase().trim() === nameLower);
 
         // 2. Try substring match (e.g. "CPU scheduling" in "CPU scheduling basics" or vice-versa)
         if (!t) {
-          t = topics.find((topic) => {
+          t = topics.find((topic: typeof topics[0]) => {
             const topicNameLower = topic.name.toLowerCase().trim();
             return topicNameLower.includes(nameLower) || nameLower.includes(topicNameLower);
           });

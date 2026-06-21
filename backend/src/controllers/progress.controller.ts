@@ -41,16 +41,22 @@ export async function updateProgress(req: AuthRequest, res: Response, next: Next
 // GET /api/roadmap/:sessionId
 export async function getRoadmap(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { sessionId } = req.params;
+    const { sessionId: sessionIdParam } = req.params;
+    let sessionId = sessionIdParam;
     const userId = req.userId!;
 
     let topics = await Topic.find({ sessionId, archived: { $ne: true } });
 
-    // If no topics found for this sessionId (e.g. stale persisted sessionId),
-    // fall back to all non-archived topics for this user ordered by creation date
+    // Stale sessionId in persisted Zustand state — resolve by loading the user's most recent session
     if (topics.length === 0) {
-      log.warn("No topics for sessionId, falling back to user topics", { sessionId, userId });
-      topics = await Topic.find({ userId, archived: { $ne: true } }).sort({ createdAt: -1 });
+      log.warn("No topics for sessionId — resolving most recent session", { sessionId, userId });
+      const recentSession = await Session.findOne({
+        userId, isReference: false, deleted: { $ne: true },
+      }).sort({ createdAt: -1 });
+      if (recentSession) {
+        topics = await Topic.find({ sessionId: recentSession._id, archived: { $ne: true } });
+        sessionId = recentSession._id.toString(); // reuse variable so session lookup below is correct
+      }
     }
 
     const nodes = topics.map((t) => ({
@@ -63,13 +69,39 @@ export async function getRoadmap(req: AuthRequest, res: Response, next: NextFunc
       masteryScore: t.masteryScore,
     }));
 
-    // Build edges: sequential linear path
-    const edges = topics.slice(0, -1).map((t, i) => ({
-      id: `e${i}`,
-      source: t._id.toString(),
-      target: topics[i + 1]._id.toString(),
-      type: t.status === "mastered" ? "mastered" : "default",
-    }));
+    // Build edges from prerequisite relationships (dependency DAG)
+    const topicNameToId = new Map(topics.map((t) => [t.name, t._id.toString()]));
+    let edges: any[] = [];
+    let edgeIdx = 0;
+
+    for (const topic of topics) {
+      if (topic.prerequisites?.length) {
+        for (const prereqName of topic.prerequisites) {
+          const sourceId = topicNameToId.get(prereqName);
+          if (sourceId) {
+            const sourceTopic = topics.find((t) => t._id.toString() === sourceId);
+            edges.push({
+              id: `e${edgeIdx++}`,
+              source: sourceId,
+              target: topic._id.toString(),
+              sourceStatus: sourceTopic?.status ?? "unstarted",
+              targetStatus: topic.status,
+            });
+          }
+        }
+      }
+    }
+
+    // Fallback: old data without prerequisites → sequential linear edges (no visual regression)
+    if (edges.length === 0) {
+      edges = topics.slice(0, -1).map((t, i) => ({
+        id: `e${edgeIdx++}`,
+        source: t._id.toString(),
+        target: topics[i + 1]._id.toString(),
+        sourceStatus: t.status,
+        targetStatus: topics[i + 1].status,
+      }));
+    }
 
     const session = await Session.findById(sessionId);
     log.debug("Roadmap fetched", { sessionId, nodeCount: nodes.length, edgeCount: edges.length });

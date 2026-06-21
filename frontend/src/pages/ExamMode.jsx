@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
-import { Calendar, Sparkles, CheckCircle, Clock, Trash2, AlertTriangle } from 'lucide-react';
+import { Calendar, Sparkles, CheckCircle, Clock, Trash2, AlertTriangle, ChevronDown, BookOpen } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/useAuthStore';
 import useExamStore from '../stores/useExamStore';
@@ -21,6 +21,8 @@ const ExamMode = () => {
   const [selectedTopic, setSelectedTopic] = React.useState(null);
   const [showResetConfirm, setShowResetConfirm] = React.useState(false);
   const [resetting, setResetting] = React.useState(false);
+  // Which day block is expanded in the timeline (null = all collapsed)
+  const [expandedDay, setExpandedDay] = React.useState(null);
 
   const handleReset = async () => {
     if (!user?._id) return;
@@ -159,33 +161,85 @@ const ExamMode = () => {
                   {loading ? (
                     <CardSkeleton lines={4} />
                   ) : rescuePlan?.days?.length > 0 ? (
-                    rescuePlan.days.map((block) => (
-                      <div
-                        key={block._id || block.day}
-                        className={`p-3.5 rounded-xl border transition-colors ${
-                          block.completed
-                            ? 'bg-emerald-500/5 border-emerald-500/25 text-emerald-800 dark:text-emerald-300'
-                            : block.isMock
-                            ? 'bg-purple-500/5 border-purple-500/25 text-purple-800 dark:text-purple-300'
-                            : 'bg-slate-50 dark:bg-elevated-dark border-border-light dark:border-border-dark text-text-base-light dark:text-text-base-dark'
-                        }`}
-                      >
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="text-xs font-mono font-bold uppercase">Day {block.day} Plan</span>
-                          <span className="text-[10px] font-mono text-text-muted-light dark:text-text-muted-dark">
-                            {block.date || ''}
-                          </span>
-                        </div>
-                        <div className="space-y-1.5">
-                          {(block.topics || []).map((t) => (
-                            <div key={t._id || t} className="flex items-center space-x-1.5 text-xs">
-                              <div className={`w-1.5 h-1.5 rounded-full ${block.completed ? 'bg-emerald-500' : block.isMock ? 'bg-purple-500' : 'bg-amber-500'}`} />
-                              <span className="font-medium truncate">{t.name || t}</span>
+                    rescuePlan.days.map((block) => {
+                      const isExpanded = expandedDay === (block._id || block.dayNumber);
+                      const dotColor = block.completed ? 'bg-emerald-500' : block.isMockExam ? 'bg-purple-500' : 'bg-amber-500';
+                      return (
+                        <div
+                          key={block._id || block.dayNumber}
+                          className={`rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden ${
+                            block.completed
+                              ? 'bg-emerald-500/5 border-emerald-500/25'
+                              : block.isMockExam
+                              ? 'bg-purple-500/5 border-purple-500/25'
+                              : 'bg-slate-50 dark:bg-elevated-dark border-border-light dark:border-border-dark'
+                          } ${isExpanded ? 'shadow-sm' : 'hover:border-slate-300 dark:hover:border-slate-600'}`}
+                        >
+                          {/* ── Header row — always visible, click to expand ── */}
+                          <div
+                            className="flex justify-between items-center p-3.5"
+                            onClick={() => setExpandedDay(isExpanded ? null : (block._id || block.dayNumber))}
+                          >
+                            <div className="flex items-center gap-2">
+                              <div className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
+                              <span className={`text-xs font-mono font-bold uppercase ${
+                                block.completed ? 'text-emerald-700 dark:text-emerald-300'
+                                : block.isMockExam ? 'text-purple-700 dark:text-purple-300'
+                                : 'text-slate-700 dark:text-slate-200'
+                              }`}>
+                                {block.isMockExam ? '🎯 Mock Exam' : `Day ${block.dayNumber} Plan`}
+                              </span>
+                              {block.completed && (
+                                <CheckCircle className="h-3 w-3 text-emerald-500" />
+                              )}
                             </div>
-                          ))}
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-mono text-text-muted-light dark:text-text-muted-dark">
+                                {block.date ? new Date(block.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
+                              </span>
+                              <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                            </div>
+                          </div>
+
+                          {/* ── Expanded topics list ── */}
+                          {isExpanded && (
+                            <div className="border-t border-border-light dark:border-border-dark px-3.5 pb-3.5 pt-3 space-y-2">
+                              {(block.topics || []).length === 0 ? (
+                                <p className="text-xs text-slate-400 italic">No topics assigned to this day.</p>
+                              ) : (
+                                (block.topics || []).map((t, ti) => (
+                                  <div key={t.topicId || t._id || ti} className="flex items-center justify-between gap-2">
+                                    <div className="flex items-center gap-1.5 min-w-0">
+                                      <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dotColor}`} />
+                                      <span className="text-xs font-medium truncate text-slate-700 dark:text-slate-300">
+                                        {t.topicName || t.name || 'Unnamed topic'}
+                                      </span>
+                                      {t.estimatedMinutes && (
+                                        <span className="text-[10px] text-slate-400 flex-shrink-0">· {t.estimatedMinutes}m</span>
+                                      )}
+                                    </div>
+                                    {t.topicId && !block.isMockExam && (
+                                      <button
+                                        onClick={(e) => { e.stopPropagation(); navigate(`/tutor/${t.topicId}?section=exam`); }}
+                                        className="flex items-center gap-1 text-[10px] font-bold text-primary dark:text-accent hover:underline flex-shrink-0"
+                                      >
+                                        <BookOpen className="h-3 w-3" />
+                                        Study
+                                      </button>
+                                    )}
+                                  </div>
+                                ))
+                              )}
+                              {block.isMockExam && (
+                                <p className="text-xs text-purple-600 dark:text-purple-300 font-medium pt-1">
+                                  📝 Full mock exam from past papers.
+                                </p>
+                              )}
+                            </div>
+                          )}
                         </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
                     <p className="text-xs text-slate-400 text-center py-4">
                       Your rescue timeline will appear here after setup.
