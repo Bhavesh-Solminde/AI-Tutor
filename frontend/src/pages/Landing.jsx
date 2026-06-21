@@ -223,6 +223,17 @@ const Landing = () => {
 
       {/* ─── FOOTER ─── */}
       <footer className="border-t border-slate-200 dark:border-white/10 py-12 px-6 bg-slate-50 dark:bg-[#0B0F19]">
+        {/* Prototype Disclaimer */}
+        <div className="max-w-7xl mx-auto mb-8">
+          <div className="flex items-start space-x-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs">
+            <span className="flex-shrink-0 mt-0.5">⚠️</span>
+            <p>
+              <span className="font-semibold">Prototype Disclaimer:</span>{' '}
+              NeuralNest is currently a prototype. All statistics, user counts, and metrics displayed on this page (e.g. "50,000+ students", ratings, percentages) are illustrative placeholders and do not reflect real usage data.
+            </p>
+          </div>
+        </div>
+
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-2 mb-4 md:mb-0">
             <Brain className="h-5 w-5 text-primary" />
