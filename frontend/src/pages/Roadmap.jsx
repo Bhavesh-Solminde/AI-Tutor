@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, Clock, GitFork, ChevronDown, Plus, Trash2, AlertTriangle } from 'lucide-react';
+import { Check, Sparkles, Clock, GitFork, ChevronDown, Plus, Trash2, AlertTriangle, Youtube } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
 import MainLayout from '../components/layout/MainLayout';
 import RoadmapCanvas from '../components/roadmap/RoadmapCanvas';
@@ -10,6 +10,7 @@ import EmptyState from '../components/ui/EmptyState';
 import useSessionStore from '../stores/useSessionStore';
 import useExamStore from '../stores/useExamStore';
 import toast from 'react-hot-toast';
+import YoutubeSuggestions from '../components/tutor/YoutubeSuggestions';
 
 const Roadmap = () => {
   const navigate = useNavigate();
@@ -24,6 +25,14 @@ const Roadmap = () => {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const switcherRef = useRef(null);
+
+  // YouTube suggestions state
+  const [showVideos, setShowVideos] = useState(false);
+  const [hasVideos, setHasVideos] = useState(false);
+
+  const handleVideosLoaded = (videos) => {
+    setHasVideos(videos && videos.length > 0);
+  };
 
   useEffect(() => {
     if (currentSession?._id) fetchRoadmap(currentSession._id);
@@ -208,6 +217,29 @@ const Roadmap = () => {
             )}
           </div>
         </div>
+
+        {/* YouTube Suggestions Collapsible Panel */}
+        {currentSession?.name && (
+          <div className={`border border-slate-200/60 dark:border-slate-800 bg-white/80 dark:bg-surface-dark/80 backdrop-blur rounded-2xl p-4 shadow-sm transition-all duration-300 ${hasVideos ? 'block' : 'hidden'}`}>
+            <button
+              onClick={() => setShowVideos((v) => !v)}
+              className="flex items-center justify-between w-full text-left font-bold text-sm text-slate-800 dark:text-white"
+            >
+              <div className="flex items-center space-x-2">
+                <Youtube className="h-4.5 w-4.5 text-red-500 fill-current" />
+                <span className="font-extrabold uppercase tracking-wider text-xs">Recommended Videos for "{sessionName}"</span>
+              </div>
+              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${showVideos ? 'rotate-180' : ''}`} />
+            </button>
+            <div className={`mt-4 transition-all duration-300 ${showVideos ? 'block' : 'hidden'}`}>
+              <YoutubeSuggestions
+                topic={currentSession.name}
+                hideHeader={true}
+                onLoaded={handleVideosLoaded}
+              />
+            </div>
+          </div>
+        )}
 
         {/* ── Canvas ── */}
         <ErrorBoundary

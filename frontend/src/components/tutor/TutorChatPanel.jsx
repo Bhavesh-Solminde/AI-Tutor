@@ -3,6 +3,7 @@ import { Paperclip, Brain, Globe, MessageSquare, Layers, ArrowUp } from 'lucide-
 import MessageBubble from './MessageBubble';
 import ComprehensionChips from './ComprehensionChips';
 import QuickActionCards from './QuickActionCards';
+import YoutubeSuggestions from './YoutubeSuggestions';
 
 const TutorChatPanel = ({
   messages,
@@ -15,7 +16,8 @@ const TutorChatPanel = ({
   setShowDoubtBox,
   explanationLevel,
   onAttachClick,
-  materialsCount = 0
+  materialsCount = 0,
+  topicName
 }) => {
   const chatEndRef = useRef(null);
 
@@ -66,6 +68,7 @@ const TutorChatPanel = ({
                 <MessageBubble key={idx} msg={msg}>
                   {msg.sender === 'ai' && msg.showChips && (
                     <div className="space-y-3 mt-3 w-full">
+                      <YoutubeSuggestions topic={topicName} />
                       <ComprehensionChips onChipClick={onChipClick} />
                       <p className="text-xs text-slate-400 dark:text-slate-500 italic font-medium mt-1">
                         Do you have any doubts or questions before we move on?
