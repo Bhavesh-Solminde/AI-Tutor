@@ -20,6 +20,8 @@ import ExamMode from './pages/ExamMode';
 import ActiveQuizzes from './pages/ActiveQuizzes';
 import Profile from './pages/Profile';
 
+import AuthPage from './pages/AuthPage';
+
 // Spinner shown while session is being restored
 const SessionLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#16161F]">
@@ -34,7 +36,7 @@ const SessionLoader = () => (
 const ProtectedRoute = ({ children }) => {
   const { user, loading } = useAuthStore();
   if (loading) return <SessionLoader />;
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   if (!user.onboarded) return <Navigate to="/onboarding" replace />;
   return children;
 };
@@ -44,14 +46,14 @@ const ProtectedRoute = ({ children }) => {
 const AuthRoute = ({ children }) => {
   const { user, loading } = useAuthStore();
   if (loading) return <SessionLoader />;
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   return children;
 };
 
 const OnboardingRoute = ({ children }) => {
   const { user, loading } = useAuthStore();
   if (loading) return <SessionLoader />;
-  if (!user) return <Navigate to="/" replace />;
+  if (!user) return <Navigate to="/login" replace />;
   if (user.onboarded) return <Navigate to="/roadmap" replace />;
   return children;
 };
@@ -85,6 +87,8 @@ function App() {
           <Routes>
             {/* Public */}
             <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+            <Route path="/login" element={<PublicRoute><AuthPage /></PublicRoute>} />
+            <Route path="/register" element={<PublicRoute><AuthPage /></PublicRoute>} />
 
             {/* OAuth callbacks */}
             <Route path="/auth/callback/google" element={<OAuthCallback />} />
