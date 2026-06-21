@@ -43,9 +43,7 @@ const Landing = () => {
         {/* Glow Effects */}
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-3/4 h-64 bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
 
-        <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 mb-8">
-          <span className="text-lg leading-none">✨</span>
-        </div>
+
 
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-tight">
           Study Smarter.<br />
