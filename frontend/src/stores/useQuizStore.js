@@ -56,7 +56,11 @@ const useQuizStore = create(
           // Also refresh progress store so Dashboard stays in sync
           const { fetchProgress } = useProgressStore.getState();
           const { user, fetchMe } = useAuthStore.getState();
-          if (user?._id) fetchProgress(user._id).catch(() => {});
+          if (user?._id) {
+            fetchProgress(user._id).catch(() => {});
+            get().fetchQuizHistory(user._id).catch(() => {});
+            get().fetchActiveQuizzes(user._id).catch(() => {});
+          }
           // Re-fetch the user so XP in Profile/Dashboard updates immediately
           fetchMe().catch(() => {});
 

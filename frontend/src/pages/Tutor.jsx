@@ -233,6 +233,7 @@ const Tutor = () => {
             explanationLevel={user?.explanationLevel || 'beginner'}
             onAttachClick={() => setShowMaterialsModal(true)}
             materialsCount={attachedMaterials.length}
+            topicName={topicName}
           />
         </div>
 

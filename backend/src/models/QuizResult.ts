@@ -38,7 +38,7 @@ const QuizResultSchema = new Schema<IQuizResult>(
     score: { type: Number, required: true },
     total: { type: Number, required: true },
     xpEarned: { type: Number, default: 0 },
-    passed: { type: Boolean, required: true },
+    passed: { type: Boolean, default: false },
     timeTaken: { type: Number, default: 0 },
   },
   { timestamps: true }
