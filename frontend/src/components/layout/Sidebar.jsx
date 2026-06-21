@@ -56,13 +56,13 @@ const Sidebar = () => {
           <CollapsibleSection title="Chat History" defaultOpen={true}>
             <div className="space-y-3 pt-2">
               {[
-                { key: 'exam', label: 'Exam', Icon: BookMarked },
-                { key: 'roadmap', label: 'Roadmap', Icon: Map },
-                { key: 'other', label: 'Other', Icon: Lightbulb },
-              ].map(({ key, label, Icon }) => (
+                { key: 'exam', label: 'Exam', Icon: BookMarked, color: 'text-blue-500/80 dark:text-blue-400/80' },
+                { key: 'roadmap', label: 'Roadmap', Icon: Map, color: 'text-emerald-500/80 dark:text-emerald-400/80' },
+                { key: 'other', label: 'Other', Icon: Lightbulb, color: 'text-amber-500/80 dark:text-amber-400/80' },
+              ].map(({ key, label, Icon, color }) => (
                 <div key={key}>
-                  <span className="text-[9px] font-sans tracking-wider uppercase text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 mb-1">
-                    <Icon className="h-3 w-3" />
+                  <span className="text-[10px] font-sans font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mb-1.5 mt-3 px-1">
+                    <Icon className={`h-3.5 w-3.5 ${color}`} />
                     {label}
                   </span>
                   <ChatHistoryList category={key} />
