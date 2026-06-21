@@ -39,4 +39,7 @@ const ChatHistorySchema = new Schema<IChatHistory>(
   { timestamps: true }
 );
 
+ChatHistorySchema.index({ userId: 1, section: 1 });
+ChatHistorySchema.index({ userId: 1, topicId: 1 });
+
 export const ChatHistory = mongoose.model<IChatHistory>("ChatHistory", ChatHistorySchema);

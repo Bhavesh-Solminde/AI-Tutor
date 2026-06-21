@@ -8,7 +8,9 @@ export interface ISession extends Document {
   rawText?: string;
   pineconeNamespace: string;
   examDate?: Date;
-  isReference: boolean;   // true = chat reference material only (no roadmap)
+  isReference: boolean;
+  deleted: boolean;
+  processingError?: string;
   createdAt: Date;
 }
 
@@ -22,8 +24,12 @@ const SessionSchema = new Schema<ISession>(
     pineconeNamespace: { type: String, required: true },
     examDate: { type: Date },
     isReference: { type: Boolean, default: false },
+    deleted: { type: Boolean, default: false },
+    processingError: { type: String },
   },
   { timestamps: true }
 );
+
+SessionSchema.index({ userId: 1, isReference: 1 });
 
 export const Session = mongoose.model<ISession>("Session", SessionSchema);

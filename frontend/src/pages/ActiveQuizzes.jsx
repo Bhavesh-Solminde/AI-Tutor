@@ -109,7 +109,8 @@ const ActiveQuizzes = () => {
                       <tr
                         key={row._id}
                         className="hover:bg-slate-50/50 dark:hover:bg-elevated-dark/20 transition cursor-pointer"
-                        onClick={() => navigate(`/quiz/${row.topicId}`)}
+                        onClick={() => navigate(`/quiz/result/${row._id}`)}
+                        title="Click to review this attempt"
                       >
                         <td className="px-6 py-4 font-bold text-text-base-light dark:text-text-base-dark">{row.topicName || row.topicId}</td>
                         <td className="px-6 py-4 font-mono font-bold text-text-base-light dark:text-text-base-dark">

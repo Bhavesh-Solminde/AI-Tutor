@@ -1,6 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Search, Bell } from 'lucide-react';
+import { } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import useAuthStore from '../../stores/useAuthStore';
 
@@ -12,14 +12,14 @@ const TopBar = () => {
     <header className="h-16 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-6 flex items-center justify-between transition-colors duration-300">
       {/* Left controls: Search Input & Ask Doubt Button next to each other */}
       <div className="flex items-center space-x-4">
-        <div className="relative w-80 group">
+        {/* <div className="relative w-80 group">
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary dark:group-focus-within:text-accent transition-colors duration-200" />
           <input
             type="text"
             placeholder="Search topics, notes, sessions..."
             className="w-full pl-10 pr-4 py-2 text-sm rounded-xl border border-border-light dark:border-border-dark bg-slate-50 dark:bg-elevated-dark text-slate-900 dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none focus:border-primary dark:focus:border-primary focus:bg-white dark:focus:bg-elevated-dark transition-all duration-300"
           />
-        </div>
+        </div> */}
 
         <button
           onClick={() => navigate('/tutor/new')}

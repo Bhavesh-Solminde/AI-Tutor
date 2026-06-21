@@ -1,7 +1,7 @@
 import { ChatOpenAI } from "@langchain/openai";
 import { AgentStateType } from "../state";
 import { DOUBT_SYSTEM_PROMPT } from "../prompts/tutorPrompt";
-import { retrieveContext, retrieveFromMultipleNamespaces } from "../../pipelines/retriever";
+import { retrieveContext, retrieveContextByNamespace, retrieveFromMultipleNamespaces, retrieveFromAllUserSessions } from "../../pipelines/retriever";
 import { env } from "../../config/env";
 
 /**
@@ -26,19 +26,30 @@ export async function doubtNode(
   if (allNamespaces.length > 1) {
     ragContext = await retrieveFromMultipleNamespaces(state.message, allNamespaces);
   } else if (allNamespaces.length === 1) {
-    ragContext = await retrieveContext(state.message, state.userId, state.sessionId);
+    // Use the pre-built namespace directly — avoids incorrect re-derivation
+    ragContext = await retrieveContextByNamespace(state.message, allNamespaces[0]);
+  } else if (state.userId) {
+    // Open-mode fallback: retrieve from all active user sessions
+    ragContext = await retrieveFromAllUserSessions(state.message, state.userId);
   }
 
-  const chatHistoryStr = state.chatHistory
-    .map((m) => `${m.role === "user" ? "Student" : "NeuralNest"}: ${m.content}`)
-    .join("\n");
+  // Build system prompt (chat history summary for context summary only)
+  const chatHistorySummary = state.chatHistory.length > 0
+    ? `The conversation so far has ${state.chatHistory.length} turns. Refer to the message history above when answering follow-up questions.`
+    : "This is the start of the conversation.";
 
   const systemPrompt = DOUBT_SYSTEM_PROMPT
     .replace("{currentDateTime}", state.currentDateTime)
     .replace("{topicName}", state.topicName)
     .replace("{explanationLevel}", state.explanationLevel)
-    .replace("{ragContext}", ragContext || "No uploaded materials found.")
-    .replace("{chatHistory}", chatHistoryStr || "No previous conversation.");
+    .replace("{ragContext}", ragContext || "No uploaded materials found. Use your knowledge.")
+    .replace("{chatHistory}", chatHistorySummary);
+
+  // Build messages array with full conversation history as real turns
+  const historyMessages = state.chatHistory.map((m) => ({
+    role: m.role as "user" | "assistant",
+    content: m.content,
+  }));
 
   const model = new ChatOpenAI({
     model: "gpt-4o",
@@ -51,6 +62,7 @@ export async function doubtNode(
 
   const response = await model.invoke([
     { role: "system", content: systemPrompt },
+    ...historyMessages,
     { role: "user", content: state.message },
   ]);
 
@@ -98,7 +110,7 @@ export async function doubtNode(
     explanation: parsed.explanation ?? "",
     checkpointQuestion: parsed.checkpoint_question ?? "",
     doubtPrompt: parsed.doubt_prompt ?? "Any other questions?",
-    nextAction: "CONTINUE",
+    nextAction: parsed.next_action ?? "CONTINUE",
     explanationMode: parsed.explanation_mode ?? "standard",
   };
 }

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { MessageSquare, PlusCircle } from 'lucide-react';
+import { MessageSquare } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useChatHistoryStore from '../../stores/useChatHistoryStore';
 import useAuthStore from '../../stores/useAuthStore';
@@ -20,26 +20,20 @@ const ChatHistoryList = ({ category }) => {
 
   if (items.length === 0) {
     return (
-      <div className="text-center py-2 space-y-1">
-        <p className="text-[11px] text-text-muted-light dark:text-text-muted-dark italic">No chats yet</p>
-        <button
-          onClick={() => navigate('/tutor/new')}
-          className="inline-flex items-center space-x-1 text-[10px] font-semibold text-primary dark:text-accent hover:underline"
-        >
-          <PlusCircle className="h-3 w-3" />
-          <span>Start a session</span>
-        </button>
-      </div>
+      <p className="text-[11px] text-text-muted-light dark:text-text-muted-dark italic py-1">
+        No chats yet
+      </p>
     );
   }
 
   return (
     <ul className="space-y-1">
       {items.map((item) => {
-        // Navigate to the topic if available, otherwise fall back to the chat's own ID
+        // Always pass chatId so Tutor.jsx can restore the exact conversation.
+        // topicId is also included so topic-mode chats still load the right topic context.
         const destination = item.topicId
-          ? `/tutor/${item.topicId}`
-          : `/tutor/new`;
+          ? `/tutor/${item.topicId}?chatId=${item._id}`
+          : `/tutor/new?chatId=${item._id}&section=${category}`;
 
         return (
           <li key={item._id}>

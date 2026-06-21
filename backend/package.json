@@ -9,6 +9,7 @@
     "start": "node dist/index.js",
     "lint": "tsc --noEmit",
     "delete:user": "tsx scripts/deleteUser.ts",
+    "db:indexes": "tsx src/scripts/createIndexes.ts",
     "test": "tsx --test src/utils/masteryCalculator.test.ts"
   },
   "dependencies": {

@@ -63,6 +63,12 @@ export const AgentState = Annotation.Root({
     default: () => [],
   }),
 
+  // Previous quiz score for this topic (null if first attempt) — used by quizGeneratorNode
+  previousQuizScore: Annotation<number | null>({
+    reducer: (_, next) => next,
+    default: () => null,
+  }),
+
   // ─── Tutor Output ───────────────────────────────────────────────────────────
   explanation: Annotation<string>({
     reducer: (_, next) => next,

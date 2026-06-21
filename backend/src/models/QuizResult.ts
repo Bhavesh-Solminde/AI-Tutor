@@ -44,4 +44,6 @@ const QuizResultSchema = new Schema<IQuizResult>(
   { timestamps: true }
 );
 
+QuizResultSchema.index({ userId: 1, createdAt: -1 });
+
 export const QuizResult = mongoose.model<IQuizResult>("QuizResult", QuizResultSchema);

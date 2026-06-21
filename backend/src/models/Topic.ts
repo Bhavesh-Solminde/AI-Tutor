@@ -12,6 +12,7 @@ export interface ITopic extends Document {
   status: "unstarted" | "learning" | "mastered";
   lastStudiedAt?: Date;
   roadmapPosition: { x: number; y: number };
+  archived: boolean;
   createdAt: Date;
 }
 
@@ -39,8 +40,13 @@ const TopicSchema = new Schema<ITopic>(
       x: { type: Number, default: 0 },
       y: { type: Number, default: 0 },
     },
+    archived: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
+
+TopicSchema.index({ userId: 1 });
+TopicSchema.index({ sessionId: 1 });
+TopicSchema.index({ userId: 1, sessionId: 1 });
 
 export const Topic = mongoose.model<ITopic>("Topic", TopicSchema);

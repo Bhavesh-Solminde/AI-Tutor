@@ -8,10 +8,10 @@ const log = createLogger("controller:chatHistory");
 // GET /api/chat-history/:userId
 export async function getChatHistory(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { userId } = req.params;
+    const userId = req.userId!;
     log.info("Fetching chat history", { userId });
 
-    const chats = await ChatHistory.find({ userId: req.params.userId }).sort({ updatedAt: -1 });
+    const chats = await ChatHistory.find({ userId }).sort({ updatedAt: -1 });
     const grouped = { exam: [] as any[], roadmap: [] as any[], other: [] as any[] };
     chats.forEach((c) => { if (grouped[c.section]) grouped[c.section].push(c); });
 
@@ -69,20 +69,36 @@ export async function getMessagesByChatId(req: AuthRequest, res: Response, next:
 export async function createChat(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const { sessionId, topicId, section, title } = req.body;
+    const userId = req.userId!;
 
-    // If a topicId is supplied, reuse the existing chat to avoid duplicates
-    // (React StrictMode / double-click can fire this twice concurrently)
+    // If a topicId is supplied, use atomic findOneAndUpdate to avoid duplicate creation
+    // from React StrictMode / double-click concurrent requests
     if (topicId) {
-      const existing = await ChatHistory.findOne({ userId: req.userId, topicId });
-      if (existing) {
-        log.info("Returning existing chat (findOrCreate)", { chatId: existing._id, topicId, section });
-        res.status(200).json({ chat: existing });
-        return;
-      }
+      const chat = await ChatHistory.findOneAndUpdate(
+        { userId, topicId },
+        {
+          $setOnInsert: {
+            userId,
+            sessionId,
+            topicId,
+            section: section || "other",
+            title: title || "New Chat",
+            messages: [],
+          },
+        },
+        { upsert: true, new: true }
+      );
+      const isNew = !chat.createdAt || (Date.now() - chat.createdAt.getTime()) < 1000;
+      log.info(isNew ? "New chat created (atomic)" : "Returning existing chat (atomic)", {
+        chatId: chat._id, topicId, section: chat.section,
+      });
+      res.status(isNew ? 201 : 200).json({ chat });
+      return;
     }
 
+    // No topicId — always create a new chat (e.g. open-mode)
     const chat = await ChatHistory.create({
-      userId: req.userId,
+      userId,
       sessionId,
       topicId,
       section: section || "other",
@@ -101,8 +117,14 @@ export async function createChat(req: AuthRequest, res: Response, next: NextFunc
 export async function deleteChat(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const { chatId } = req.params;
-    await ChatHistory.findByIdAndDelete(chatId);
-    log.info("Chat deleted", { chatId });
+    const userId = req.userId!;
+    const deleted = await ChatHistory.findOneAndDelete({ _id: chatId, userId });
+    if (!deleted) {
+      log.warn("deleteChat: not found or unauthorized", { chatId, userId });
+      res.status(404).json({ error: "Chat not found." });
+      return;
+    }
+    log.info("Chat deleted", { chatId, userId });
     res.json({ success: true });
   } catch (err) {
     next(err);

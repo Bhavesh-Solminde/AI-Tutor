@@ -37,14 +37,15 @@ const useSessionStore = create(
   persist(
     (set, get) => ({
       currentSession: null,
+      allSessions: [],       // all non-deleted sessions for the switcher UI
       topics: [],
       roadmapNodes: [],
       roadmapEdges: [],
       uploading: false,
-      topicsProcessing: false, // true while background extraction is running
+      topicsProcessing: false,
       loading: false,
       error: null,
-      uploadedFile: null, // The actual File object for the current session
+      uploadedFile: null,
 
       // Upload PDF / text file → embed in Pinecone → topics extracted in background
       uploadFile: async (formData) => {
@@ -163,6 +164,35 @@ const useSessionStore = create(
       setCurrentSession: (session) => set({ currentSession: session }),
       setTopics: (topics) => set({ topics }),
       clearSession: () => set({ currentSession: null, topics: [], roadmapNodes: [], roadmapEdges: [] }),
+
+      // Fetch all non-deleted sessions for the session switcher dropdown
+      fetchUserSessions: async () => {
+        try {
+          const { data } = await api.get('/api/sessions/user', { _silent: true });
+          set({ allSessions: data.sessions || [] });
+        } catch {}
+      },
+
+      // Switch the active session and load its roadmap
+      switchSession: (session) => {
+        set({ currentSession: session, roadmapNodes: [], roadmapEdges: [], topics: [] });
+      },
+
+      // Soft-delete current session: archives topics, clears local state
+      deleteCurrentSession: async (sessionId) => {
+        try {
+          await api.delete(`/api/sessions/${sessionId}`);
+          set((state) => ({
+            currentSession: null,
+            roadmapNodes: [],
+            roadmapEdges: [],
+            topics: [],
+            allSessions: state.allSessions.filter((s) => s._id !== sessionId),
+          }));
+        } catch (err) {
+          throw err;
+        }
+      },
     }),
     {
       name: 'neuralnest-session',

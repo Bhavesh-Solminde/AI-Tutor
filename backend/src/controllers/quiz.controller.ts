@@ -4,7 +4,7 @@ import { Topic } from "../models/Topic";
 import { QuizResult } from "../models/QuizResult";
 import { User } from "../models/User";
 import { StudyPlan } from "../models/StudyPlan";
-import { quizGeneratorNode } from "../agents/nodes/quizGeneratorNode";
+import { runTutorGraph } from "../agents/graph";
 import { progressTrackerNode } from "../agents/nodes/progressTrackerNode";
 import { AgentState } from "../agents/state";
 import { NotFoundError } from "../utils/AppError";
@@ -22,16 +22,25 @@ export async function generateQuiz(req: AuthRequest, res: Response, next: NextFu
 
     log.info("Generating quiz", { topicId, topicName: topic.name, masteryScore: topic.masteryScore });
 
-    // Build minimal state for quizGeneratorNode
-    const state = {
-      ...AgentState.State,
+    // Load previous quiz score for adaptive difficulty
+    const lastQuiz = await QuizResult.findOne({ userId: req.userId!, topicId })
+      .sort({ createdAt: -1 })
+      .lean();
+    const previousQuizScore = lastQuiz
+      ? Math.round((lastQuiz.score / lastQuiz.total) * 100)
+      : null;
+
+    // Route through the LangGraph graph — router sees "QUIZ_READY" and sends to quizGeneratorNode
+    const result = await runTutorGraph({
+      userId: req.userId!,
       topicId,
       topicName: topic.name,
       masteryScore: topic.masteryScore,
+      message: "QUIZ_READY",
+      messageType: "teach",
       explanation: `Concepts from ${topic.name}`,
-    };
-
-    const result = await quizGeneratorNode(state as any);
+      previousQuizScore,
+    });
 
     log.info("Quiz generated", { topicId, questionCount: result.questions?.length, timeLimit: result.timeLimit });
     res.json({
@@ -156,8 +165,10 @@ export async function submitQuiz(req: AuthRequest, res: Response, next: NextFunc
       lastStudiedAt: new Date(),
     });
 
-    // Update User XP (maps to n8n MongoDB (Update User XP))
-    await User.findByIdAndUpdate(userId, { $inc: { xp: progressResult.xpEarned ?? 0 } });
+    // Update User XP — increment both fields (User model has both; different UI components read different ones)
+    await User.findByIdAndUpdate(userId, {
+      $inc: { xp: progressResult.xpEarned ?? 0, totalXp: progressResult.xpEarned ?? 0 },
+    });
 
     // Update StudyPlan if exists
     if (examDate && progressResult.studyPlanUpdate && Object.keys(progressResult.studyPlanUpdate).length > 0) {
@@ -195,9 +206,9 @@ export async function submitQuiz(req: AuthRequest, res: Response, next: NextFunc
 // GET /api/quiz/history/:userId
 export async function getQuizHistory(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const userId = req.params.userId;
+    const userId = req.userId!;
     const history = await QuizResult.find({ userId })
-      .sort({ completedAt: -1 })
+      .sort({ createdAt: -1 })  // QuizResult uses Mongoose timestamps — field is createdAt, not completedAt
       .limit(50)
       .lean();
 
@@ -211,6 +222,7 @@ export async function getQuizHistory(req: AuthRequest, res: Response, next: Next
       topicName: topicMap.get(h.topicId?.toString()) || h.topicId,
       correctAnswers: h.score,
       totalQuestions: h.total,
+      completedAt: h.createdAt, // alias so frontend date display works correctly
     }));
 
     res.json({ history: enriched });
@@ -219,12 +231,13 @@ export async function getQuizHistory(req: AuthRequest, res: Response, next: Next
   }
 }
 
+
 // GET /api/quiz/active/:userId
 // Returns quiz sessions that were generated but not submitted (in-progress)
 export async function getActiveQuizzes(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     // Active quizzes: topics currently in 'learning' state
-    const userId = req.params.userId;
+    const userId = req.userId!;
     const learningTopics = await Topic.find({ userId, status: 'learning' }).lean();
     const active = learningTopics.map((t) => ({
       _id: t._id,
@@ -234,6 +247,31 @@ export async function getActiveQuizzes(req: AuthRequest, res: Response, next: Ne
       totalQuestions: 10,
     }));
     res.json({ active });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/quiz/result/:resultId
+// Returns a single past quiz result with all questions, user answers, and correct answers
+export async function getQuizResult(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { resultId } = req.params;
+    const userId = req.userId!;
+
+    const result = await QuizResult.findOne({ _id: resultId, userId }).lean();
+    if (!result) { return next(new NotFoundError("Quiz result")); }
+
+    // Populate topic name
+    const topic = await Topic.findById(result.topicId).lean();
+
+    res.json({
+      result: {
+        ...result,
+        completedAt: result.createdAt,
+        topicName: topic?.name || "Unknown Topic",
+      },
+    });
   } catch (err) {
     next(err);
   }

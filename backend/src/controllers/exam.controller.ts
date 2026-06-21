@@ -4,6 +4,7 @@ import { Exam } from "../models/Exam";
 import { ingestPDF, ingestText } from "../pipelines/ingest";
 import { analyzePYQ } from "../pipelines/pyqParser";
 import { Topic } from "../models/Topic";
+import { StudyPlan } from "../models/StudyPlan";
 import { TavilySearch } from "@langchain/tavily";
 import { ChatOpenAI } from "@langchain/openai";
 import { env } from "../config/env";
@@ -173,11 +174,27 @@ export async function uploadPYQ(req: AuthRequest, res: Response, next: NextFunct
 // ─── GET /api/exam/:userId ────────────────────────────────────────────────────
 export async function getExam(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const exam = await Exam.findOne({ userId: req.params.userId });
+    const userId = req.userId!;
+    const exam = await Exam.findOne({ userId });
     if (!exam) { res.status(404).json({ error: "No exam configured yet." }); return; }
-    const topics = await Topic.find({ userId: req.params.userId });
+    const topics = await Topic.find({ userId });
     const daysLeft = Math.ceil((exam.examDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     res.json({ exam, topics, daysLeft });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/exam/:userId — removes exam + study plan so user can start fresh
+export async function deleteExam(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.userId!;
+    await Promise.all([
+      Exam.findOneAndDelete({ userId }),
+      StudyPlan.findOneAndDelete({ userId }),
+    ]);
+    log.info("Exam deleted", { userId });
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

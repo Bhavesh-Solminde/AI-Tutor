@@ -39,12 +39,27 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
     ]);
 
     // Build day objects with real topic IDs
-    const topicMap = Object.fromEntries(topics.map((t) => [t.name.toLowerCase(), t]));
     const days = result.days.map((d: any) => ({
       dayNumber: d.dayNumber,
       date: new Date(d.date),
       topics: d.topicNames.map((name: string) => {
-        const t = topicMap[name.toLowerCase()] || topics[0];
+        const nameLower = name.toLowerCase().trim();
+        // 1. Try exact lowercase match
+        let t = topics.find((topic) => topic.name.toLowerCase().trim() === nameLower);
+
+        // 2. Try substring match (e.g. "CPU scheduling" in "CPU scheduling basics" or vice-versa)
+        if (!t) {
+          t = topics.find((topic) => {
+            const topicNameLower = topic.name.toLowerCase().trim();
+            return topicNameLower.includes(nameLower) || nameLower.includes(topicNameLower);
+          });
+        }
+
+        // 3. Fallback to first topic if no match
+        if (!t) {
+          t = topics[0];
+        }
+
         return { topicId: t._id, topicName: t.name, estimatedMinutes: t.estimatedMinutes };
       }),
       isMockExam: d.isMockExam,
@@ -67,7 +82,8 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
 // GET /api/studyplan/:userId
 export async function getStudyPlan(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const plan = await StudyPlan.findOne({ userId: req.params.userId }).sort({ createdAt: -1 });
+    const userId = req.userId!;
+    const plan = await StudyPlan.findOne({ userId }).sort({ createdAt: -1 });
     res.json({ plan });
   } catch (err) {
     next(err);
@@ -79,13 +95,43 @@ export async function markDayComplete(req: AuthRequest, res: Response, next: Nex
   try {
     const { dayId } = req.params;
     const { planId, score } = req.body;
-    const update: any = { "days.$.completed": true };
-    // If score < 60%, push topics to next day (handled on frontend for now)
-    await StudyPlan.findOneAndUpdate(
+
+    // Mark this day as completed
+    const plan = await StudyPlan.findOneAndUpdate(
       { _id: planId, "days._id": dayId },
-      { $set: update }
+      { $set: { "days.$.completed": true } },
+      { new: true }
     );
-    res.json({ success: true, pushTopics: score < 60 });
+
+    if (!plan) {
+      res.status(404).json({ error: "Study plan or day not found." });
+      return;
+    }
+
+    // If score < 60%, push this day's topics to the next incomplete day
+    let pushed = false;
+    if (score !== undefined && score < 60) {
+      const completedDay = plan.days.find((d) => d._id?.toString() === dayId);
+      const nextDay = plan.days.find((d) => !d.completed && d._id?.toString() !== dayId);
+      if (completedDay && nextDay) {
+        // Append the weak topics to the next day (avoiding duplicates)
+        const existingTopicIds = new Set(nextDay.topics.map((t) => t.topicId?.toString()));
+        const newTopics = completedDay.topics.filter((t) => !existingTopicIds.has(t.topicId?.toString()));
+        if (newTopics.length > 0) {
+          await StudyPlan.findOneAndUpdate(
+            { _id: planId, "days._id": nextDay._id },
+            { $push: { "days.$.topics": { $each: newTopics } } }
+          );
+          pushed = true;
+          log.info("Weak score — topics pushed to next day", {
+            planId, fromDay: completedDay.dayNumber, toDay: nextDay.dayNumber,
+            topicsPushed: newTopics.map((t) => t.topicName),
+          });
+        }
+      }
+    }
+
+    res.json({ success: true, pushTopics: pushed });
   } catch (err) {
     next(err);
   }

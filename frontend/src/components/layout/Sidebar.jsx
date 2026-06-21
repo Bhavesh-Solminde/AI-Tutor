@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Brain,
@@ -8,22 +8,14 @@ import {
   GraduationCap,
   Clock,
   Plus,
-  FileText,
-  X,
 } from 'lucide-react';
 import NavItem from '../sidebar/NavItem';
 import CollapsibleSection from '../sidebar/CollapsibleSection';
 import ChatHistoryList from '../sidebar/ChatHistoryList';
 import NotesList from '../sidebar/NotesList';
-import useSessionStore from '../../stores/useSessionStore';
-
-const SECTIONS = ['📅 Exam', '🗺️ Roadmap', '💡 Other'];
-const SECTION_KEYS = ['exam', 'roadmap', 'other'];
 
 const Sidebar = () => {
   const navigate = useNavigate();
-  const { currentSession } = useSessionStore();
-  const [showSectionPicker, setShowSectionPicker] = useState(false);
 
   const coreNavItems = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -32,17 +24,6 @@ const Sidebar = () => {
     { to: '/exam', label: 'Exam Mode', icon: Clock },
     { to: '/active-quizzes', label: 'Active Quizzes', icon: GraduationCap },
   ];
-
-  const handleNewSession = () => {
-    setShowSectionPicker(true);
-  };
-
-  const handleSectionSelect = (sectionKey) => {
-    setShowSectionPicker(false);
-    // Navigate to open-mode tutor with the chosen section — Tutor.jsx will create the chat
-    // on the first message (lazy creation). Don't pre-create here to avoid doubles.
-    navigate(`/tutor/new?section=${sectionKey}`);
-  };
 
   return (
     <aside className="w-[210px] flex-shrink-0 border-r border-border-light dark:border-border-dark bg-sidebar-light dark:bg-sidebar-dark flex flex-col justify-between h-screen sticky top-0 transition-colors duration-300">
@@ -87,7 +68,7 @@ const Sidebar = () => {
           </CollapsibleSection>
         </div>
 
-        {/* Notes (all uploaded sessions) */}
+        {/* Notes */}
         <div className="px-3 py-4 border-b border-border-light dark:border-border-dark">
           <CollapsibleSection title="Notes" defaultOpen={false}>
             <NotesList />
@@ -95,29 +76,10 @@ const Sidebar = () => {
         </div>
       </div>
 
-      {/* Footer: New Session CTA + Section Picker */}
-      <div className="p-3 border-t border-border-light dark:border-border-dark bg-slate-50/50 dark:bg-sidebar-dark/40 relative">
-        {showSectionPicker && (
-          <div className="absolute bottom-full left-3 right-3 mb-2 bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl shadow-xl overflow-hidden z-50">
-            <div className="flex items-center justify-between px-3 py-2 border-b border-border-light dark:border-border-dark">
-              <span className="text-[10px] font-mono font-bold uppercase text-text-muted-light dark:text-text-muted-dark">Save chat under</span>
-              <button onClick={() => setShowSectionPicker(false)}>
-                <X className="h-3.5 w-3.5 text-slate-400" />
-              </button>
-            </div>
-            {SECTIONS.map((label, i) => (
-              <button
-                key={SECTION_KEYS[i]}
-                onClick={() => handleSectionSelect(SECTION_KEYS[i])}
-                className="w-full text-left px-4 py-2.5 text-xs font-semibold text-text-base-light dark:text-text-base-dark hover:bg-slate-50 dark:hover:bg-elevated-dark transition-colors"
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-        )}
+      {/* Footer: New Session — always creates under Other, no section picker */}
+      <div className="p-3 border-t border-border-light dark:border-border-dark bg-slate-50/50 dark:bg-sidebar-dark/40">
         <button
-          onClick={handleNewSession}
+          onClick={() => navigate('/tutor/new?section=other')}
           className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-cta hover:bg-cta-hover text-white text-xs font-bold rounded-xl shadow-md transition-all duration-300"
         >
           <Plus className="h-3.5 w-3.5" />

@@ -118,6 +118,16 @@ const useExamStore = create(
 
       setSetupComplete: (val) => set({ setupComplete: val }),
       clearExam: () => set({ exam: null, topics: [], daysLeft: null, rescuePlan: null, setupComplete: false }),
+
+      // DELETE exam + study plan so user can restart from scratch
+      deleteExam: async (userId) => {
+        try {
+          await api.delete(`/api/exam/${userId}`);
+          set({ exam: null, topics: [], daysLeft: null, rescuePlan: null, setupComplete: false });
+        } catch (err) {
+          throw err;
+        }
+      },
     }),
     {
       name: 'neuralnest-exam',

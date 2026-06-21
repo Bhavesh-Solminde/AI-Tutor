@@ -14,6 +14,7 @@ import Onboarding from './pages/Onboarding';
 import Roadmap from './pages/Roadmap';
 import Tutor from './pages/Tutor';
 import Quiz from './pages/Quiz';
+import QuizResultView from './pages/QuizResultView';
 import Dashboard from './pages/Dashboard';
 import ExamMode from './pages/ExamMode';
 import ActiveQuizzes from './pages/ActiveQuizzes';
@@ -35,6 +36,15 @@ const ProtectedRoute = ({ children }) => {
   if (loading) return <SessionLoader />;
   if (!user) return <Navigate to="/" replace />;
   if (!user.onboarded) return <Navigate to="/onboarding" replace />;
+  return children;
+};
+
+// AuthRoute: requires login only — no onboarded check.
+// Used for /onboarding so already-onboarded users can return to create new roadmaps.
+const AuthRoute = ({ children }) => {
+  const { user, loading } = useAuthStore();
+  if (loading) return <SessionLoader />;
+  if (!user) return <Navigate to="/" replace />;
   return children;
 };
 
@@ -82,13 +92,14 @@ function App() {
             {/* Legacy callback path — backend may redirect here */}
             <Route path="/auth/callback" element={<OAuthCallback />} />
 
-            {/* Onboarding */}
-            <Route path="/onboarding" element={<OnboardingRoute><Onboarding /></OnboardingRoute>} />
+            {/* Onboarding — accessible to all logged-in users so they can create additional roadmaps */}
+            <Route path="/onboarding" element={<AuthRoute><Onboarding /></AuthRoute>} />
 
             {/* Protected */}
             <Route path="/roadmap" element={<ProtectedRoute><Roadmap /></ProtectedRoute>} />
             <Route path="/tutor/:topicId" element={<ProtectedRoute><Tutor /></ProtectedRoute>} />
             <Route path="/quiz/:topicId" element={<ProtectedRoute><Quiz /></ProtectedRoute>} />
+            <Route path="/quiz/result/:resultId" element={<ProtectedRoute><QuizResultView /></ProtectedRoute>} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/exam" element={<ProtectedRoute><ExamMode /></ProtectedRoute>} />
             <Route path="/active-quizzes" element={<ProtectedRoute><ActiveQuizzes /></ProtectedRoute>} />

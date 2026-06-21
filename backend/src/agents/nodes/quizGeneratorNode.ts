@@ -40,7 +40,7 @@ export async function quizGeneratorNode(
   const userMessage = `Topic: ${state.topicName}
 Concepts Covered: ${state.explanation || "Concepts from this topic"}
 User Mastery Level: ${state.masteryScore}
-Previous Quiz Score: null
+Previous Quiz Score: ${state.previousQuizScore !== null && state.previousQuizScore !== undefined ? `${state.previousQuizScore}%` : "null (first attempt)"}
 
 Generate the quiz now.`;
 

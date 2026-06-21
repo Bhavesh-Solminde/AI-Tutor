@@ -5,6 +5,7 @@ import MainLayout from '../components/layout/MainLayout';
 import useAuthStore from '../stores/useAuthStore';
 import useProgressStore from '../stores/useProgressStore';
 import useExamStore from '../stores/useExamStore';
+import useQuizStore from '../stores/useQuizStore';
 
 import MasteryRing from '../components/dashboard/MasteryRing';
 import TopicMasteryTable from '../components/dashboard/TopicMasteryTable';
@@ -27,12 +28,14 @@ const Dashboard = () => {
   const {
     exam, daysLeft, rescuePlan, fetchExam, fetchStudyPlan, loading: examLoading,
   } = useExamStore();
+  const { quizHistory, fetchQuizHistory } = useQuizStore();
 
   useEffect(() => {
     if (user?._id) {
       fetchProgress(user._id);
       fetchExam(user._id);
       fetchStudyPlan(user._id);
+      fetchQuizHistory(user._id);
     }
   }, [user?._id]);
 
@@ -47,6 +50,12 @@ const Dashboard = () => {
     const weekAgo = new Date(); weekAgo.setDate(weekAgo.getDate() - 7);
     return day >= weekAgo;
   }).length || 0;
+
+  // XP earned today — sum xpEarned from all quiz results completed today
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0);
+  const xpToday = quizHistory
+    .filter((r) => r.completedAt && new Date(r.completedAt) >= todayStart)
+    .reduce((sum, r) => sum + (r.xpEarned || 0), 0);
 
   return (
     <MainLayout>
@@ -78,33 +87,10 @@ const Dashboard = () => {
             )}
           </div>
           <div className="md:col-span-4">
-            <WeeklyStreakWidget streakDays={studyDaysThisWeek} xpToday={user?.totalXp || 0} />
+            <WeeklyStreakWidget streakDays={studyDaysThisWeek} xpToday={xpToday} totalXp={user?.xp ?? user?.totalXp ?? 0} />
           </div>
         </div>
 
-        {/* Topic Mastery Table */}
-        <ErrorBoundary
-          FallbackComponent={({ error, resetErrorBoundary }) => (
-            <InlineErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} message={progressError || 'Failed to load topic data.'} />
-          )}
-        >
-          {progressLoading ? (
-            <TopicTableSkeleton />
-          ) : topics.length === 0 ? (
-            <EmptyState
-              icon={BarChart2}
-              title="No progress data yet"
-              description="Complete a lesson and quiz to see your mastery scores here."
-              action={() => navigate('/onboarding')}
-              actionLabel="Start Learning"
-            />
-          ) : (
-            <TopicMasteryTable
-              topics={topics}
-              onStudyClick={(id) => navigate(`/tutor/${id}`)}
-            />
-          )}
-        </ErrorBoundary>
 
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -148,6 +134,32 @@ const Dashboard = () => {
             )}
           </div>
         </div>
+
+
+        {/* Topic Mastery Table */}
+        <ErrorBoundary
+          FallbackComponent={({ error, resetErrorBoundary }) => (
+            <InlineErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} message={progressError || 'Failed to load topic data.'} />
+          )}
+        >
+          {progressLoading ? (
+            <TopicTableSkeleton />
+          ) : topics.length === 0 ? (
+            <EmptyState
+              icon={BarChart2}
+              title="No progress data yet"
+              description="Complete a lesson and quiz to see your mastery scores here."
+              action={() => navigate('/onboarding')}
+              actionLabel="Start Learning"
+            />
+          ) : (
+            <TopicMasteryTable
+              topics={topics}
+              onStudyClick={(id) => navigate(`/tutor/${id}`)}
+            />
+          )}
+        </ErrorBoundary>
+
       </div>
     </MainLayout>
   );

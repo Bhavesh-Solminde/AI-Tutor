@@ -9,7 +9,7 @@ const log = createLogger("controller:progress");
 // GET /api/progress/:userId
 export async function getProgress(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { userId } = req.params;
+    const userId = req.userId!;
     const topics = await Topic.find({ userId }).sort({ masteryScore: -1 });
     const total = topics.length;
     const mastered = topics.filter((t) => t.status === "mastered").length;
@@ -44,13 +44,13 @@ export async function getRoadmap(req: AuthRequest, res: Response, next: NextFunc
     const { sessionId } = req.params;
     const userId = req.userId!;
 
-    let topics = await Topic.find({ sessionId });
+    let topics = await Topic.find({ sessionId, archived: { $ne: true } });
 
     // If no topics found for this sessionId (e.g. stale persisted sessionId),
-    // fall back to all topics for this user ordered by creation date
+    // fall back to all non-archived topics for this user ordered by creation date
     if (topics.length === 0) {
       log.warn("No topics for sessionId, falling back to user topics", { sessionId, userId });
-      topics = await Topic.find({ userId }).sort({ createdAt: -1 });
+      topics = await Topic.find({ userId, archived: { $ne: true } }).sort({ createdAt: -1 });
     }
 
     const nodes = topics.map((t) => ({

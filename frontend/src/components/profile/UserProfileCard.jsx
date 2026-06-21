@@ -1,5 +1,6 @@
 import React from 'react';
 import { Zap, Flame, CheckCircle } from 'lucide-react';
+import { getXpLevel } from '../../utils/xpLevels';
 
 const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
   const name = user?.name || 'Guest Scholar';
@@ -27,11 +28,16 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
       <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mt-4 tracking-tight">{name}</h2>
       <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{email}</p>
 
-      {/* Mastery Badge */}
-      <div className="mt-3 flex items-center space-x-1 px-3.5 py-1.5 bg-amber-500/10 text-amber-500 dark:text-amber-400 border border-amber-500/20 rounded-full text-xs font-bold shadow-sm">
-        <span>🎓</span>
-        <span>College Scholar</span>
-      </div>
+      {/* Mastery Badge — dynamic based on XP */}
+      {(() => {
+        const level = getXpLevel(totalXP);
+        return (
+          <div className={`mt-3 flex items-center space-x-1 px-3.5 py-1.5 bg-amber-500/10 ${level.color} border border-amber-500/20 rounded-full text-xs font-bold shadow-sm`}>
+            <span>{level.emoji}</span>
+            <span>{level.title}</span>
+          </div>
+        );
+      })()}
 
       {/* Row of 3 Stats */}
       <div className="mt-8 flex flex-wrap justify-center items-center gap-10 md:gap-14 w-full px-4">

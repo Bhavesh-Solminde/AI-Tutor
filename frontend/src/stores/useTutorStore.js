@@ -29,9 +29,10 @@ const useTutorStore = create((set, get) => ({
       // Only show chips on the last AI message
       const uiMessages = data.messages.map((m, idx) => {
         const isAi = m.role === 'assistant';
+        const isSystem = m.role === 'system';
         const isLast = idx === data.messages.length - 1;
         return {
-          sender: isAi ? 'ai' : 'user',
+          sender: isAi ? 'ai' : (isSystem ? 'system' : 'user'),
           text: m.content,
           isStreaming: false,
           showChips: isAi && isLast,

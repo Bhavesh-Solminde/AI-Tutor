@@ -55,8 +55,10 @@ const useQuizStore = create(
           }
           // Also refresh progress store so Dashboard stays in sync
           const { fetchProgress } = useProgressStore.getState();
-          const { user } = useAuthStore.getState();
+          const { user, fetchMe } = useAuthStore.getState();
           if (user?._id) fetchProgress(user._id).catch(() => {});
+          // Re-fetch the user so XP in Profile/Dashboard updates immediately
+          fetchMe().catch(() => {});
 
           if (data.xpEarned) {
             toast.success(`+${data.xpEarned} XP earned! ${data.passed ? '🎉 Topic mastered!' : '📚 Keep studying!'}`, { duration: 4000 });

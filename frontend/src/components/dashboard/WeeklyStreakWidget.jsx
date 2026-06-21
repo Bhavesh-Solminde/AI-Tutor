@@ -1,7 +1,8 @@
 import React from 'react';
 import { Zap } from 'lucide-react';
+import { getXpLevel } from '../../utils/xpLevels';
 
-const WeeklyStreakWidget = ({ streakDays = 4, xpToday = 180 }) => {
+const WeeklyStreakWidget = ({ streakDays = 4, xpToday = 180, totalXp = 0 }) => {
   return (
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 flex flex-col justify-between shadow-sm text-left h-28">
       <div className="space-y-1">
@@ -9,10 +10,13 @@ const WeeklyStreakWidget = ({ streakDays = 4, xpToday = 180 }) => {
         <p className="text-2xl font-extrabold text-slate-900 dark:text-white leading-none mt-0.5">{streakDays} Days</p>
       </div>
 
-      <div className="mt-2.5">
+      <div className="mt-2.5 flex items-center space-x-2">
         <span className="inline-flex items-center space-x-1 px-3 py-1 bg-emerald-500 text-white rounded-full text-xs font-bold shadow-sm">
           <Zap className="h-3.5 w-3.5 fill-current" />
           <span>+{xpToday} XP today</span>
+        </span>
+        <span className={`text-xs font-bold ${getXpLevel(totalXp).color}`}>
+          {getXpLevel(totalXp).emoji} {getXpLevel(totalXp).title}
         </span>
       </div>
     </div>

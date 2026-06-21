@@ -19,26 +19,40 @@ async function extractAndSaveTopics(
   userId: string,
   sessionId: string
 ): Promise<void> {
-  try {
-    log.info("Background: topic extraction started", { sessionId });
-    const extractedTopics = await extractTopicsFromText(rawText);
-    await Topic.insertMany(
-      extractedTopics.map((t, index) => ({
-        sessionId: new mongoose.Types.ObjectId(sessionId),
-        userId: new mongoose.Types.ObjectId(userId),
-        name: t.name,
-        difficulty: t.difficulty,
-        estimatedMinutes: t.estimatedMinutes,
-        roadmapPosition: { x: 250, y: index * 150 },
-      }))
-    );
-    log.info("Background: topics saved", {
-      sessionId,
-      topicCount: extractedTopics.length,
-      topicNames: extractedTopics.map((t) => t.name),
-    });
-  } catch (err: any) {
-    log.error("Background: topic extraction failed", { sessionId, error: err.message });
+  const MAX_RETRIES = 2;
+  for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      log.info("Background: topic extraction started", { sessionId, attempt });
+      const extractedTopics = await extractTopicsFromText(rawText);
+      await Topic.insertMany(
+        extractedTopics.map((t, index) => ({
+          sessionId: new mongoose.Types.ObjectId(sessionId),
+          userId: new mongoose.Types.ObjectId(userId),
+          name: t.name,
+          difficulty: t.difficulty,
+          estimatedMinutes: t.estimatedMinutes,
+          roadmapPosition: { x: 250, y: index * 150 },
+        }))
+      );
+      log.info("Background: topics saved", {
+        sessionId,
+        topicCount: extractedTopics.length,
+        topicNames: extractedTopics.map((t) => t.name),
+      });
+      return; // Success — exit retry loop
+    } catch (err: any) {
+      log.error("Background: topic extraction failed", { sessionId, attempt, error: err.message });
+      if (attempt < MAX_RETRIES) {
+        // Wait before retrying (exponential backoff: 5s, 10s)
+        const delayMs = attempt * 5000;
+        log.info("Background: retrying topic extraction", { sessionId, nextAttempt: attempt + 1, delayMs });
+        await new Promise((r) => setTimeout(r, delayMs));
+      } else {
+        // All retries exhausted — mark session with error message
+        log.error("Background: all retries exhausted — marking session with error", { sessionId });
+        await Session.findByIdAndUpdate(sessionId, { processingError: err.message || "Unknown error during topic extraction" });
+      }
+    }
   }
 }
 

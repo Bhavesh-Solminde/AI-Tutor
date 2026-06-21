@@ -1,6 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IStudyPlanDay {
+  _id?: mongoose.Types.ObjectId;
   dayNumber: number;
   date: Date;
   topics: Array<{
@@ -46,5 +47,7 @@ const StudyPlanSchema = new Schema<IStudyPlan>(
   },
   { timestamps: true }
 );
+
+StudyPlanSchema.index({ userId: 1, sessionId: 1 });
 
 export const StudyPlan = mongoose.model<IStudyPlan>("StudyPlan", StudyPlanSchema);

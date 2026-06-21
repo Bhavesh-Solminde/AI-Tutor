@@ -3,6 +3,7 @@ import { AuthRequest } from "../types";
 import { Session } from "../models/Session";
 import { Topic } from "../models/Topic";
 import { createLogger } from "../config/logger";
+import { NotFoundError } from "../utils/AppError";
 
 const log = createLogger("controller:session");
 
@@ -60,6 +61,42 @@ export async function getSessionMaterials(req: AuthRequest, res: Response, next:
     }));
     log.debug("Session materials fetched", { userId, count: materials.length });
     res.json({ materials });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// GET /api/sessions/user — all non-deleted roadmap sessions (for session switcher)
+export async function getUserSessions(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.userId!;
+    const sessions = await Session.find({ userId, isReference: false, deleted: { $ne: true } })
+      .sort({ createdAt: -1 })
+      .select("_id name inputMethod createdAt")
+      .lean();
+    res.json({ sessions });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/sessions/:id — soft-deletes session, archives topics (preserves quiz history)
+export async function deleteSession(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const { id } = req.params;
+    const userId = req.userId!;
+
+    const session = await Session.findOne({ _id: id, userId });
+    if (!session) return next(new NotFoundError("Session"));
+
+    session.deleted = true;
+    await session.save();
+
+    // Archive all topics — preserves mastery scores and quiz history
+    await Topic.updateMany({ sessionId: id }, { $set: { archived: true } });
+
+    log.info("Session soft-deleted", { sessionId: id, userId });
+    res.json({ success: true });
   } catch (err) {
     next(err);
   }

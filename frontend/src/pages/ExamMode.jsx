@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
-import { Calendar, Sparkles, CheckCircle, Clock } from 'lucide-react';
+import { Calendar, Sparkles, CheckCircle, Clock, Trash2, AlertTriangle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/useAuthStore';
 import useExamStore from '../stores/useExamStore';
@@ -8,14 +8,33 @@ import ExamSetupWizard from '../components/exam/ExamSetupWizard';
 import RoadmapCanvas from '../components/roadmap/RoadmapCanvas';
 import { RoadmapSkeleton, CardSkeleton } from '../components/ui/LoadingSkeleton';
 import EmptyState from '../components/ui/EmptyState';
+import toast from 'react-hot-toast';
 
 const ExamMode = () => {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const {
     exam, topics, daysLeft, rescuePlan, setupComplete, loading,
-    fetchExam, fetchStudyPlan, setSetupComplete,
+    fetchExam, fetchStudyPlan, setSetupComplete, deleteExam,
   } = useExamStore();
+
+  const [selectedTopic, setSelectedTopic] = React.useState(null);
+  const [showResetConfirm, setShowResetConfirm] = React.useState(false);
+  const [resetting, setResetting] = React.useState(false);
+
+  const handleReset = async () => {
+    if (!user?._id) return;
+    setResetting(true);
+    try {
+      await deleteExam(user._id);
+      toast.success('Exam setup reset. You can now start fresh.');
+      setShowResetConfirm(false);
+    } catch {
+      toast.error('Failed to reset exam setup.');
+    } finally {
+      setResetting(false);
+    }
+  };
 
   useEffect(() => {
     if (user?._id) {
@@ -24,8 +43,7 @@ const ExamMode = () => {
     }
   }, [user?._id]);
 
-  // Normalize exam topics same way Roadmap.jsx does (API returns label/_id from some paths)
-  const normalizedTopics = (topics || []).map((t, idx) => ({
+  const normalizedTopics = (topics || []).map((t) => ({
     ...t,
     id: t.id || t._id,
     name: t.name || t.label || 'Untitled Topic',
@@ -33,8 +51,6 @@ const ExamMode = () => {
 
   const mastered = normalizedTopics.filter((t) => t.status === 'mastered').length;
   const active   = normalizedTopics.filter((t) => t.status === 'learning').length;
-
-  const [selectedTopic, setSelectedTopic] = React.useState(null);
 
   return (
     <MainLayout>
@@ -80,6 +96,36 @@ const ExamMode = () => {
                   <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-amber-500/10 text-amber-500 border border-amber-500/20 rounded-xl font-semibold text-xs font-mono">
                     <Sparkles className="h-4 w-4" />
                     <span>{active} Active</span>
+                  </div>
+                )}
+              </div>
+              {/* Reset exam button */}
+              <div className="flex items-center gap-2">
+                {!showResetConfirm ? (
+                  <button
+                    onClick={() => setShowResetConfirm(true)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl border border-red-200 dark:border-red-900/40 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    Reset Exam Setup
+                  </button>
+                ) : (
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+                    <AlertTriangle className="h-3.5 w-3.5 text-red-500" />
+                    <span className="text-xs font-semibold text-red-600 dark:text-red-400">This will clear your exam and rescue plan.</span>
+                    <button
+                      onClick={handleReset}
+                      disabled={resetting}
+                      className="text-xs font-bold text-white bg-red-500 hover:bg-red-600 px-2 py-0.5 rounded-lg disabled:opacity-50 transition"
+                    >
+                      {resetting ? 'Resetting…' : 'Confirm'}
+                    </button>
+                    <button
+                      onClick={() => setShowResetConfirm(false)}
+                      className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                    >
+                      Cancel
+                    </button>
                   </div>
                 )}
               </div>

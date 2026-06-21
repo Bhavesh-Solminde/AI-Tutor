@@ -26,4 +26,6 @@ const ExamSchema = new Schema<IExam>(
   { timestamps: true }
 );
 
+ExamSchema.index({ userId: 1 }, { unique: true });
+
 export const Exam = mongoose.model<IExam>("Exam", ExamSchema);

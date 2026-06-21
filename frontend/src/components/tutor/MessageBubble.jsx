@@ -65,6 +65,16 @@ const MessageBubble = ({ msg, children }) => {
     hr: () => <hr className="border-slate-200 dark:border-slate-700 my-3" />,
   };
 
+  if (msg.sender === 'system') {
+    return (
+      <div className="flex justify-center my-3 w-full">
+        <div className="bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 text-xs rounded-full px-4 py-1.5 font-medium border border-slate-200/50 dark:border-slate-700/50 max-w-[85%] text-center">
+          {msg.text}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}>
       <div

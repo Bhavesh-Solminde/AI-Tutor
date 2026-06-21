@@ -154,9 +154,9 @@ const Profile = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          <button className="flex-1 py-3 border border-slate-200 dark:border-border-dark hover:bg-slate-50 dark:hover:bg-elevated-dark text-slate-700 dark:text-white text-sm font-bold rounded-2xl transition-all duration-300">
+          {/* <button className="flex-1 py-3 border border-slate-200 dark:border-border-dark hover:bg-slate-50 dark:hover:bg-elevated-dark text-slate-700 dark:text-white text-sm font-bold rounded-2xl transition-all duration-300">
             Settings
-          </button>
+          </button> */}
           <button
             onClick={() => logout()}
             className="flex-1 py-3 border border-red-500/30 hover:bg-red-500/5 text-red-500 text-sm font-bold rounded-2xl transition-all duration-300"

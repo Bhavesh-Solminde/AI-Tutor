@@ -51,6 +51,10 @@ export async function ingestPDFEmbedOnly(
   const fileUrl = await uploadPdfToCloudinary(buffer, originalName);
   const parsed = await pdfParse(buffer);
   const rawText = parsed.text;
+  if (!rawText.trim()) {
+    log.warn("PDF has no extractable text (scanned/image-only PDF)", { originalName, sessionId });
+    throw new Error("Couldn't extract text from the PDF. It may be a scanned/image-only document.");
+  }
   await Session.findByIdAndUpdate(sessionId, { fileUrl, rawText });
   await embedText(rawText, userId, sessionId);
   return { rawText, fileUrl };

@@ -1,5 +1,6 @@
 import { PineconeStore } from "@langchain/pinecone";
 import { cohereEmbeddings, getPineconeIndex } from "../config/pinecone";
+import { Session } from "../models/Session";
 
 /**
  * RAG retrieval pipeline.
@@ -115,4 +116,37 @@ export async function retrieveFromMultipleNamespaces(
   return allChunks
     .map((chunk, i) => `[Chunk ${i + 1}]\n${chunk.content}`)
     .join("\n\n---\n\n");
+}
+
+/**
+ * Open-mode RAG retrieval.
+ * Retrieves context from the 5 most recent active sessions of the user.
+ */
+export async function retrieveFromAllUserSessions(
+  query: string,
+  userId: string,
+  topK: number = 5
+): Promise<string> {
+  try {
+    const recentSessions = await Session.find({ userId, deleted: { $ne: true } })
+      .sort({ createdAt: -1 })
+      .limit(5);
+
+    if (recentSessions.length === 0) {
+      return "No uploaded materials found. Use your knowledge.";
+    }
+
+    const namespaces = recentSessions
+      .map((s) => s.pineconeNamespace)
+      .filter((ns) => !!ns);
+
+    if (namespaces.length === 0) {
+      return "No uploaded materials found. Use your knowledge.";
+    }
+
+    return await retrieveFromMultipleNamespaces(query, namespaces, topK);
+  } catch (error) {
+    console.error("Error in retrieveFromAllUserSessions:", error);
+    return "No relevant context found in the uploaded materials.";
+  }
 }

@@ -88,11 +88,13 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       currentDateTime: new Date().toISOString(),
     });
 
-    // Stream the response token by token (simulate word-by-word)
+    // Stream the response in rapid batches of ~10 words with 5ms delay
     const words = result.explanation.split(" ");
-    for (const word of words) {
-      res.write(`data: ${JSON.stringify({ token: word + " " })}\n\n`);
-      await new Promise((r) => setTimeout(r, 30)); // ~30ms per word
+    const batchSize = 10;
+    for (let i = 0; i < words.length; i += batchSize) {
+      const chunk = words.slice(i, i + batchSize).join(" ") + (i + batchSize < words.length ? " " : "");
+      res.write(`data: ${JSON.stringify({ token: chunk })}\n\n`);
+      await new Promise((r) => setTimeout(r, 5)); // 5ms delay
     }
 
     // Send the full structured result
@@ -121,15 +123,57 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       res.write(`data: ${JSON.stringify({ chatHistoryId: resolvedChatId })}\n\n`);
     }
 
-    await ChatHistory.findByIdAndUpdate(resolvedChatId, {
-      $push: {
-        messages: [
-          { role: "user", content: message, timestamp: new Date() },
-          { role: "assistant", content: result.explanation, timestamp: new Date() },
-        ],
+    const chat = await ChatHistory.findByIdAndUpdate(
+      resolvedChatId,
+      {
+        $push: {
+          messages: [
+            { role: "user", content: message, timestamp: new Date() },
+            { role: "assistant", content: result.explanation, timestamp: new Date() },
+          ],
+        },
       },
-    });
-    log.debug("Messages saved to chat history", { chatId: resolvedChatId });
+      { new: true }
+    );
+
+    if (chat && chat.messages.length > 20) {
+      log.info("Chat history exceeds 20 messages, summarizing first 20...", { chatId: resolvedChatId, count: chat.messages.length });
+      try {
+        const messagesToSummarize = chat.messages.slice(0, 20).map(m => ({ role: m.role, content: m.content }));
+        const { ChatOpenAI } = await import("@langchain/openai");
+        const { env } = await import("../config/env");
+        const summarizerModel = new ChatOpenAI({
+          model: "gpt-4.1",
+          temperature: 0.3,
+          apiKey: env.OPENAI_API_KEY,
+        });
+        const summaryResponse = await summarizerModel.invoke([
+          { role: "system", content: "You are a helpful assistant. Summarize the following conversation history between a student and an AI tutor concisely, preserving key facts, questions asked, and concepts discussed so the tutor can continue teaching seamlessly." },
+          { role: "user", content: JSON.stringify(messagesToSummarize) }
+        ]);
+        const summaryText = typeof summaryResponse.content === "string" ? summaryResponse.content : JSON.stringify(summaryResponse.content);
+        const summaryMsg = {
+          role: "system" as const,
+          content: `Summary of previous discussion: ${summaryText}`,
+          timestamp: new Date()
+        };
+        const remainingMsgs = chat.messages.slice(20).map(m => ({
+          role: m.role,
+          content: m.content,
+          timestamp: m.timestamp
+        }));
+        await ChatHistory.findByIdAndUpdate(resolvedChatId, {
+          $set: {
+            messages: [summaryMsg, ...remainingMsgs]
+          }
+        });
+        log.info("Chat history summarized successfully", { chatId: resolvedChatId });
+      } catch (err: any) {
+        log.error("Failed to summarize chat history", { chatId: resolvedChatId, error: err.message });
+      }
+    } else {
+      log.debug("Messages saved to chat history", { chatId: resolvedChatId });
+    }
 
     // Update topic status to "learning" (only in topic mode)
     if (topic && topic.status === "unstarted") {
@@ -145,6 +189,12 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
     log.info("Tutor chat complete", { chatId: resolvedChatId, topicId, nextAction: result.nextAction });
     res.end();
   } catch (err) {
+    if (res.headersSent) {
+      log.error("Error occurred after SSE headers were sent — closing stream safely", { error: err });
+      res.write(`data: ${JSON.stringify({ error: "An error occurred during response generation." })}\n\n`);
+      res.end();
+      return;
+    }
     next(err);
   }
 }

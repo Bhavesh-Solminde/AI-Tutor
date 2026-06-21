@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, ArrowRight, RefreshCw } from 'lucide-react';
 import MainLayout from '../components/layout/MainLayout';
@@ -10,7 +10,6 @@ import api from '../lib/axiosClient';
 
 import TutorChatPanel from '../components/tutor/TutorChatPanel';
 import MaterialsModal from '../components/tutor/MaterialsModal';
-import QuickActionCards from '../components/tutor/QuickActionCards';
 
 const Tutor = () => {
   const { topicId } = useParams();
@@ -39,7 +38,11 @@ const Tutor = () => {
     ? (sectionFromQuery || 'other')
     : (sectionFromQuery || 'roadmap');
 
-  // On mount: resolve topic name from API, reuse existing chat if possible
+  // Extracted so it can be a useEffect dependency — switching between two open-mode
+  // chats changes this value while topicId stays 'new', triggering a re-load.
+  const chatIdFromUrl = searchParams.get('chatId');
+
+  // On mount / when topicId or chatIdFromUrl changes: resolve topic name & load messages
   useEffect(() => {
     // React StrictMode mounts twice — use a cancelled flag so only one run proceeds
     let cancelled = false;
@@ -51,8 +54,19 @@ const Tutor = () => {
 
     if (isNewSession) {
       // Open-mode: user can type anything.
-      // Don't reset chatHistoryId here — Sidebar may have already set one.
       setCurrentTopic({ _id: null, name: 'New Study Chat' });
+
+      // Restore an existing open-mode chat if ?chatId= is in the URL.
+      // chatIdFromUrl is declared outside the effect so it is a stable dependency.
+      if (chatIdFromUrl) {
+        // Sidebar clicked a specific chat — load it
+        setChatHistoryId(chatIdFromUrl);
+        loadMessages(chatIdFromUrl);
+      } else {
+        // New Session button (no chatId) — always start fresh, clear any
+        // stale chatHistoryId left over from a previous open-mode session
+        setChatHistoryId(null);
+      }
       return () => { cancelled = true; };
     }
 
@@ -62,6 +76,16 @@ const Tutor = () => {
     const init = async () => {
       setResolving(true);
       try {
+        // 0. If a specific chatId came from the sidebar, use it directly
+        if (chatIdFromUrl) {
+          const { data: topicData } = await api.get(`/api/topics/${topicId}`, { _silent: true }).catch(() => ({ data: null }));
+          if (cancelled) return;
+          setCurrentTopic({ _id: topicId, name: topicData?.name || topicData?.topic?.name || topicId });
+          setChatHistoryId(chatIdFromUrl);
+          await loadMessages(chatIdFromUrl);
+          return;
+        }
+
         // 1. Fetch the real topic from the API to get its name
         const { data: topicData } = await api.get(`/api/topics/${topicId}`, { _silent: true }).catch(() => ({ data: null }));
         if (cancelled) return;
@@ -104,39 +128,33 @@ const Tutor = () => {
 
     // Cleanup: mark as cancelled so any in-flight async work is discarded
     return () => { cancelled = true; };
-  }, [topicId]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [topicId, chatIdFromUrl]);
 
   const handleSend = async (textToSend) => {
     const text = textToSend || inputVal;
     if (!text.trim() || isStreaming) return;
     if (!textToSend) setInputVal('');
 
-    // Lazily create a chat entry for open-mode on the very first message,
-    // so conversations are always saved and appear in the sidebar.
-    let activeChatId = chatHistoryId;
-    if (isNewSession && !activeChatId) {
-      const newChat = await createChat({
-        sessionId: currentSession?._id,
-        topicId: null,
-        section: chatSection,
-        title: text.length > 40 ? text.slice(0, 40) + '…' : text,
-      });
-      if (newChat?._id) {
-        setChatHistoryId(newChat._id);
-        activeChatId = newChat._id;
-        // Refresh sidebar immediately so this new chat appears
-        if (user?._id) fetchChatHistory(user._id);
-      }
-    }
+    // For open-mode, let the backend auto-create the chat on the first message.
+    // It sends back chatHistoryId over SSE → onChatCreated picks it up below.
+    // Do NOT pre-create a chat here — that causes two duplicate documents per message.
+    const activeChatId = chatHistoryId;
 
     await sendMessage({
       topicId: isNewSession ? null : topicId,
       message: text,
-      type: text.toLowerCase().includes('why') || text.toLowerCase().includes('how') || text.toLowerCase().includes('explain') ? 'doubt' : 'teach',
+      type: (() => {
+        if (messages.length === 0) return 'teach';
+        const doubtRegex = /\b(why|how|explain)\b/i;
+        return doubtRegex.test(text) ? 'doubt' : 'teach';
+      })(),
       chatHistoryId: activeChatId,
       materialSessionIds: attachedMaterials.map((m) => m._id),
       onChatCreated: (newId) => {
-        // Backend auto-created a chat — refresh sidebar
+        // Backend auto-created a chat — update URL so refresh re-loads this exact chat
+        navigate(`/tutor/new?chatId=${newId}&section=${chatSection}`, { replace: true });
+        // Refresh sidebar so the new chat appears
         if (user?._id) fetchChatHistory(user._id);
       },
     });
@@ -201,29 +219,8 @@ const Tutor = () => {
           </div>
         )}
 
-        {/* Empty state: show Quick Action Cards when no messages */}
-        {messages.length === 0 && (
-          <div className="flex-1 flex flex-col items-center justify-center space-y-6">
-            <div className="text-center space-y-2">
-              <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                {isNewSession ? 'What do you want to learn?' : `Ready to study ${topicName}?`}
-              </h2>
-              <p className="text-sm text-slate-500 dark:text-slate-400">
-                {isNewSession ? 'Start a conversation or pick a quick action.' : `Ask a question or click "Start Teaching" to begin.`}
-              </p>
-            </div>
-            <QuickActionCards onActionClick={handleSend} />
-            <button
-              onClick={() => handleSend(startTeachingText)}
-              disabled={resolving || isStreaming}
-              className="px-6 py-3 bg-primary dark:bg-accent hover:bg-primary-hover dark:hover:bg-accent/90 text-white font-bold rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {resolving ? 'Loading…' : 'Start Teaching →'}
-            </button>
-          </div>
-        )}
-
-        <div className={`${messages.length === 0 ? 'hidden' : 'flex-1 overflow-hidden min-h-0 w-full'}`}>
+        {/* TutorChatPanel — always rendered so input box and quick-actions are always visible */}
+        <div className="flex-1 overflow-hidden min-h-0 w-full">
           <TutorChatPanel
             messages={messages}
             isTyping={isStreaming}
@@ -238,6 +235,19 @@ const Tutor = () => {
             materialsCount={attachedMaterials.length}
           />
         </div>
+
+        {/* Start Teaching button — only for topic-mode when chat is empty */}
+        {!isNewSession && messages.length === 0 && !resolving && (
+          <div className="flex justify-center pb-4 flex-shrink-0">
+            <button
+              onClick={() => handleSend(startTeachingText)}
+              disabled={isStreaming}
+              className="px-6 py-3 bg-primary dark:bg-accent hover:bg-primary-hover dark:hover:bg-accent/90 text-white font-bold rounded-xl shadow-lg transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Start Teaching →
+            </button>
+          </div>
+        )}
 
         <MaterialsModal
           isOpen={showMaterialsModal}
