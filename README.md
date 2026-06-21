@@ -15,7 +15,7 @@
 
 ---
 
-> **NeuralNest is not a chatbot with a learning skin.** It is a fully agentic, multi-node LangGraph system that drives the curriculum, detects when a student is confused, re-explains in a smarter way, generates personalized quizzes, tracks mastery at the topic level, and reschedules a student's entire study plan around their exam date — all autonomously.
+> **NeuralNest is a fully agentic LangGraph teaching system that verifies student understanding after every explanation, re-teaches in a smarter mode when confused, and autonomously manages an entire curriculum from syllabus to exam day.**
 
 ---
 
