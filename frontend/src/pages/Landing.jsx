@@ -6,7 +6,7 @@ import ThemeToggle from '../components/layout/ThemeToggle';
 const Landing = () => {
   return (
     <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-slate-800 dark:text-slate-200 transition-colors duration-300 font-sans selection:bg-primary/30">
-      
+
       {/* ─── NAVBAR ─── */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-[#0B0F19]/80 backdrop-blur-md border-b border-slate-200 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
@@ -18,7 +18,7 @@ const Landing = () => {
               NEURALNEST
             </span>
           </div>
-          
+
           <div className="hidden md:flex items-center space-x-8 text-sm font-medium text-slate-600 dark:text-slate-400">
             <a href="#features" className="hover:text-primary dark:hover:text-white transition-colors">Features</a>
             <a href="#how-it-works" className="hover:text-primary dark:hover:text-white transition-colors">How it works</a>
@@ -42,15 +42,14 @@ const Landing = () => {
       <section className="pt-32 pb-20 px-6 relative overflow-hidden flex flex-col items-center text-center">
         {/* Glow Effects */}
         <div className="absolute top-20 left-1/2 -translate-x-1/2 w-3/4 h-64 bg-primary/20 blur-[120px] rounded-full pointer-events-none" />
-        
+
         <div className="inline-flex items-center space-x-2 px-3 py-1.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 mb-8">
           <span className="text-lg leading-none">✨</span>
-          <span>AI Powered Study + Realtime Tutor Support</span>
         </div>
 
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white max-w-4xl mx-auto leading-tight">
-          Study Smarter.<br/>
-          <span className="text-primary">Master Faster.</span><br/>
+          Study Smarter.<br />
+          <span className="text-primary">Master Faster.</span><br />
           Ace Every Exam.
         </h1>
 
@@ -205,9 +204,9 @@ const Landing = () => {
           {/* Background decorations */}
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3" />
           <div className="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/3" />
-          
+
           <div className="relative z-10">
-            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Your exam isn't going to<br/>study for itself.</h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-6">Your exam isn't going to<br />study for itself.</h2>
             <p className="text-primary-100 text-lg mb-10 text-white/80 max-w-xl mx-auto">
               Join 50,000+ students who stopped cramming and started mastering. Free to start. No credit card required.
             </p>
