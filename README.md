@@ -226,17 +226,23 @@ Every topic has an AI-generated quiz powered by `quizGeneratorNode`:
 
 ## 13. Mastery Scoring Engine with Auto-Unlock
 
-Mastery is computed from quiz performance, not self-reporting:
+Mastery is computed from a **weighted formula** in [`masteryCalculator.ts`](backend/src/utils/masteryCalculator.ts) — pure TypeScript, no LLM involved:
 
 ```
-masteryScore = (correctAnswers / totalQuestions) × 100
+masteryScore = round( (quizScore × 0.6) + (selfRating × 0.3) + (engagement × 0.1) ) × 100
 ```
 
-- Written to the `Topic` document in MongoDB on every quiz submission
-- `selfRatingAfter = round((score / totalQs) * 10)` stored separately for cross-session analytics
-- Status transitions: `unstarted → learning → mastered` (mastered at ≥70%)
-- The roadmap graph re-renders automatically after status changes — node color updates live
-- **Overall mastery** (shown on Dashboard) = average of all topic mastery scores
+| Component | Weight | Formula |
+|---|---|---|
+| `quizScore` | **60%** | `correctAnswers / totalQuestions` |
+| `selfRating` | **30%** | `selfRatingAfter / 10` (1–10 scale normalized to 0–1) |
+| `engagement` | **10%** | `min(actualStudyMinutes / estimatedTopicMinutes, 1.0)` — capped at 1 |
+
+- **`passed`** = `quizScore >= 0.7` (quiz score alone determines pass/fail)
+- **`nodeColor`** = `"mastered"` only when `passed && masteryScore >= 70`, else `"learning"`
+- **`xpEarned`** = `correctAnswers × 20`
+- Written to `Topic.masteryScore` in MongoDB on every quiz submission
+- **Overall mastery** on Dashboard = average of all topic mastery scores
 
 ---
 
