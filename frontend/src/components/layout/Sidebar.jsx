@@ -8,6 +8,9 @@ import {
   GraduationCap,
   Clock,
   Plus,
+  BookMarked,
+  Map,
+  Lightbulb,
 } from 'lucide-react';
 import NavItem from '../sidebar/NavItem';
 import CollapsibleSection from '../sidebar/CollapsibleSection';
@@ -53,12 +56,13 @@ const Sidebar = () => {
           <CollapsibleSection title="Chat History" defaultOpen={true}>
             <div className="space-y-3 pt-2">
               {[
-                { key: 'exam', label: '📅 Exam' },
-                { key: 'roadmap', label: '🗺️ Roadmap' },
-                { key: 'other', label: '💡 Other' },
-              ].map(({ key, label }) => (
+                { key: 'exam', label: 'Exam', Icon: BookMarked },
+                { key: 'roadmap', label: 'Roadmap', Icon: Map },
+                { key: 'other', label: 'Other', Icon: Lightbulb },
+              ].map(({ key, label, Icon }) => (
                 <div key={key}>
-                  <span className="text-[9px] font-mono tracking-wider uppercase text-text-muted-light dark:text-text-muted-dark block mb-1">
+                  <span className="text-[9px] font-sans tracking-wider uppercase text-text-muted-light dark:text-text-muted-dark flex items-center gap-1 mb-1">
+                    <Icon className="h-3 w-3" />
                     {label}
                   </span>
                   <ChatHistoryList category={key} />

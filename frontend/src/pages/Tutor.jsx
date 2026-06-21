@@ -234,6 +234,7 @@ const Tutor = () => {
             onAttachClick={() => setShowMaterialsModal(true)}
             materialsCount={attachedMaterials.length}
             topicName={topicName}
+            isNewSession={isNewSession}
           />
         </div>
 

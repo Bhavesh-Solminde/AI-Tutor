@@ -17,7 +17,8 @@ const TutorChatPanel = ({
   explanationLevel,
   onAttachClick,
   materialsCount = 0,
-  topicName
+  topicName,
+  isNewSession = true
 }) => {
   const chatEndRef = useRef(null);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
@@ -33,6 +34,7 @@ const TutorChatPanel = ({
   };
 
   const isChatEmpty = messages.filter(m => m.type !== 'system').length === 0;
+  const hideInputBox = isChatEmpty && !isNewSession;
 
   return (
     <div className="flex flex-col justify-between h-full text-left relative bg-transparent overflow-hidden">
@@ -40,7 +42,8 @@ const TutorChatPanel = ({
       <div className="flex-grow overflow-y-auto p-4 min-h-0 flex flex-col scrollbar-thin">
         <div className="max-w-3xl mx-auto w-full flex-grow flex flex-col justify-center">
           {isChatEmpty ? (
-            <div className="flex-grow flex flex-col items-center justify-center space-y-7 py-8 my-auto">
+            isNewSession ? (
+              <div className="flex-grow flex flex-col items-center justify-center space-y-7 py-8 my-auto">
               {/* Mascot Logo - Solid Blue Squircle with White Brain Icon */}
               <div className="w-16 h-16 bg-[#3B6BFF] rounded-[20px] text-white flex items-center justify-center shadow-lg shadow-blue-500/10 flex-shrink-0">
                 <Brain className="h-8 w-8 text-white" />
@@ -62,7 +65,18 @@ const TutorChatPanel = ({
                 <span>•</span>
                 <button className="hover:text-slate-600 dark:hover:text-slate-300 transition-colors">View Previous Chat Sessions</button>
               </div>
-            </div>
+              </div>
+            ) : (
+              <div className="flex-grow flex flex-col items-center justify-center space-y-4 py-8 my-auto text-center">
+                <div className="w-16 h-16 bg-primary/10 dark:bg-accent/10 rounded-2xl text-primary dark:text-accent flex items-center justify-center mb-2 shadow-sm">
+                  <Brain className="h-8 w-8" />
+                </div>
+                <h3 className="font-extrabold text-2xl text-slate-800 dark:text-white">Ready to master this topic?</h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md">
+                  Click the button below to have your AI tutor start teaching <strong>{topicName}</strong> from the beginning.
+                </p>
+              </div>
+            )
           ) : (
             <div className="space-y-6 pt-4 w-full flex-grow">
               {messages.map((msg, idx) => (
@@ -94,8 +108,9 @@ const TutorChatPanel = ({
       </div>
 
       {/* Floating Pinned Input Card at bottom */}
-      <div className="px-2 pb-2 pt-0 bg-transparent border-none flex-shrink-0">
-        <div className="w-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-[24px] shadow-lg p-3.5 transition-all duration-300">
+      {!hideInputBox && (
+        <div className="px-2 pb-2 pt-0 bg-transparent border-none flex-shrink-0">
+          <div className="w-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-[24px] shadow-lg p-3.5 transition-all duration-300">
           
           {/* Top part: Borderless input/textarea */}
           <input
@@ -152,7 +167,7 @@ const TutorChatPanel = ({
             {/* Right side actions */}
             <div className="flex items-center space-x-3">
               <span className="text-[10px] text-slate-400 font-sans hidden sm:inline">
-                Mode: {explanationLevel}{webSearchEnabled ? ' · 🔍 Web' : ''}
+                Mode: {explanationLevel}{webSearchEnabled ? ' · Web' : ''}
               </span>
 
 
@@ -183,6 +198,7 @@ const TutorChatPanel = ({
           </div>
         )}
       </div>
+      )}
     </div>
   );
 };
