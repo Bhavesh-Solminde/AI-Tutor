@@ -1,261 +1,93 @@
-# 🧠 NeuralNest — AI Tutor
+<div align="center">
+  <img src="frontend/public/dark.png" alt="NeuralNest Dashboard" width="100%" style="border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.5);" />
 
-An intelligent, personalized AI learning platform built for Operating Systems (and beyond). NeuralNest adapts to your pace, generates quizzes, tracks your mastery, and lets you chat with an AI tutor grounded in your own syllabus and notes.
-
----
-
-## ✨ Features
-
-- **AI Tutor Chat** — Conversational tutoring powered by LangGraph + OpenAI, grounded in your uploaded materials via RAG (Pinecone + Cohere)
-- **Roadmap** — Visual topic graph showing your mastery progress node by node
-- **Quizzes** — Auto-generated MCQs per topic, tracked and scored
-- **Exam Mode** — Upload PYQs and syllabus to simulate a real exam environment
-- **Dashboard** — Mastery table, rescue plan timeline, and progress metrics
-- **OAuth Login** — Google & GitHub sign-in via Passport.js + JWT
-- **File Upload** — PDFs, DOCX, and images ingested and embedded into Pinecone
+  <h1>🧠 NeuralNest AI</h1>
+  <p><strong>Your Ultimate AI-Powered Academic Companion</strong></p>
+  
+  [![Live Demo](https://img.shields.io/badge/Live_Demo-Play_Now!-3B6BFF?style=for-the-badge)](https://ai-tutor-ebon-tau.vercel.app/)
+  [![Tech Stack](https://img.shields.io/badge/Stack-React_%7C_Node_%7C_LangGraph-0B0F19?style=for-the-badge)](#)
+</div>
 
 ---
 
-## 🏗️ Tech Stack
+## 🏆 Why NeuralNest? (The Finalist's Edge)
 
-| Layer | Technology |
-|---|---|
-| Frontend | React 18 + React Router v7 + Tailwind CSS |
-| State | Zustand |
-| Backend | Node.js + Express + TypeScript |
-| AI Agent | LangGraph (TypeScript) |
-| LLM | OpenAI (`gpt-4o`) |
-| Embeddings | Cohere (`embed-english-v3.0`) |
-| Vector DB | Pinecone |
-| Database | MongoDB (Mongoose) |
-| Auth | Passport.js (Google, GitHub OAuth) + JWT |
-| File Storage | Cloudinary |
-| Tracing | LangSmith |
-| Web Search | Tavily |
+We didn't just build a wrapper around an LLM. We built a complete, agentic **Learning Operating System** (NeuralNest OS). Designed to end blind cramming, NeuralNest fundamentally transforms how students master complex subjects by combining graph-based progression, gamified active recall, adaptive exam rescue plans, and a highly stateful LangGraph-powered AI tutor. 
+
+Every pixel, from our glassmorphic dark mode to our interactive comprehension chips, has been obsessively crafted for student focus and engagement.
+
+**Experience the future of education here:** 👉 [Live Application (Vercel)](https://ai-tutor-ebon-tau.vercel.app/)
 
 ---
 
-## 📁 Project Structure
+## 🔥 Flagship Features
 
-```
-AI-Tutor/
-├── backend/                  # Express + TypeScript API
-│   ├── src/
-│   │   ├── agents/           # LangGraph state machine (graph, nodes, prompts)
-│   │   ├── config/           # DB, env, logger, passport, pinecone, cloudinary
-│   │   ├── controllers/      # Route handlers
-│   │   ├── middleware/        # Auth, error handler, rate limiter, validator
-│   │   ├── models/           # Mongoose schemas (User, Session, Topic, Quiz…)
-│   │   ├── pipelines/        # RAG pipelines (ingest, retriever, topic extractor, PYQ parser)
-│   │   ├── routes/           # Express routers
-│   │   ├── types/            # Shared TypeScript types
-│   │   └── utils/            # AppError, cloudinary upload, mastery calculator
-│   ├── scripts/              # Admin scripts (deleteUser)
-│   ├── langgraph.json        # LangGraph CLI config
-│   ├── nodemon.json
-│   └── package.json
-│
-└── frontend/                 # React app (Create React App)
-    ├── src/
-    │   ├── components/       # Reusable components (layout, sidebar, quiz, tutor…)
-    │   ├── context/          # AuthContext
-    │   ├── lib/              # Axios client
-    │   ├── pages/            # Route-level pages
-    │   ├── services/         # API call functions
-    │   └── stores/           # Zustand stores
-    └── package.json
-```
+### 1. 🤖 LangGraph-Powered Agentic Tutor
+NeuralNest's AI is backed by an advanced multi-node LangGraph architecture. It doesn't just answer questions; it drives the curriculum.
+- **Context-Aware Memory**: Remembers your mastery level, current topic, and past mistakes across sessions.
+- **Q&A Doubt Mode**: Interrupt the tutor mid-lesson with a burning question. The AI will gracefully pause the curriculum, answer your specific doubt, and then seamlessly resume teaching where it left off.
+- **Interactive Comprehension Chips**: Real-time feedback buttons (👍 Understood, 🤔 Need more help, 🚀 Go deeper) that dynamically alter the AI's next instructional node.
+- **Integrated Web Search**: With a single toggle, the tutor agents can query the web (via Tavily) to pull in the latest documentation or current events.
+- **Dynamic YouTube Injection**: The AI intelligently recommends highly relevant YouTube video tutorials inline within the chat when explaining complex concepts.
 
----
+### 2. 🗺️ Visual Syllabus Roadmap (React Flow)
+Learning isn't linear, it's a web. We visualize the entire syllabus using a stunning, interactive graph built on React Flow.
+- **Node-Based Progression**: Topics are locked until prerequisites are mastered.
+- **Real-Time Mastery Tracking**: Each node displays estimated completion time, difficulty level, and your current mastery percentage.
+- **Animated Edge Gradients**: Beautiful UI that visually guides the student from fundamental topics to advanced concepts.
 
-## 🚀 Getting Started (Development Setup)
+### 3. 🚨 Exam Rescue Plan & PYQ Intelligence
+Your exam isn't going to study for itself. NeuralNest generates a day-by-day rescue timeline up to your exact exam date.
+- **Adaptive Scheduling**: Dynamically shifts topics based on the days remaining and your current mastery speed.
+- **PYQ (Past Year Question) Calibration**: Upload past exam papers. Our RAG pipeline ingests them, analyzes testing patterns, and forces the tutor to prioritize highly-tested topics.
+- **Mock Exam Integration**: Automatically schedules full mock exams in the timeline just before test day.
 
-### Prerequisites
+### 4. 🎮 Gamified Active Recall Quizzes
+Reading isn't learning. We built an entire active recall engine to test knowledge dynamically.
+- **AI-Generated MCQs**: Quizzes are generated on the fly based on the specific syllabus constraints of the current topic.
+- **Hearts & Timers**: A high-stakes, gamified environment with countdown timers and a lives (hearts) system.
+- **XP & Leveling**: Earn XP for correct answers, trigger floating UI animations, and climb the ranks from "Beginner" to "Master".
+- **Intelligent Score Summary**: Immediate post-quiz feedback that mathematically updates your global Mastery Score and highlights specific weaknesses.
 
-Make sure you have the following installed:
+### 5. 📚 Multi-Modal RAG Document Intelligence
+We allow students to bring their own context.
+- **Upload Anything**: Supports PDFs, DOCX, and images.
+- **Advanced Vector Search**: Documents are chunked and embedded via Cohere (`embed-english-v3.0`), stored in Pinecone, and seamlessly injected into the tutor's reasoning context.
+- **Syllabus Grounding**: Prevents AI hallucinations by strictly anchoring the tutor's knowledge to the student's actual university syllabus.
 
-| Tool | Version | Install |
-|---|---|---|
-| Node.js | `>= 20.x` | [nodejs.org](https://nodejs.org) |
-| npm | `>= 10.x` | Comes with Node.js |
-| Git | Latest | [git-scm.com](https://git-scm.com) |
-
-You'll also need accounts / API keys for:
-
-- **MongoDB Atlas** — [mongodb.com/atlas](https://www.mongodb.com/atlas) (free tier works fine)
-- **OpenAI** — [platform.openai.com](https://platform.openai.com)
-- **Cohere** — [cohere.com](https://cohere.com)
-- **Pinecone** — [pinecone.io](https://pinecone.io)
-- **Cloudinary** — [cloudinary.com](https://cloudinary.com)
-- **Google OAuth** — [console.cloud.google.com](https://console.cloud.google.com)
-- **GitHub OAuth** — [github.com/settings/developers](https://github.com/settings/developers)
-- **LangSmith** *(optional, for tracing)* — [smith.langchain.com](https://smith.langchain.com)
-- **Tavily** — [tavily.com](https://tavily.com)
+### 6. ✨ World-Class UI/UX Design
+We believe educational tools shouldn't look like legacy software from 2005.
+- **Glassmorphic Aesthetics**: Beautiful background blurs, gradients, and soft shadows.
+- **Meticulous Typography & Iconography**: Set in the clean `Inter` sans-serif font, heavily utilizing Lucide icons for a premium, native-app feel.
+- **Micro-Interactions**: From pulsing notification dots to bouncing "Tutor is teaching..." typing indicators.
 
 ---
 
-### 1. Clone the repository
+## 🏗️ The Engineering Under the Hood
 
-```bash
-git clone https://github.com/Bhavesh-Solminde/AI-Tutor.git
-cd AI-Tutor
-```
+To deliver this experience, we engineered a highly scalable, robust architecture:
 
----
-
-### 2. Backend Setup
-
-#### 2a. Install dependencies
-
-```bash
-cd backend
-npm install
-```
-
-#### 2b. Create the `.env` file
-
-A `.env.example` file is included with all required variables and descriptions. Copy it and fill in your values:
-
-```bash
-cp .env.example .env
-```
-
-Then open `backend/.env` and fill in each value. See the comments inside `.env.example` for where to get each key.
-
-> **Tip:** Generate a strong JWT secret with:
-> ```bash
-> node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
-> ```
-
-#### 2c. Set up Pinecone Index
-
-1. Go to [pinecone.io](https://app.pinecone.io) → Create Index
-2. Name: `neuralnest-os`
-3. Dimensions: `1024` (Cohere `embed-english-v3.0` output size)
-4. Metric: `cosine`
-
-#### 2d. Set up OAuth Credentials
-
-**Google OAuth:**
-1. Go to [Google Cloud Console](https://console.cloud.google.com) → APIs & Services → Credentials
-2. Create OAuth 2.0 Client ID (Web Application)
-3. Add Authorized redirect URI: `http://localhost:5000/api/auth/google/callback`
-4. Copy Client ID and Secret into `.env`
-
-**GitHub OAuth:**
-1. Go to GitHub → Settings → Developer Settings → OAuth Apps → New OAuth App
-2. Homepage URL: `http://localhost:3000`
-3. Authorization callback URL: `http://localhost:5000/api/auth/github/callback`
-4. Copy Client ID and Secret into `.env`
-
-#### 2e. Start the backend dev server
-
-```bash
-npm run dev
-```
-
-The Express API will start on **http://localhost:5000**.
-
-> Optionally, run the LangGraph dev server for local agent inspection:
-> ```bash
-> npx @langchain/langgraph-cli dev
-> ```
-> This opens the LangGraph Studio UI to visualise your agent graph.
+- **Frontend**: React 18, React Router v7, Zustand (State Management), Tailwind CSS, React Flow, React Markdown.
+- **Backend**: Node.js, Express, TypeScript, Mongoose (MongoDB).
+- **AI & Graph Logic**: LangGraph, LangChain, OpenAI (`gpt-4o`).
+- **Embeddings & Vector DB**: Cohere, Pinecone.
+- **Authentication & Storage**: Passport.js (Google/GitHub OAuth), Cloudinary.
+- **Observability**: LangSmith integrated for full trace debugging of our agentic workflows.
 
 ---
 
-### 3. Frontend Setup
+## 📸 See It In Action
 
-Open a **new terminal tab**.
+*(Judges: Please visit the live link to experience the app, or view the screenshots below)*
 
-#### 3a. Install dependencies
+> **Live Demo:** [ai-tutor-ebon-tau.vercel.app](https://ai-tutor-ebon-tau.vercel.app/)
 
-```bash
-cd frontend
-npm install
-```
-
-#### 3b. Create the `.env` file
-
-A `.env.example` file is included. Copy it and you're ready to go:
-
-```bash
-cp .env.example .env
-```
-
-The only variable is `REACT_APP_API_URL` — it should point to your running backend (default: `http://localhost:5000`).
-
-#### 3c. Start the frontend dev server
-
-```bash
-npm run dev
-# or
-npm start
-```
-
-The React app will open on **http://localhost:3000**.
+<p align="center">
+  <img src="frontend/public/light.png" alt="Landing Page Preview" width="48%" />
+  <img src="frontend/public/dark.png" alt="Dark Mode Dashboard Preview" width="48%" />
+</p>
 
 ---
-
-### 4. Verify Everything Is Running
-
-| Service | URL | Expected |
-|---|---|---|
-| Frontend | http://localhost:3000 | NeuralNest landing page |
-| Backend API | http://localhost:5000/api/health | `{ "status": "ok" }` |
-| LangGraph Studio | http://localhost:2024 | Agent graph visualiser *(optional)* |
-
----
-
-## 🔧 Available Scripts
-
-### Backend (`/backend`)
-
-| Command | Description |
-|---|---|
-| `npm run dev` | Start backend with hot-reload (`tsx watch`) |
-| `npm run build` | Compile TypeScript to `dist/` |
-| `npm start` | Run compiled production server |
-| `npm run lint` | Type-check with `tsc --noEmit` |
-| `npm run delete:user` | Run the `deleteUser` admin script |
-
-### Frontend (`/frontend`)
-
-| Command | Description |
-|---|---|
-| `npm start` / `npm run dev` | Start React dev server on port 3000 |
-| `npm run build` | Build for production |
-| `npm test` | Run tests |
-
----
-
-## 🛠️ Troubleshooting
-
-**`❌ Invalid environment variables` on backend start**
-→ One or more required env vars are missing. Check your `backend/.env` against the list above.
-
-**MongoDB connection error**
-→ Whitelist your IP in MongoDB Atlas → Network Access → Add IP Address (or use `0.0.0.0/0` for dev).
-
-**OAuth redirect mismatch error**
-→ The redirect URIs in Google/GitHub console must exactly match what's in your `.env` (`BACKEND_URL`).
-
-**Pinecone 404 or dimension mismatch**
-→ Ensure the index name matches `PINECONE_INDEX` and was created with dimension `1024`.
-
-**CORS errors on frontend**
-→ Make sure `FRONTEND_URL` in `backend/.env` is set to `http://localhost:3000`.
-
----
-
-## 🤝 Contributing
-
-1. Fork the repo and create a feature branch: `git checkout -b feat/your-feature`
-2. Commit using conventional commits: `feat:`, `fix:`, `refactor:`, `chore:`
-3. Push and open a Pull Request against `main`
-
----
-
-## 📄 License
-
-MIT © [Bhavesh Solminde](https://github.com/Bhavesh-Solminde)
+<div align="center">
+  Built with ❤️ for the future of education.
+</div>
