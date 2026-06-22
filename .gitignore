@@ -4,3 +4,10 @@ node_modules
 # LangGraph API
 .langgraph_api
 .DS_Store
+
+# Agent folders
+.agents/
+.gemini/
+.claude/
+.codex/
+.impeccable/
