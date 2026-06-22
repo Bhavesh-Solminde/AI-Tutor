@@ -42,9 +42,9 @@ const MessageBubble = ({ msg, children }) => {
     p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
     strong: ({ children }) => <strong className="font-semibold text-slate-900 dark:text-white">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
-    ul: ({ children }) => <ul className="list-disc list-inside space-y-1 my-2 pl-1">{children}</ul>,
-    ol: ({ children }) => <ol className="list-decimal list-inside space-y-1 my-2 pl-1">{children}</ol>,
-    li: ({ children }) => <li className="text-sm leading-relaxed">{children}</li>,
+    ul: ({ children }) => <ul className="list-disc list-outside space-y-2 my-3 ml-5">{children}</ul>,
+    ol: ({ children }) => <ol className="list-decimal list-outside space-y-2 my-3 ml-5">{children}</ol>,
+    li: ({ children }) => <li className="text-sm leading-relaxed pl-1 [&>p]:inline">{children}</li>,
     h2: ({ children }) => <h2 className="text-base font-bold text-slate-900 dark:text-white mt-3 mb-1">{children}</h2>,
     h3: ({ children }) => <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 mt-2 mb-1">{children}</h3>,
     blockquote: ({ children }) => (
