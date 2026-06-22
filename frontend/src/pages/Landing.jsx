@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Brain, ArrowRight, Play, UploadCloud, MessageSquareText, ShieldCheck, CheckCircle2, Zap, Lock, Sparkles, Clock, FileText } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Brain, ArrowRight, Play, UploadCloud, MessageSquareText, ShieldCheck, CheckCircle2, Zap, Lock, Sparkles, Clock, FileText, Target, BookOpen } from 'lucide-react';
 import ThemeToggle from '../components/layout/ThemeToggle'; // Re-added theme toggle
 
 // ─── Interactive Neural Canvas ───
@@ -206,6 +207,162 @@ const MagneticNode = ({ children, className }) => {
   );
 };
 
+
+const LiveTerminalPreview = () => {
+  const [topic, setTopic] = useState("");
+  const [stage, setStage] = useState("input"); // input -> generating -> result
+
+  const handleSimulate = (e) => {
+    e.preventDefault();
+    if (!topic.trim()) return;
+    setStage("generating");
+    
+    // Fake generation delay
+    setTimeout(() => {
+      setStage("result");
+    }, 2000);
+  };
+
+  const handleReset = () => {
+    setStage("input");
+    setTopic("");
+  };
+
+  return (
+    <section className="py-24 px-6 relative z-10 border-y border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-[#0F1322]/50">
+      <div className="max-w-7xl mx-auto">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">Intelligence that adapts.</h2>
+          <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Watch your knowledge physically transform as you interact with the platform.</p>
+        </div>
+
+        <motion.div 
+          layout
+          transition={{ type: "spring", bounce: 0.2, duration: 0.8 }}
+          className="relative z-10 w-full max-w-4xl mx-auto backdrop-blur-2xl bg-white dark:bg-[#0B0F19]/60 border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-xl dark:shadow-[0_0_80px_rgba(59,107,255,0.15)]"
+        >
+          {/* Fake Window Header */}
+          <div className="flex items-center space-x-2 px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-slate-100/50 dark:bg-black/20">
+            <div className="w-3 h-3 rounded-full bg-red-500/80" />
+            <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
+            <div className="w-3 h-3 rounded-full bg-green-500/80" />
+            <div className="flex-1 text-center font-mono text-xs text-slate-500 dark:text-slate-400 opacity-70">
+              neuralnest/core-engine
+            </div>
+          </div>
+
+          <div className="p-8 md:p-12 min-h-[300px] flex flex-col justify-center relative">
+            <AnimatePresence mode="wait">
+              {stage === "input" && (
+                <motion.form 
+                  key="input"
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.05, filter: "blur(10px)" }}
+                  transition={{ duration: 0.4 }}
+                  onSubmit={handleSimulate}
+                  className="w-full relative"
+                >
+                  <div className="flex items-center bg-slate-50 dark:bg-black/40 border border-slate-200 dark:border-white/20 rounded-2xl p-2 focus-within:border-primary focus-within:ring-2 ring-primary/20 transition-all shadow-sm dark:shadow-none">
+                    <div className="pl-6 pr-4 text-primary">
+                      <Sparkles className="w-6 h-6" />
+                    </div>
+                    <input
+                      type="text"
+                      value={topic}
+                      onChange={(e) => setTopic(e.target.value)}
+                      placeholder="e.g. Advanced Thermodynamics, React Hooks..."
+                      className="flex-1 w-full bg-transparent border-none text-xl md:text-2xl text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-0 py-4 font-light"
+                    />
+                    <button 
+                      type="submit"
+                      disabled={!topic.trim()}
+                      className="bg-primary hover:bg-primary-hover disabled:opacity-50 disabled:hover:bg-primary text-white p-4 rounded-xl transition-colors ml-2"
+                    >
+                      <ArrowRight className="w-6 h-6" />
+                    </button>
+                  </div>
+                </motion.form>
+              )}
+
+              {stage === "generating" && (
+                <motion.div 
+                  key="generating"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="flex flex-col items-center justify-center space-y-6 text-center"
+                >
+                  <motion.div 
+                    animate={{ rotate: 360 }}
+                    transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
+                    className="w-16 h-16 border-4 border-slate-200 dark:border-white/10 border-t-primary dark:border-t-primary rounded-full"
+                  />
+                  <div className="font-mono text-primary text-lg animate-pulse">
+                    Synthesizing cognitive map for "{topic}"...
+                  </div>
+                </motion.div>
+              )}
+
+              {stage === "result" && (
+                <motion.div 
+                  key="result"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}
+                  className="w-full flex flex-col space-y-8"
+                >
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="text-3xl font-bold text-slate-900 dark:text-white mb-2">{topic}</h3>
+                      <p className="text-slate-600 dark:text-slate-400">Custom Syllabus Generated.</p>
+                    </div>
+                    <button onClick={handleReset} className="text-sm font-medium text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white flex items-center transition-colors">
+                      Reset Demo
+                    </button>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[
+                      { icon: BookOpen, title: "7 Core Modules", desc: "Foundational theory mapped." },
+                      { icon: Target, title: "3 Mastery Exams", desc: "Adaptive testing checkpoints." },
+                      { icon: Zap, title: "12 Interactive Quizzes", desc: "Real-time concept validation." }
+                    ].map((item, i) => (
+                      <motion.div 
+                        key={i}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.15 + 0.3 }}
+                        className="bg-slate-50 dark:bg-black/30 border border-slate-200 dark:border-white/5 rounded-2xl p-6"
+                      >
+                        <item.icon className="w-8 h-8 text-primary mb-4" />
+                        <h4 className="text-slate-900 dark:text-white font-semibold mb-1">{item.title}</h4>
+                        <p className="text-slate-600 dark:text-slate-400 text-sm">{item.desc}</p>
+                      </motion.div>
+                    ))}
+                  </div>
+
+                  <motion.div 
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ delay: 1 }}
+                    className="pt-4 flex justify-end"
+                  >
+                    <Link to="/register" className="flex items-center space-x-2 bg-slate-900 dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl font-bold hover:bg-slate-800 dark:hover:bg-slate-200 transition-colors shadow-md">
+                      <span>Start Learning This</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Link>
+                  </motion.div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </motion.div>
+      </div>
+    </section>
+  );
+};
+
 const Landing = () => {
   return (
     // Removed Forced Dark Wrapper so ThemeToggle can work globally
@@ -273,7 +430,7 @@ const Landing = () => {
 
           <div className="mt-10 flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4 animate-fade-in-up" style={{ animationDelay: '200ms' }}>
             <MagneticNode>
-              <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-colors shadow-[0_0_40px_-10px_rgba(59,107,255,0.6)] flex items-center justify-center space-x-2 cursor-pointer">
+              <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all shadow-[0_0_30px_-5px_rgba(59,107,255,0.4)] hover:shadow-[0_0_40px_-5px_rgba(59,107,255,0.6)] flex items-center justify-center space-x-2 cursor-pointer">
                 <span>Start Learning Free</span>
                 <ArrowRight className="h-4 w-4" />
               </Link>
@@ -355,7 +512,7 @@ const Landing = () => {
       <section id="features" className="py-24 px-6 relative z-10 bg-slate-50 dark:bg-transparent">
         <div className="max-w-7xl mx-auto">
           <div className="mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">The ecosystem for mastery.</h2>
+            <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">The ecosystem for mastery.</h2>
             <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl">Stop jumping between PDFs, generic ChatGPT tabs, and flashcard apps. NeuralNest natively integrates every tool you need.</p>
           </div>
 
@@ -449,7 +606,7 @@ const Landing = () => {
                 <div className="w-48 h-48 rounded-full flex items-center justify-center relative shadow-[0_0_50px_-10px_rgba(168,85,247,0.15)] dark:shadow-[0_0_50px_-10px_rgba(168,85,247,0.3)]">
                   <svg className="absolute inset-0 w-full h-full -rotate-90 overflow-visible" viewBox="0 0 192 192">
                     <circle cx="96" cy="96" r="100" fill="none" className="stroke-slate-100 dark:stroke-slate-800" strokeWidth="8" />
-                    <circle cx="96" cy="96" r="100" fill="none" stroke="#A855F7" strokeWidth="16" strokeDasharray="552.9" strokeDashoffset="110.5" strokeLinecap="round" className="transition-all duration-1000" />
+                    <circle cx="96" cy="96" r="100" fill="none" stroke="#A855F7" strokeWidth="16" strokeDasharray="628.3" strokeDashoffset="125.6" strokeLinecap="round" className="transition-all duration-1000" />
                   </svg>
                   <div className="text-center">
                     <span className="text-3xl font-extrabold text-slate-900 dark:text-white">80%</span>
@@ -463,76 +620,13 @@ const Landing = () => {
         </div>
       </section>
 
-      {/* ─── OVERDRIVE: Stepped Progression Timeline ─── */}
-      <section id="how-it-works" className="py-24 px-6 relative z-10 border-y border-slate-200 dark:border-white/5 bg-slate-50/50 dark:bg-[#0F1322]/50">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-20">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white">The anatomy of mastery.</h2>
-            <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">Watch your knowledge physically transform as you interact with the platform.</p>
-          </div>
-
-          <div className="flex flex-col md:flex-row items-center justify-center gap-12 md:gap-8 relative">
-
-            {/* Connector */}
-            <div className="hidden md:block absolute top-1/2 left-[20%] right-[20%] h-px bg-gradient-to-r from-slate-200 dark:from-slate-800 via-amber-500/50 to-emerald-500/50 -translate-y-1/2 z-0" />
-            <div className="md:hidden absolute left-1/2 top-[10%] bottom-[10%] w-px bg-gradient-to-b from-slate-200 dark:from-slate-800 via-amber-500/50 to-emerald-500/50 -translate-x-1/2 z-0" />
-
-            {/* Step 1: Locked */}
-            <div className="relative z-10 flex flex-col items-center group">
-              <div className="w-40 p-4 rounded-2xl bg-white dark:bg-[#121212] border border-slate-200 dark:border-slate-800 shadow-lg text-center mb-6 transition-transform group-hover:-translate-y-2">
-                <div className="w-10 h-10 mx-auto rounded-xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 dark:text-slate-500 mb-3">
-                  <Lock className="h-5 w-5" />
-                </div>
-                <h4 className="text-sm font-bold text-slate-600 dark:text-slate-400">Locked Concept</h4>
-                <div className="mt-3 h-1 w-full bg-slate-100 dark:bg-slate-800 rounded-full" />
-              </div>
-              <div className="text-center max-w-[200px]">
-                <span className="text-xs font-mono text-slate-400 dark:text-slate-500 font-bold mb-1 block">STAGE 01</span>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Concepts wait until prerequisite knowledge is proven.</p>
-              </div>
-            </div>
-
-            {/* Step 2: Learning */}
-            <div className="relative z-10 flex flex-col items-center group">
-              <div className="w-48 p-5 rounded-3xl bg-white dark:bg-[#1E1E1E] border border-amber-500/50 shadow-md dark:shadow-[0_4px_10px_-2px_rgba(245,158,11,0.1)] text-center mb-6 transition-transform group-hover:-translate-y-2 relative">
-                <div className="w-12 h-12 mx-auto rounded-xl bg-amber-500 flex items-center justify-center text-white mb-3 shadow-md shadow-amber-500/20">
-                  <Sparkles className="h-5 w-5 animate-pulse" />
-                </div>
-                <h4 className="text-base font-bold text-slate-900 dark:text-white">Active Learning</h4>
-                <div className="mt-4 flex items-center justify-center space-x-1.5 text-[10px] font-bold text-amber-500 uppercase tracking-wider">
-                  <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                  <span>In Progress</span>
-                </div>
-              </div>
-              <div className="text-center max-w-[200px]">
-                <span className="text-xs font-mono text-amber-500 font-bold mb-1 block">STAGE 02</span>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Engage with the AI tutor and take adaptive quizzes.</p>
-              </div>
-            </div>
-
-            {/* Step 3: Mastered */}
-            <div className="relative z-10 flex flex-col items-center group">
-              <div className="w-40 p-4 rounded-2xl bg-white/90 dark:bg-[#121212]/90 border border-emerald-500/30 shadow-lg text-center mb-6 transition-transform group-hover:-translate-y-2">
-                <div className="w-10 h-10 mx-auto rounded-xl bg-emerald-500/10 flex items-center justify-center text-emerald-500 mb-3">
-                  <CheckCircle2 className="h-5 w-5" />
-                </div>
-                <h4 className="text-sm font-bold text-slate-900 dark:text-white">Mastered</h4>
-                <div className="mt-3 h-1 w-full bg-emerald-500 rounded-full shadow-[0_0_10px_rgba(16,185,129,0.3)] dark:shadow-[0_0_10px_rgba(16,185,129,0.5)]" />
-              </div>
-              <div className="text-center max-w-[200px]">
-                <span className="text-xs font-mono text-emerald-500 font-bold mb-1 block">STAGE 03</span>
-                <p className="text-sm text-slate-600 dark:text-slate-400">Knowledge is validated. Next nodes are unlocked.</p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </section>
+      {/* ─── LIVE AI TERMINAL PREVIEW ─── */}
+      <LiveTerminalPreview />
 
       {/* ─── Refined Editorial Testimonials ─── */}
       <section id="testimonials" className="py-24 px-6 relative z-10 bg-white dark:bg-transparent">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-4xl font-bold text-slate-900 dark:text-white mb-16 md:w-1/2">Real learners. Real mastery.</h2>
+          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-16 md:w-1/2">Real learners. Real mastery.</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
             {[
@@ -564,10 +658,13 @@ const Landing = () => {
               Stop cramming and start mastering. Free to start. No credit card required.
             </p>
             <div className="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4">
-              <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 bg-primary text-white hover:bg-primary-hover font-bold rounded-xl transition-colors shadow-lg dark:shadow-[0_0_30px_-5px_rgba(59,107,255,0.4)]">
+              <Link to="/register" className="w-full sm:w-auto px-8 py-3.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all shadow-[0_0_30px_-5px_rgba(59,107,255,0.4)] hover:shadow-[0_0_40px_-5px_rgba(59,107,255,0.6)] hover:-translate-y-0.5 flex items-center justify-center text-center">
                 Start Learning Free
               </Link>
-              <button className="w-full sm:w-auto px-8 py-3.5 border border-slate-300 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-white font-semibold rounded-xl transition-colors">
+              <button 
+                onClick={() => document.getElementById('features')?.scrollIntoView({ behavior: 'smooth' })}
+                className="w-full sm:w-auto px-8 py-3.5 border border-slate-300 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-white font-semibold rounded-xl transition-colors"
+              >
                 View Live Demo
               </button>
             </div>
