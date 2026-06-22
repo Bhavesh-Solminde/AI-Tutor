@@ -1,6 +1,10 @@
 <div align="center">
 
-<img src="frontend/public/dark.png" alt="NeuralNest" style="border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.5);max-width:100%;" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="frontend/public/dark.png">
+  <source media="(prefers-color-scheme: light)" srcset="frontend/public/light.png">
+  <img alt="NeuralNest Dashboard" src="frontend/public/light.png" style="border-radius:16px;box-shadow:0 8px 40px rgba(0,0,0,0.15);max-width:100%;">
+</picture>
 
 <br/><br/>
 
