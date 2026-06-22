@@ -21,6 +21,7 @@ const TutorChatPanel = ({
   isNewSession = true
 }) => {
   const chatEndRef = useRef(null);
+  const textareaRef = useRef(null);
   const [webSearchEnabled, setWebSearchEnabled] = useState(false);
 
   useEffect(() => {
@@ -28,8 +29,12 @@ const TutorChatPanel = ({
   }, [messages, isTyping]);
 
   const handleKeyDown = (e) => {
-    if (e.key === 'Enter') {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       onSend();
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
     }
   };
 
@@ -45,7 +50,7 @@ const TutorChatPanel = ({
             isNewSession ? (
               <div className="flex-grow flex flex-col items-center justify-center space-y-7 py-8 my-auto">
               {/* Mascot Logo - Solid Blue Squircle with White Brain Icon */}
-              <div className="w-16 h-16 bg-[#3B6BFF] rounded-[20px] text-white flex items-center justify-center shadow-lg shadow-blue-500/10 flex-shrink-0">
+              <div className="w-16 h-16 bg-primary dark:bg-accent rounded-[20px] text-white flex items-center justify-center shadow-lg shadow-primary/20 dark:shadow-accent/20 flex-shrink-0">
                 <Brain className="h-8 w-8 text-white" />
               </div>
               
@@ -97,9 +102,9 @@ const TutorChatPanel = ({
 
           {isTyping && (
             <div className="flex items-center space-x-2 text-slate-400 mt-4 px-1 flex-shrink-0">
-              <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-              <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-              <div className="h-2 w-2 bg-slate-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              <div className="h-2 w-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
+              <div className="h-2 w-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
+              <div className="h-2 w-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />
               <span className="text-xs font-sans">Tutor is teaching...</span>
             </div>
           )}
@@ -113,13 +118,19 @@ const TutorChatPanel = ({
           <div className="w-full bg-white dark:bg-surface-dark border border-slate-200 dark:border-border-dark rounded-[24px] shadow-lg p-3.5 transition-all duration-300">
           
           {/* Top part: Borderless input/textarea */}
-          <input
-            type="text"
+          <textarea
+            ref={textareaRef}
+            rows={1}
             placeholder="Ask your AI tutor anything..."
             value={inputVal}
-            onChange={(e) => setInputVal(e.target.value)}
+            onChange={(e) => {
+              setInputVal(e.target.value);
+              e.target.style.height = 'auto';
+              e.target.style.height = `${Math.min(e.target.scrollHeight, 150)}px`;
+            }}
             onKeyDown={handleKeyDown}
-            className="w-full px-3 py-1 bg-transparent text-slate-900 dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none text-sm border-none"
+            className="w-full px-3 py-1 bg-transparent text-slate-900 dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none text-sm border-none resize-none overflow-y-auto"
+            style={{ minHeight: '28px', maxHeight: '150px' }}
           />
 
           {/* Bottom part: Tools Row */}
@@ -173,8 +184,11 @@ const TutorChatPanel = ({
 
 
               <button
-                onClick={() => onSend()}
-                className="h-9 w-9 bg-[#3B6BFF] hover:bg-blue-600 text-white rounded-full flex items-center justify-center transition-all duration-300 shadow-md shadow-blue-500/10"
+                onClick={() => {
+                  onSend();
+                  if (textareaRef.current) textareaRef.current.style.height = 'auto';
+                }}
+                className="h-9 w-9 bg-primary hover:bg-primary-hover dark:bg-accent dark:hover:bg-accent/90 text-white rounded-full flex items-center justify-center transition-all duration-300 shadow-md shadow-primary/20 dark:shadow-accent/20 flex-shrink-0"
                 title="Send message"
               >
                 <ArrowUp className="h-4.5 w-4.5 stroke-[2.5]" />

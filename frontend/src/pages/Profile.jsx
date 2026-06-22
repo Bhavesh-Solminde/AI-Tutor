@@ -113,7 +113,7 @@ const Profile = () => {
             <button
               onClick={handleLevelChange}
               disabled={savingLevel}
-              className="text-sm font-semibold text-[#3B6BFF] dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors disabled:opacity-50"
+              className="text-sm font-semibold text-primary dark:text-accent hover:text-primary-hover dark:hover:text-accent/90 transition-colors disabled:opacity-50"
             >
               {savingLevel ? 'Saving...' : 'Change'}
             </button>
@@ -129,12 +129,12 @@ const Profile = () => {
                     type="date"
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
-                    className="px-2 py-1 text-xs font-mono rounded-lg border border-border-light dark:border-border-dark bg-transparent text-slate-800 dark:text-white focus:outline-none focus:border-[#3B6BFF]"
+                    className="px-2 py-1 text-xs font-mono rounded-lg border border-border-light dark:border-border-dark bg-transparent text-slate-800 dark:text-white focus:outline-none focus:border-primary dark:focus:border-accent"
                   />
                   <button
                     onClick={handleSaveDate}
                     disabled={savingDate}
-                    className="px-2.5 py-1 bg-[#3B6BFF] text-white text-[10px] font-bold rounded-lg shadow disabled:opacity-50"
+                    className="px-2.5 py-1 bg-primary dark:bg-accent text-white text-[10px] font-bold rounded-lg shadow disabled:opacity-50 hover:bg-primary-hover dark:hover:bg-accent/90 transition"
                   >
                     {savingDate ? '...' : 'Save'}
                   </button>
@@ -147,7 +147,7 @@ const Profile = () => {
             {!isEditingDate && (
               <button
                 onClick={() => setIsEditingDate(true)}
-                className="text-sm font-semibold text-[#3B6BFF] dark:text-blue-400 hover:text-blue-600 dark:hover:text-blue-300 transition-colors flex-shrink-0"
+                className="text-sm font-semibold text-primary dark:text-accent hover:text-primary-hover dark:hover:text-accent/90 transition-colors flex-shrink-0"
               >
                 Change
               </button>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { CheckCircle, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { CheckCircle, ArrowUpRight, ArrowDownRight, AlertTriangle } from 'lucide-react';
 
 const ScoreSummary = ({ score, total, xp, passed, masteryDelta, onRetry, onBack }) => {
   const renderMasteryDelta = () => {
@@ -61,14 +61,20 @@ const ScoreSummary = ({ score, total, xp, passed, masteryDelta, onRetry, onBack 
     );
   };
 
+  const headerText = passed ? "Quiz Passed!" : "Needs Review";
+  const HeaderIcon = passed ? CheckCircle : AlertTriangle;
+  const headerColors = passed 
+    ? "bg-emerald-500/10 text-emerald-500" 
+    : "bg-rose-500/10 text-rose-500";
+
   return (
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-8 shadow-sm text-center max-w-lg mx-auto space-y-6">
-      <div className="h-16 w-16 mx-auto rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold">
-        <CheckCircle className="h-10 w-10" />
+      <div className={`h-16 w-16 mx-auto rounded-full ${headerColors} flex items-center justify-center font-bold`}>
+        <HeaderIcon className="h-10 w-10" />
       </div>
 
       <div className="space-y-2">
-        <h3 className="text-2xl font-extrabold text-slate-950 dark:text-white">Quiz Completed!</h3>
+        <h3 className="text-2xl font-extrabold text-slate-950 dark:text-white">{headerText}</h3>
       </div>
 
       <div className="grid grid-cols-2 gap-4 py-4 border-y border-border-light/40 dark:border-border-dark/40 font-mono">
@@ -78,7 +84,7 @@ const ScoreSummary = ({ score, total, xp, passed, masteryDelta, onRetry, onBack 
         </div>
         <div className="flex flex-col items-center">
           <span className="text-xs text-slate-400">XP Earned</span>
-          <span className="text-xl font-bold text-amber-500">+{xp} XP</span>
+          <span className="text-xl font-bold text-primary dark:text-accent">+{xp} XP</span>
         </div>
       </div>
 

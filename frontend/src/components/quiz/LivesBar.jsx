@@ -16,8 +16,8 @@ const LivesBar = ({ lives, maxLives = 5, xp }) => {
           />
         ))}
       </div>
-      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-amber-500/10 text-amber-600 dark:text-amber-400 font-mono text-xs font-bold border border-amber-500/20">
-        <Flame className="h-4 w-4" />
+      <div className="flex items-center space-x-1.5 px-3 py-1 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-mono text-xs font-bold border border-border-light dark:border-border-dark shadow-sm">
+        <Flame className="h-4 w-4 text-primary" />
         <span>{xp} XP</span>
       </div>
     </div>

@@ -62,6 +62,13 @@ const ExamMode = () => {
   const mastered = normalizedTopics.filter((t) => t.status === 'mastered').length;
   const active   = normalizedTopics.filter((t) => t.status === 'learning').length;
 
+  const getDaysLeftStyles = (days) => {
+    if (days === null) return '';
+    if (days < 7) return 'bg-red-500/10 text-red-500 border-red-500/20';
+    if (days <= 14) return 'bg-amber-500/10 text-amber-500 border-amber-500/20';
+    return 'bg-primary/10 text-primary border-primary/20 dark:bg-accent/10 dark:text-accent dark:border-accent/20';
+  };
+
   return (
     <MainLayout>
       <div className="h-full flex flex-col justify-between text-left">
@@ -91,7 +98,7 @@ const ExamMode = () => {
               </div>
               <div className="flex flex-wrap items-center gap-3">
                 {daysLeft !== null && (
-                  <div className="flex items-center space-x-1.5 px-3 py-1.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-xl font-semibold text-xs">
+                  <div className={`flex items-center space-x-1.5 px-3 py-1.5 border rounded-xl font-semibold text-xs ${getDaysLeftStyles(daysLeft)}`}>
                     <Calendar className="h-4 w-4" />
                     <span>{daysLeft} Days Left</span>
                   </div>
@@ -172,7 +179,7 @@ const ExamMode = () => {
                   ) : rescuePlan?.days?.length > 0 ? (
                     rescuePlan.days.map((block) => {
                       const isExpanded = expandedDay === (block._id || block.dayNumber);
-                      const dotColor = block.completed ? 'bg-emerald-500' : block.isMockExam ? 'bg-purple-500' : 'bg-amber-500';
+                      const dotColor = block.completed ? 'bg-emerald-500' : block.isMockExam ? 'bg-primary dark:bg-accent' : 'bg-amber-500';
                       return (
                         <div
                           key={block._id || block.dayNumber}
@@ -180,7 +187,7 @@ const ExamMode = () => {
                             block.completed
                               ? 'bg-emerald-500/5 border-emerald-500/25'
                               : block.isMockExam
-                              ? 'bg-purple-500/5 border-purple-500/25'
+                              ? 'bg-primary/5 border-primary/25 dark:bg-accent/5 dark:border-accent/25'
                               : 'bg-slate-50 dark:bg-elevated-dark border-border-light dark:border-border-dark'
                           } ${isExpanded ? 'shadow-sm' : 'hover:border-slate-300 dark:hover:border-slate-600'}`}
                         >
@@ -193,7 +200,7 @@ const ExamMode = () => {
                               <div className={`w-2 h-2 rounded-full flex-shrink-0 ${dotColor}`} />
                               <span className={`text-xs font-sans font-bold uppercase ${
                                 block.completed ? 'text-emerald-700 dark:text-emerald-300'
-                                : block.isMockExam ? 'text-purple-700 dark:text-purple-300'
+                                : block.isMockExam ? 'text-primary dark:text-accent'
                                 : 'text-slate-700 dark:text-slate-200'
                               }`}>
                                {block.isMockExam
@@ -245,7 +252,7 @@ const ExamMode = () => {
                                 ))
                               )}
                               {block.isMockExam && (
-                                <p className="text-xs text-purple-600 dark:text-purple-300 font-medium pt-1 flex items-center gap-1">
+                                <p className="text-xs text-primary dark:text-accent font-medium pt-1 flex items-center gap-1">
                                   <FileText className="h-3.5 w-3.5" />
                                   Full mock exam from past papers.
                                 </p>

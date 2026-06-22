@@ -5,16 +5,8 @@ const ExplanationLevelCard = ({ level, title, recommended, icon: Icon, active, o
   let iconBgClass = 'bg-slate-100 dark:bg-elevated-dark text-slate-400';
 
   if (active) {
-    if (level === 'beginner') {
-      cardBorderClass = 'border-emerald-500 dark:border-emerald-500 bg-emerald-500/5 shadow-md';
-      iconBgClass = 'bg-emerald-500/20 text-emerald-500';
-    } else if (level === 'intermediate') {
-      cardBorderClass = 'border-yellow-500 dark:border-yellow-500 bg-yellow-500/5 shadow-md';
-      iconBgClass = 'bg-yellow-500/20 text-yellow-500';
-    } else {
-      cardBorderClass = 'border-purple-500 dark:border-purple-500 bg-purple-500/5 shadow-md';
-      iconBgClass = 'bg-purple-500/20 text-purple-500';
-    }
+    cardBorderClass = 'border-primary dark:border-accent bg-primary/5 dark:bg-accent/5 shadow-md';
+    iconBgClass = 'bg-primary/20 dark:bg-accent/20 text-primary dark:text-accent';
   }
 
   return (

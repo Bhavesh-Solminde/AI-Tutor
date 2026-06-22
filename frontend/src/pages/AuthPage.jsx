@@ -68,7 +68,7 @@ const AuthPage = () => {
           <div className="bg-primary/10 dark:bg-accent/10 p-2 rounded-xl text-primary dark:text-accent group-hover:bg-primary/20 transition-colors">
             <Brain className="h-6 w-6" />
           </div>
-          <span className="text-xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 dark:from-accent dark:to-purple-400 bg-clip-text text-transparent">
+          <span className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             NeuralNest
           </span>
         </Link>

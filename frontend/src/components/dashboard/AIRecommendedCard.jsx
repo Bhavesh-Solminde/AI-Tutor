@@ -12,7 +12,7 @@ const AIRecommendedCard = ({
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm flex flex-col justify-between space-y-5 text-left">
       <div className="space-y-1">
         <div className="flex items-center space-x-1.5 text-xs font-mono text-accent dark:text-accent-light uppercase tracking-wider font-bold">
-          <Sparkles className="h-4 w-4 text-yellow-500" />
+          <Sparkles className="h-4 w-4 text-primary" />
           <span>AI Recommended Next</span>
         </div>
         <p className="text-[11px] text-text-muted-light dark:text-text-muted-dark">

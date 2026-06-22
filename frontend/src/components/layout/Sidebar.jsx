@@ -37,7 +37,7 @@ const Sidebar = () => {
             <Brain className="h-5 w-5" />
           </div>
           <span
-            className="text-base font-extrabold tracking-tight bg-gradient-to-r from-primary to-purple-600 dark:from-accent dark:to-purple-400 bg-clip-text text-transparent cursor-pointer"
+            className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white cursor-pointer"
             onClick={() => navigate('/dashboard')}
           >
             NEURALNEST

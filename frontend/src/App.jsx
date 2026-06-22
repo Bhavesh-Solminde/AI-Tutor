@@ -9,6 +9,8 @@ import GlobalErrorFallback from './components/ui/ErrorFallback';
 
 // Pages
 import Landing from './pages/Landing';
+import LandingVariant4 from './pages/LandingVariant4';
+
 import OAuthCallback from './pages/OAuthCallback';
 import Onboarding from './pages/Onboarding';
 import Roadmap from './pages/Roadmap';
@@ -87,6 +89,8 @@ function App() {
           <Routes>
             {/* Public */}
             <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+            <Route path="/4" element={<PublicRoute><LandingVariant4 /></PublicRoute>} />
+
             <Route path="/login" element={<PublicRoute><AuthPage /></PublicRoute>} />
             <Route path="/register" element={<PublicRoute><AuthPage /></PublicRoute>} />
 

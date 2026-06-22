@@ -8,8 +8,12 @@ const MasteryRing = ({ progress = 33.7 }) => {
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 flex items-center justify-between shadow-sm text-left h-28">
       <div className="space-y-1">
         <h3 className="text-xs font-mono text-text-muted-light dark:text-text-muted-dark uppercase tracking-wider">Overall Syllabus</h3>
-        <p className="text-3xl font-extrabold text-slate-900 dark:text-white">{progress}%</p>
-        <p className="text-xs text-text-muted-light dark:text-text-muted-dark">of syllabus covered</p>
+        <p className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none mt-0.5">{progress}%</p>
+        <div className="pt-1">
+          <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md inline-block">
+            Syllabus Covered
+          </span>
+        </div>
       </div>
       
       {/* SVG Radial Mastery Ring */}

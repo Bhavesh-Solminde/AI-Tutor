@@ -3,10 +3,10 @@ import React from 'react';
 const MasteryHeatmap = ({ heatmapDays }) => {
   const getHeatmapColor = (level) => {
     switch (level) {
-      case 1: return 'bg-emerald-500/25 dark:bg-emerald-500/20';
-      case 2: return 'bg-emerald-500/50 dark:bg-emerald-500/40';
-      case 3: return 'bg-emerald-500/75 dark:bg-emerald-500/65';
-      case 4: return 'bg-emerald-500 dark:bg-emerald-400';
+      case 1: return 'bg-primary/25 dark:bg-accent/20';
+      case 2: return 'bg-primary/50 dark:bg-accent/40';
+      case 3: return 'bg-primary/75 dark:bg-accent/65';
+      case 4: return 'bg-primary dark:bg-accent';
       default: return 'bg-slate-100 dark:bg-slate-800/80';
     }
   };
@@ -35,10 +35,10 @@ const MasteryHeatmap = ({ heatmapDays }) => {
         <div className="flex justify-end items-center space-x-2 text-xs text-slate-400 dark:text-slate-500 pr-2">
           <span>Less</span>
           <div className="w-3 h-3 rounded-[2px] bg-slate-100 dark:bg-slate-800/80" />
-          <div className="w-3 h-3 rounded-[2px] bg-emerald-500/25 dark:bg-emerald-500/20" />
-          <div className="w-3 h-3 rounded-[2px] bg-emerald-500/50 dark:bg-emerald-500/40" />
-          <div className="w-3 h-3 rounded-[2px] bg-emerald-500/75 dark:bg-emerald-500/65" />
-          <div className="w-3 h-3 rounded-[2px] bg-emerald-500 dark:bg-emerald-400" />
+          <div className="w-3 h-3 rounded-[2px] bg-primary/25 dark:bg-accent/20" />
+          <div className="w-3 h-3 rounded-[2px] bg-primary/50 dark:bg-accent/40" />
+          <div className="w-3 h-3 rounded-[2px] bg-primary/75 dark:bg-accent/65" />
+          <div className="w-3 h-3 rounded-[2px] bg-primary dark:bg-accent" />
           <span>More</span>
         </div>
       </div>

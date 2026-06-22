@@ -199,7 +199,7 @@ const Tutor = () => {
               {error && (
                 <button
                   onClick={retryLastMessage}
-                  className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold text-amber-600 dark:text-amber-400 border border-amber-500/30 rounded-xl hover:bg-amber-500/10 transition"
+                  className="flex items-center space-x-1.5 px-3 py-1.5 text-xs font-bold text-red-500 border border-red-500/30 rounded-xl hover:bg-red-500/10 transition"
                 >
                   <RefreshCw className="h-3.5 w-3.5" />
                   <span>Retry</span>
@@ -209,7 +209,7 @@ const Tutor = () => {
               {!isNewSession && (
                 <button
                   onClick={() => navigate(`/quiz/${topicId}`)}
-                  className="flex items-center space-x-2 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-500 rounded-xl shadow-md transition-all duration-300"
+                  className="flex items-center space-x-2 px-4 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-hover dark:bg-accent dark:hover:bg-accent/90 rounded-xl shadow-md transition-all duration-300"
                 >
                   <span>Proceed to Quiz</span>
                   <ArrowRight className="h-4 w-4" />

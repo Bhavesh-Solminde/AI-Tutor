@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Check, Sparkles, Clock, GitFork, ChevronDown, Plus, Trash2, AlertTriangle, Youtube } from 'lucide-react';
+import { Check, Sparkles, Clock, GitFork, ChevronDown, Plus, Trash2, AlertTriangle } from 'lucide-react';
 import { ErrorBoundary } from 'react-error-boundary';
 import MainLayout from '../components/layout/MainLayout';
 import RoadmapCanvas from '../components/roadmap/RoadmapCanvas';
@@ -168,7 +168,7 @@ const Roadmap = () => {
               </span>
             )}
             {daysLeft !== null && (
-              <span className="flex items-center space-x-1.5 px-3 py-1 bg-orange-500 text-white rounded-full text-xs font-semibold shadow-sm">
+              <span className="flex items-center space-x-1.5 px-3 py-1 bg-primary text-white rounded-full text-xs font-semibold shadow-sm">
                 <Clock className="h-3.5 w-3.5" /><span>{daysLeft} Days Left</span>
               </span>
             )}
@@ -226,7 +226,10 @@ const Roadmap = () => {
               className="flex items-center justify-between w-full text-left font-bold text-sm text-slate-800 dark:text-white"
             >
               <div className="flex items-center space-x-2">
-                <Youtube className="h-4.5 w-4.5 text-red-500 fill-current" />
+                <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21.582 6.186a2.6 2.6 0 0 0-1.838-1.848C18.125 3.9 12 3.9 12 3.9s-6.125 0-7.744.438a2.6 2.6 0 0 0-1.838 1.848C2 7.82 2 12 2 12s0 4.18.418 5.814a2.6 2.6 0 0 0 1.838 1.848C5.875 20.1 12 20.1 12 20.1s6.125 0 7.744-.438a2.6 2.6 0 0 0 1.838-1.848C22 16.18 22 12 22 12s0-4.18-.418-5.814Z" fill="#FF0000"/>
+                  <path d="M9.9 15.6 15.4 12 9.9 8.4v7.2Z" fill="#FFFFFF"/>
+                </svg>
                 <span className="font-extrabold uppercase tracking-wider text-xs">Recommended Videos for "{sessionName}"</span>
               </div>
               <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${showVideos ? 'rotate-180' : ''}`} />

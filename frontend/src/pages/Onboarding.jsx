@@ -112,7 +112,7 @@ const Onboarding = () => {
                   return (
                     <button key={tab.id} onClick={() => { setInputType(tab.id); setLocalError(''); }}
                       className={`flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${inputType === tab.id
-                          ? 'bg-white dark:bg-elevated-dark text-primary dark:text-primary shadow-sm border border-slate-200 dark:border-border-dark'
+                          ? 'bg-white dark:bg-elevated-dark text-primary dark:text-accent shadow-sm border border-slate-200 dark:border-border-dark'
                           : 'text-slate-500 dark:text-text-muted-dark hover:text-slate-800 dark:hover:text-text-primary-dark'
                         }`}>
                       <Icon className="h-4 w-4" />
@@ -235,20 +235,31 @@ const Onboarding = () => {
               <ChevronLeft className="h-4 w-4" />
               <span>Back</span>
             </button>
-            <button
-              onClick={handleNextStep}
-              disabled={nextLoading || uploading || (step === 3 && topicsProcessing && topics.length === 0)}
-              className="flex items-center space-x-1.5 px-6 py-2.5 bg-primary dark:bg-accent hover:bg-primary-hover dark:hover:bg-accent/90 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-bold shadow-md shadow-primary/10 dark:shadow-accent/10 transition-all duration-300"
-            >
-              {(nextLoading || uploading) ? (
-                <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>{step === 3 ? 'Generate Roadmap' : 'Next Step'}</span>
-                  {step === 3 ? <CheckCircle className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
-                </>
+            <div className="flex items-center space-x-3">
+              {step === 3 && topics.length > 0 && !topicsProcessing && (
+                <button
+                  onClick={handleNextStep}
+                  disabled={nextLoading || uploading}
+                  className="px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition"
+                >
+                  Skip
+                </button>
               )}
-            </button>
+              <button
+                onClick={handleNextStep}
+                disabled={nextLoading || uploading || (step === 3 && topicsProcessing && topics.length === 0)}
+                className="flex items-center space-x-1.5 px-6 py-2.5 bg-primary dark:bg-accent hover:bg-primary-hover dark:hover:bg-accent/90 disabled:opacity-60 disabled:cursor-not-allowed text-white rounded-xl font-bold shadow-md shadow-primary/10 dark:shadow-accent/10 transition-all duration-300"
+              >
+                {(nextLoading || uploading) ? (
+                  <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>{step === 3 ? 'Generate Roadmap' : 'Next Step'}</span>
+                    {step === 3 ? <CheckCircle className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />}
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </main>

@@ -43,8 +43,8 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
       <div className="mt-8 flex flex-wrap justify-center items-center gap-10 md:gap-14 w-full px-4">
         {/* Stat 1: Total XP */}
         <div className="flex flex-col items-center justify-center text-center space-y-1">
-          <Zap className="h-6 w-6 text-amber-500 fill-amber-500/10" />
-          <span className="text-xl md:text-2xl font-extrabold text-amber-500 tracking-tight">
+          <Zap className="h-6 w-6 text-primary fill-primary/10 dark:text-accent dark:fill-accent/10" />
+          <span className="text-xl md:text-2xl font-extrabold text-primary dark:text-accent tracking-tight">
             {totalXP.toLocaleString()}
           </span>
           <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
@@ -54,8 +54,8 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
 
         {/* Stat 2: Current Streak */}
         <div className="flex flex-col items-center justify-center text-center space-y-1">
-          <Flame className="h-6 w-6 text-orange-500 fill-orange-500/10" />
-          <span className="text-xl md:text-2xl font-extrabold text-orange-500 tracking-tight">
+          <Flame className="h-6 w-6 text-primary fill-primary/10 dark:text-accent dark:fill-accent/10" />
+          <span className="text-xl md:text-2xl font-extrabold text-primary dark:text-accent tracking-tight">
             {streakDays} Days
           </span>
           <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">

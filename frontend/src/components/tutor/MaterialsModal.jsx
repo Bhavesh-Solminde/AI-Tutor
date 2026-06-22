@@ -122,7 +122,7 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
               <button
                 onClick={handleUploadNew}
                 disabled={uploading}
-                className="border-2 border-dashed border-border-light dark:border-border-dark rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-center text-text-muted-light dark:text-text-muted-dark hover:border-slate-400 hover:text-text-base-light dark:hover:text-text-base-dark transition-all duration-300 disabled:opacity-50"
+                className="border-2 border-dashed border-border-light dark:border-border-dark rounded-xl p-4 flex flex-col items-center justify-center space-y-2 text-center text-text-muted-light dark:text-text-muted-dark hover:border-slate-400 hover:text-text-base-light dark:hover:text-text-base-dark transition-all duration-300 disabled:opacity-50 h-36"
               >
                 {uploading ? <div className="h-5 w-5 border-2 border-slate-300 border-t-primary rounded-full animate-spin" /> : <Plus className="h-6 w-6" />}
                 <span className="text-xs font-semibold">{uploading ? 'Uploading...' : 'Upload New'}</span>
@@ -134,7 +134,7 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
               )}
               {filtered.map((item) => (
                 <div key={item._id} onClick={() => handleToggle(item._id)}
-                  className={`border rounded-xl p-4 flex flex-col justify-between items-start space-y-3 cursor-pointer transition-all duration-300 hover:scale-[1.01] hover:shadow-sm ${
+                  className={`border rounded-xl p-4 flex flex-col justify-between items-start cursor-pointer transition-all duration-300 hover:scale-[1.01] hover:shadow-sm h-36 ${
                     item.selected ? 'border-primary dark:border-accent bg-primary/5 dark:bg-accent/5' : 'border-border-light dark:border-border-dark hover:border-slate-300 dark:hover:border-slate-700 bg-transparent'
                   }`}
                 >
@@ -142,9 +142,9 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
                     <FileText className={`h-5 w-5 ${item.selected ? 'text-primary dark:text-accent-light' : 'text-text-muted-light dark:text-text-muted-dark'}`} />
                     {item.selected && <CheckCircle2 className="h-4 w-4 text-emerald-500" />}
                   </div>
-                  <div>
-                    <h4 className="text-xs font-bold text-text-base-light dark:text-text-base-dark leading-tight">{item.title}</h4>
-                    <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark mt-0.5 truncate w-full">{item.desc}</p>
+                  <div className="w-full min-w-0">
+                    <h4 className="text-xs font-bold text-text-base-light dark:text-text-base-dark leading-tight line-clamp-2 break-all" title={item.title}>{item.title}</h4>
+                    <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark mt-1 truncate w-full">{item.desc}</p>
                   </div>
                 </div>
               ))}
@@ -157,10 +157,10 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
                     item.selected ? 'border-primary dark:border-accent bg-primary/5 dark:bg-accent/5' : 'border-border-light dark:border-border-dark hover:border-slate-300 dark:hover:border-slate-700 bg-transparent'
                   }`}
                 >
-                  <div className="flex items-center space-x-3 truncate">
+                  <div className="flex items-center space-x-3 min-w-0 flex-1">
                     <FileText className={`h-4.5 w-4.5 flex-shrink-0 ${item.selected ? 'text-primary dark:text-accent-light' : 'text-text-muted-light dark:text-text-muted-dark'}`} />
-                    <div className="truncate">
-                      <h4 className="text-xs font-bold text-text-base-light dark:text-text-base-dark leading-tight">{item.title}</h4>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-xs font-bold text-text-base-light dark:text-text-base-dark leading-tight truncate" title={item.title}>{item.title}</h4>
                       <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark truncate">{item.desc}</p>
                     </div>
                   </div>

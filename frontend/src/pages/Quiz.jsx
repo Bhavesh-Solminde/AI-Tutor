@@ -118,7 +118,7 @@ const Quiz = () => {
               <ArrowLeft className="h-4 w-4" />
             </button>
             <div>
-              <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-emerald-500">Practice Module</span>
+              <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-primary">Practice Module</span>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">Generating Quiz...</h2>
             </div>
           </div>
@@ -155,7 +155,7 @@ const Quiz = () => {
               <ArrowLeft className="h-4 w-4" />
             </button>
             <div>
-              <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-emerald-500">Practice Module</span>
+              <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-primary">Practice Module</span>
               <h2 className="text-lg font-bold text-slate-900 dark:text-white">Topic Mastery Quiz</h2>
             </div>
           </div>
