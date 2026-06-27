@@ -37,8 +37,8 @@ const FinalCTA = () => {
   };
 
   return (
-    <section className="py-24 px-6 relative z-50">
-      <div className="max-w-5xl mx-auto rounded-3xl bg-slate-50 dark:bg-[#121622] border border-slate-200 dark:border-white/5 text-center p-12 md:p-20 relative shadow-sm dark:shadow-none overflow-hidden group">
+    <section className="py-16 md:py-24 px-4 md:px-6 relative z-50">
+      <div className="max-w-5xl mx-auto rounded-3xl bg-slate-50 dark:bg-[#121622] border border-slate-200 dark:border-white/5 text-center p-8 md:p-20 relative shadow-sm dark:shadow-none overflow-hidden group">
         
         {/* Animated Background Glow */}
         <div className="absolute inset-0 bg-gradient-to-t from-primary/5 dark:from-primary/10 to-transparent pointer-events-none rounded-3xl" />

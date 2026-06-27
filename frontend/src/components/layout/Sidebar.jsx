@@ -13,6 +13,7 @@ import {
   Lightbulb,
   X,
 } from 'lucide-react';
+
 import NavItem from '../sidebar/NavItem';
 import CollapsibleSection from '../sidebar/CollapsibleSection';
 import ChatHistoryList from '../sidebar/ChatHistoryList';
@@ -20,6 +21,11 @@ import NotesList from '../sidebar/NotesList';
 
 const Sidebar = ({ onClose }) => {
   const navigate = useNavigate();
+
+  const go = (path) => {
+    navigate(path);
+    onClose?.();
+  };
 
   const coreNavItems = [
     { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -32,35 +38,35 @@ const Sidebar = ({ onClose }) => {
   return (
     <aside className="w-[210px] flex-shrink-0 border-r border-border-light dark:border-border-dark bg-sidebar-light dark:bg-sidebar-dark flex flex-col justify-between h-screen sticky top-0 transition-colors duration-300">
       <div className="flex-grow flex flex-col overflow-y-auto min-h-0">
-        {/* Logo + mobile close button */}
+      {/* Logo + mobile close */}
         <div className="p-4 border-b border-border-light dark:border-border-dark flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
+          <div
+            className="flex items-center space-x-2.5 cursor-pointer"
+            onClick={() => go('/dashboard')}
+          >
             <div className="bg-primary/10 dark:bg-accent/10 p-1.5 rounded-lg text-primary dark:text-accent">
               <Brain className="h-5 w-5" />
             </div>
-            <span
-              className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white cursor-pointer"
-              onClick={() => { navigate('/dashboard'); onClose?.(); }}
-            >
+            <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
               NEURALNEST
             </span>
           </div>
           {/* Close button — only visible on mobile */}
-          {onClose && (
-            <button
-              onClick={onClose}
-              className="md:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-              aria-label="Close sidebar"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          )}
+          <button
+            onClick={onClose}
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+            aria-label="Close sidebar"
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         {/* Core Nav */}
         <nav className="px-3 py-4 space-y-1 border-b border-border-light dark:border-border-dark">
           {coreNavItems.map((item) => (
-            <NavItem key={item.to} to={item.to} label={item.label} icon={item.icon} />
+            <div key={item.to} onClick={() => onClose?.()}>
+              <NavItem to={item.to} label={item.label} icon={item.icon} />
+            </div>
           ))}
         </nav>
 
@@ -93,10 +99,10 @@ const Sidebar = ({ onClose }) => {
         </div>
       </div>
 
-      {/* Footer: New Session — always creates under Other, no section picker */}
+      {/* Footer: New Session */}
       <div className="p-3 border-t border-border-light dark:border-border-dark bg-slate-50/50 dark:bg-sidebar-dark/40">
         <button
-          onClick={() => navigate('/tutor/new?section=other')}
+          onClick={() => go('/tutor/new?section=other')}
           className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-cta hover:bg-cta-hover text-white text-xs font-bold rounded-xl shadow-md transition-all duration-300"
         >
           <Plus className="h-3.5 w-3.5" />

@@ -4,39 +4,40 @@ import { Menu } from 'lucide-react';
 import ThemeToggle from './ThemeToggle';
 import useAuthStore from '../../stores/useAuthStore';
 
-const TopBar = ({ onMenuToggle }) => {
+const TopBar = ({ onMenuClick }) => {
   const { user } = useAuthStore();
   const navigate = useNavigate();
 
   return (
-    <header className="h-14 md:h-16 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-4 md:px-6 flex items-center justify-between transition-colors duration-300 flex-shrink-0">
+    <header className="h-16 border-b border-border-light dark:border-border-dark bg-surface-light dark:bg-surface-dark px-4 md:px-6 flex items-center justify-between transition-colors duration-300 flex-shrink-0">
 
-      {/* Left: hamburger (mobile only) + Ask Doubt */}
+      {/* Left: hamburger (mobile) + Ask Doubt */}
       <div className="flex items-center space-x-3">
+        {/* Hamburger — only visible on mobile */}
         <button
-          onClick={onMenuToggle}
-          aria-label="Toggle sidebar"
-          className="md:hidden p-2 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+          onClick={onMenuClick}
+          aria-label="Open sidebar"
+          className="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
         >
           <Menu className="h-5 w-5" />
         </button>
 
         <button
           onClick={() => navigate('/tutor/new')}
-          className="flex items-center px-4 md:px-6 py-1.5 md:py-2 text-sm font-bold bg-cta hover:bg-cta-hover text-white rounded-full shadow-md transition-all duration-300"
+          className="flex items-center px-4 md:px-6 py-2 text-xs md:text-sm font-bold bg-cta hover:bg-cta-hover text-white rounded-full shadow-md transition-all duration-300"
         >
           Ask Doubt
         </button>
       </div>
 
-      {/* Right: theme toggle + user */}
+      {/* Right: ThemeToggle + User */}
       <div className="flex items-center space-x-3 md:space-x-6">
         <ThemeToggle />
 
         {user && (
           <div
             onClick={() => navigate('/profile')}
-            className="flex items-center space-x-2 md:space-x-3 cursor-pointer hover:opacity-80 transition-opacity"
+            className="flex items-center space-x-2 cursor-pointer hover:opacity-80 transition-opacity"
             title="View Profile"
           >
             <div className="h-8 w-8 md:h-9 md:w-9 rounded-full overflow-hidden bg-slate-200 dark:bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-md">
@@ -50,8 +51,8 @@ const TopBar = ({ onMenuToggle }) => {
                 }}
               />
             </div>
-            {/* Hide name on very small screens */}
-            <span className="hidden sm:block text-sm font-semibold text-slate-800 dark:text-text-primary-dark select-none">
+            {/* Name hidden on small screens to prevent overflow */}
+            <span className="hidden sm:block text-sm font-semibold text-slate-800 dark:text-text-primary-dark select-none truncate max-w-[120px]">
               {user.name}
             </span>
           </div>
