@@ -5,6 +5,7 @@ import { tutorNode } from "./nodes/tutorNode";
 import { doubtNode } from "./nodes/doubtNode";
 import { quizGeneratorNode } from "./nodes/quizGeneratorNode";
 import { gradeNode } from "./nodes/gradeNode";
+import { type AgentLogFn } from "../utils/agentLogger";
 
 /**
  * Main LangGraph state graph — Agentic Teaching Loop.
@@ -48,42 +49,75 @@ function routeAfterGrade(
   }
 }
 
-const workflow = new StateGraph(AgentState)
-  .addNode("router", routerNode)
-  .addNode("tutorNode", tutorNode as any)
-  .addNode("doubtNode", doubtNode as any)
-  .addNode("quizGeneratorNode", quizGeneratorNode as any)
-  .addNode("gradeNode", gradeNode as any)
-  // Always start at router
-  .addEdge("__start__", "router")
-  // Router fans out to the right specialist node
-  .addConditionalEdges("router", routeMessage, {
-    tutorNode: "tutorNode",
-    doubtNode: "doubtNode",
-    quizGeneratorNode: "quizGeneratorNode",
-  })
-  // After tutorNode always classify — gradeNode decides what's next
-  .addEdge("tutorNode", "gradeNode")
-  // gradeNode decides: loop back, switch to doubt, or finish
-  .addConditionalEdges("gradeNode", routeAfterGrade, {
-    tutorNode: "tutorNode",
-    doubtNode: "doubtNode",
-    __end__: END,
-  })
-  // Doubt resolves → END (response is ready)
-  .addEdge("doubtNode", END)
-  // Quiz generation → END
-  .addEdge("quizGeneratorNode", END);
+/**
+ * Build a compiled graph with optional SSE emitter.
+ * Wraps each node so the emitter is threaded without modifying LangGraph state.
+ */
+function buildGraph(emit?: AgentLogFn) {
+  const wrappedRouter = (state: AgentStateType) => {
+    const route = routeMessage(state);
+    if (emit) {
+      const routeLabel =
+        route === "tutorNode" ? "teach" :
+        route === "doubtNode" ? "doubt" :
+        "quiz";
+      emit("ROUTER", `Message classified → ${routeLabel}`, "info");
+    }
+    return routerNode(state);
+  };
 
-export const graph = workflow.compile();
+  const wrappedTutor = (state: AgentStateType) => tutorNode(state, emit);
+  const wrappedGrade = (state: AgentStateType) => gradeNode(state, emit);
+
+  const wrappedDoubt = async (state: AgentStateType) => {
+    emit?.("DOUBT_NODE", `Answering specific doubt: "${state.message.slice(0, 60)}..."`, "info");
+    const result = await doubtNode(state as any);
+    emit?.("DOUBT_NODE", `Doubt resolved · returning to curriculum`, "success");
+    return result;
+  };
+
+  return new StateGraph(AgentState)
+    .addNode("router", wrappedRouter)
+    .addNode("tutorNode", wrappedTutor as any)
+    .addNode("doubtNode", wrappedDoubt as any)
+    .addNode("quizGeneratorNode", quizGeneratorNode as any)
+    .addNode("gradeNode", wrappedGrade as any)
+    // Always start at router
+    .addEdge("__start__", "router")
+    // Router fans out to the right specialist node
+    .addConditionalEdges("router", routeMessage, {
+      tutorNode: "tutorNode",
+      doubtNode: "doubtNode",
+      quizGeneratorNode: "quizGeneratorNode",
+    })
+    // After tutorNode always classify — gradeNode decides what's next
+    .addEdge("tutorNode", "gradeNode")
+    // gradeNode decides: loop back, switch to doubt, or finish
+    .addConditionalEdges("gradeNode", routeAfterGrade, {
+      tutorNode: "tutorNode",
+      doubtNode: "doubtNode",
+      __end__: END,
+    })
+    // Doubt resolves → END (response is ready)
+    .addEdge("doubtNode", END)
+    // Quiz generation → END
+    .addEdge("quizGeneratorNode", END)
+    .compile();
+}
+
+// Default compiled graph (no SSE, for non-HTTP callers)
+export const graph = buildGraph();
 
 /**
  * Run the tutor/doubt/quiz graph and return the final state.
  * Called by tutor.controller.ts for every chat message.
+ * Pass `emit` to stream agent_log events over SSE in real time.
  */
 export async function runTutorGraph(
-  input: Partial<AgentStateType>
+  input: Partial<AgentStateType>,
+  emit?: AgentLogFn
 ): Promise<AgentStateType> {
-  const result = await graph.invoke(input as AgentStateType);
+  const compiledGraph = emit ? buildGraph(emit) : graph;
+  const result = await compiledGraph.invoke(input as AgentStateType);
   return result as AgentStateType;
 }
