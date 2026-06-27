@@ -1,0 +1,127 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-surface: var(--surface);
+  --color-elevated: var(--elevated);
+  --color-card: var(--surface);
+  --color-card-foreground: var(--foreground);
+  --color-popover: var(--elevated);
+  --color-popover-foreground: var(--foreground);
+  --color-border: var(--border);
+  --color-input: var(--border);
+  --color-muted: var(--surface);
+  --color-muted-foreground: var(--muted);
+  --color-secondary: var(--surface);
+  --color-secondary-foreground: var(--foreground);
+  --color-accent: var(--elevated);
+  --color-accent-foreground: var(--foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: #ffffff;
+  --color-primary-hover: var(--primary-hover);
+  --color-success: var(--success);
+  --color-warning: var(--warning);
+
+  --color-agent-tutor: var(--agent-tutor);
+  --color-agent-grade: var(--agent-grade);
+  --color-agent-router: var(--agent-router);
+  --color-exam: var(--exam);
+
+  --color-ring: var(--primary);
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+/* Light theme (default :root) */
+:root {
+  color-scheme: light;
+  --background: #f9fafb;
+  --foreground: #1f2937;
+  --surface: #ffffff;
+  --elevated: #ffffff;
+  --border: #e5e7eb;
+  --muted: #6b7280;
+
+  --primary: #3b6bff;
+  --primary-hover: #2f5ae0;
+  --success: #10b981;
+  --warning: #fbbf24;
+
+  --agent-tutor: #a78bfa;
+  --agent-grade: #fbbf24;
+  --agent-router: #60a5fa;
+  --exam: #a855f7;
+}
+
+/* Dark theme */
+.dark {
+  color-scheme: dark;
+  --background: #000000;
+  --foreground: #f3f4f6;
+  --surface: #121212;
+  --elevated: #1e1e1e;
+  --border: #262626;
+  --muted: #9ca3af;
+
+  --primary: #3b6bff;
+  --primary-hover: #2f5ae0;
+  --success: #10b981;
+  --warning: #fbbf24;
+
+  --agent-tutor: #a78bfa;
+  --agent-grade: #fbbf24;
+  --agent-router: #60a5fa;
+  --exam: #a855f7;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    -webkit-font-smoothing: antialiased;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  /* Smooth 300ms theme transition on color-bearing properties */
+  body,
+  body * {
+    transition-property: background-color, border-color, color, fill, stroke;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Hide scrollbar for horizontal scroll regions */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
