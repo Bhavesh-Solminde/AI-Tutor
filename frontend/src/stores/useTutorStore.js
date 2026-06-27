@@ -7,6 +7,7 @@ import useAuthStore from './useAuthStore';
 
 const useTutorStore = create((set, get) => ({
   messages: [],
+  agentLogs: [],         // ← real-time agent_log events
   isStreaming: false,
   currentTopic: null,
   chatHistoryId: null,
@@ -111,11 +112,25 @@ const useTutorStore = create((set, get) => ({
             }
             try {
               const parsed = JSON.parse(raw);
+              // ── Agent log event ──────────────────────────────────
+              if (parsed.type === 'agent_log') {
+                set((state) => ({
+                  agentLogs: [...state.agentLogs, {
+                    timestamp: parsed.timestamp,
+                    node: parsed.node,
+                    message: parsed.message,
+                    logType: parsed.logType || 'info',
+                  }],
+                }));
+                continue;
+              }
+              // ── Explanation token ─────────────────────────────────
               if (parsed.token) {
                 accText += parsed.token;
+                const currentText = accText;
                 set((state) => ({
                   messages: state.messages.map((m, i) =>
-                    i === aiMsgIndex ? { ...m, text: accText } : m
+                    i === aiMsgIndex ? { ...m, text: currentText } : m
                   ),
                 }));
               }
@@ -179,6 +194,7 @@ const useTutorStore = create((set, get) => ({
 
   clearMessages: () => set({
     messages: [],
+    agentLogs: [],
     checkpointQuestion: '',
     doubtPrompt: 'Do you have any doubts or questions before we move on?',
     nextAction: 'CONTINUE',
