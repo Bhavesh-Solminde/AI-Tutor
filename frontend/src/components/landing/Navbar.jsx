@@ -45,7 +45,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 border-b transition-all duration-300 ${
+        className={`fixed top-0 left-0 right-0 z-[9999] border-b transition-all duration-300 ${
           scrolled
             ? 'bg-white/85 dark:bg-[#0B0F19]/85 backdrop-blur-md border-slate-200 dark:border-white/10 shadow-sm'
             : 'bg-transparent border-transparent'
@@ -113,7 +113,7 @@ const Navbar = () => {
 
       {/* Mobile slide-down menu */}
       {mobileOpen && (
-        <div className="fixed top-16 left-0 right-0 z-40 bg-white dark:bg-[#0B0F19] border-b border-slate-200 dark:border-white/10 shadow-lg md:hidden">
+        <div className="fixed top-16 left-0 right-0 z-[9998] bg-white dark:bg-[#0B0F19] border-b border-slate-200 dark:border-white/10 shadow-lg md:hidden">
           <div className="px-4 py-4 flex flex-col space-y-1">
             {navLinks.map(({ href, label, id }) => (
               <a
