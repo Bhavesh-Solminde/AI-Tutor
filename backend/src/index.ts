@@ -1,3 +1,8 @@
+// Polyfill global `crypto` for Node < 19 — required by uuid, @langchain/*, @pinecone/* etc.
+// Must be the very first line before any other imports.
+import { webcrypto } from "crypto";
+if (!globalThis.crypto) (globalThis as any).crypto = webcrypto;
+
 import "./config/env"; // Validate env vars first — fail fast
 import { connectDB } from "./config/db";
 import { logger } from "./config/logger";
