@@ -32,22 +32,20 @@ const Testimonials = () => {
           Real learners. Real mastery.
         </motion.h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mt-10">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12 mt-10">
           {testimonials.map((testimonial, idx) => {
-            // Apply parallax based on index, disable if reduceMotion is true
             const y = reduceMotion ? 0 : (idx === 1 ? yDown : yUp);
-            
             return (
-              <motion.div 
-                key={idx} 
+              <motion.div
+                key={idx}
                 style={{ y }}
                 className="flex flex-col"
               >
-                <div className="pl-6 border-l-2 border-primary/50 group hover:border-primary transition-colors duration-300 h-full flex flex-col justify-between">
-                  <p className="text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-medium">"{testimonial.text}"</p>
+                <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#121622] p-6 h-full flex flex-col justify-between hover:border-primary/40 transition-colors duration-300 group">
+                  <p className="text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-medium">"{testimonial.text}"</p>
                   <div>
-                    <h5 className="font-bold text-slate-900 dark:text-white text-sm truncate group-hover:text-primary transition-colors">{testimonial.name}</h5>
-                    <p className="text-xs text-slate-500 mt-0.5 truncate">{testimonial.role}</p>
+                    <h5 className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-primary transition-colors">{testimonial.name}</h5>
+                    <p className="text-xs text-slate-500 mt-0.5">{testimonial.role}</p>
                   </div>
                 </div>
               </motion.div>

@@ -66,6 +66,14 @@ const PILL = 'absolute font-mono text-[11px] tracking-wide rounded-xl border px-
 const PinnedAgentGraph = () => {
   const containerRef = useRef(null);
   const reduceMotion = useReducedMotion();
+  // Use a simple mobile fallback — SVG scroll animation doesn't render well on narrow viewports
+  const [isMobile, setIsMobile] = React.useState(() => window.innerWidth < 768);
+  React.useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const handler = (e) => setIsMobile(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
 
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -106,15 +114,40 @@ const PinnedAgentGraph = () => {
   const endOp        = useTransform(scrollYProgress, [0.88, 0.96], [0, 1]);
   const scrollHint   = useTransform(scrollYProgress, [0, 0.06], [1, 0]);
 
-  // ── Reduced-motion fallback ─────────────────────────────────────────────────
-  if (reduceMotion) {
+  // ── Mobile / reduced-motion fallback ────────────────────────────────────────
+  if (reduceMotion || isMobile) {
+    const steps = [
+      { label: '__start__', color: 'text-slate-500 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-600', bg: 'bg-white dark:bg-[#0D1220]' },
+      { label: 'router', color: 'text-[#3B6BFF]', border: 'border-[#3B6BFF]/40', bg: 'bg-[#EEF2FF] dark:bg-[#0c1530]' },
+      { label: 'tutorNode', color: 'text-[#F59E0B]', border: 'border-[#F59E0B]/40', bg: 'bg-[#FFFBEB] dark:bg-[#1a1206]' },
+      { label: 'gradeNode', note: 'CONFUSED', color: 'text-[#10B981]', border: 'border-[#10B981]/40', bg: 'bg-[#ECFDF5] dark:bg-[#06180f]', chip: { label: 'CONFUSED → loops back', color: 'text-[#EF4444]', bg: 'bg-[#fef2f2] dark:bg-[#1c0505]', border: 'border-[#EF4444]/40' } },
+      { label: 'tutorNode', color: 'text-[#F59E0B]', border: 'border-[#F59E0B]/40', bg: 'bg-[#FFFBEB] dark:bg-[#1a1206]' },
+      { label: 'gradeNode', note: 'UNDERSTOOD', color: 'text-[#10B981]', border: 'border-[#10B981]/40', bg: 'bg-[#ECFDF5] dark:bg-[#06180f]', chip: { label: 'UNDERSTOOD → END ✓', color: 'text-[#10B981]', bg: 'bg-[#f0fdf8] dark:bg-[#061510]', border: 'border-[#10B981]/40' } },
+      { label: 'END', color: 'text-slate-500 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-600', bg: 'bg-white dark:bg-[#0D1220]' },
+    ];
     return (
-      <section className="py-24 px-6 bg-white dark:bg-[#060A12] text-center">
-        <h2 className="text-3xl font-bold text-slate-900 dark:text-white mb-4">LangGraph Agent Architecture</h2>
-        <p className="text-slate-500 dark:text-slate-400 mb-10">The reasoning engine, step by step.</p>
-        <div className="flex flex-col items-center gap-3 font-mono text-sm">
-          {['__start__', 'router', 'tutorNode', 'gradeNode (CONFUSED)', 'tutorNode', 'gradeNode (UNDERSTOOD)', 'END'].map((n, i) => (
-            <div key={i} className="px-5 py-2 rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/5 text-slate-700 dark:text-white">{n}</div>
+      <section className="py-20 px-5 bg-white dark:bg-[#060A12] text-center">
+        <h2 className="font-display text-3xl font-extrabold text-slate-900 dark:text-white mb-3">
+          Powered by <span className="text-[#3B6BFF]">LangGraph</span>.
+        </h2>
+        <p className="text-slate-500 dark:text-slate-400 mb-12 max-w-sm mx-auto text-sm leading-relaxed">
+          Watch the multi-agent loop classify your understanding and adapt the lesson in real time.
+        </p>
+        <div className="relative inline-flex flex-col items-center gap-0 max-w-xs mx-auto w-full">
+          {steps.map((step, i) => (
+            <React.Fragment key={i}>
+              <div className={`font-mono text-[11px] tracking-wide rounded-xl border px-4 py-2.5 whitespace-nowrap ${step.color} ${step.border} ${step.bg}`}>
+                {step.label}{step.note ? ` — iter ${step.note === 'CONFUSED' ? '1' : '2'}` : ''}
+              </div>
+              {step.chip && (
+                <div className={`font-mono text-[10px] font-bold px-3 py-1.5 rounded-lg border mt-1 ${step.chip.color} ${step.chip.bg} ${step.chip.border}`}>
+                  {step.chip.label}
+                </div>
+              )}
+              {i < steps.length - 1 && (
+                <div className="w-px h-5 bg-slate-300 dark:bg-slate-700" />
+              )}
+            </React.Fragment>
           ))}
         </div>
       </section>
