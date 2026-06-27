@@ -10,6 +10,7 @@ import api from '../lib/axiosClient';
 
 import TutorChatPanel from '../components/tutor/TutorChatPanel';
 import MaterialsModal from '../components/tutor/MaterialsModal';
+import AgentLogPanel from '../components/tutor/AgentLogPanel';
 
 const Tutor = () => {
   const { topicId } = useParams();
@@ -18,7 +19,7 @@ const Tutor = () => {
   const { user } = useAuthStore();
   const { currentSession } = useSessionStore();
   const {
-    messages, isStreaming, currentTopic, chatHistoryId, error,
+    messages, isStreaming, currentTopic, chatHistoryId, error, agentLogs,
     sendMessage, clearMessages, setCurrentTopic, setChatHistoryId, loadMessages, retryLastMessage,
   } = useTutorStore();
   const { findChatByTopicId, createChat, fetchChatHistory } = useChatHistoryStore();
@@ -46,6 +47,16 @@ const Tutor = () => {
   useEffect(() => {
     // React StrictMode mounts twice — use a cancelled flag so only one run proceeds
     let cancelled = false;
+
+    // ── Guard: skip reset if this effect fired because onChatCreated just called navigate ──
+    // When the backend auto-creates a chat and we navigate to ?chatId=xxx, React Router
+    // re-fires this effect. But chatHistoryId in the store is ALREADY set to that ID
+    // (set from the SSE event before navigate was called) and messages are in memory.
+    // Clearing here would wipe the live conversation — so bail out early.
+    if (isNewSession && chatIdFromUrl && chatIdFromUrl === chatHistoryId) {
+      setCurrentTopic((t) => t || { _id: null, name: 'New Study Chat' });
+      return () => { cancelled = true; };
+    }
 
     // Reset messages & topic, but NOT chatHistoryId —
     // the Sidebar's "New Session" button may have pre-created a chat and set it already.
@@ -146,8 +157,12 @@ const Tutor = () => {
       message: text,
       type: (() => {
         if (messages.length === 0) return 'teach';
-        const doubtRegex = /\b(why|how|explain)\b/i;
-        return doubtRegex.test(text) ? 'doubt' : 'teach';
+        // Classify as doubt only for genuine follow-up questions:
+        //   - Contains a question mark, OR
+        //   - Starts with why/how/what (not "explain X" teaching commands)
+        const startsWithQuestion = /^(why|how|what|when|where|who)\b/i.test(text.trim());
+        const hasQuestionMark = text.includes('?');
+        return (startsWithQuestion || hasQuestionMark) ? 'doubt' : 'teach';
       })(),
       chatHistoryId: activeChatId,
       materialSessionIds: attachedMaterials.map((m) => m._id),
@@ -237,6 +252,9 @@ const Tutor = () => {
             isNewSession={isNewSession}
           />
         </div>
+
+        {/* Agent Activity Log — collapsible terminal panel */}
+        <AgentLogPanel logs={agentLogs} isStreaming={isStreaming} />
 
         {/* Start Teaching button — only for topic-mode when chat is empty */}
         {!isNewSession && messages.length === 0 && !resolving && (
