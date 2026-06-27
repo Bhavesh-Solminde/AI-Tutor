@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import { createLogger } from "../config/logger";
 
 const log = createLogger("http");
@@ -18,7 +18,7 @@ export function requestLogger(req: Request & { requestId?: string }, res: Respon
     return;
   }
 
-  const requestId = uuidv4();
+  const requestId = randomUUID();
   (req as any).requestId = requestId;
 
   const start = Date.now();

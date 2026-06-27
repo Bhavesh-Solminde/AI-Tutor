@@ -1,13 +1,13 @@
 import { Request, Response, NextFunction } from "express";
 import { AppError } from "../utils/AppError";
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "crypto";
 import { logger } from "../config/logger";
 
 /**
  * Translate Mongoose & JWT errors into AppErrors with specific messages.
  */
 function normalizeError(err: any): AppError {
-  const requestId = uuidv4();
+  const requestId = randomUUID();
 
   // Already an operational AppError — pass through
   if (err.isOperational) return err;

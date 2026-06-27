@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 /**
  * Base operational error — always shows a user-friendly message.
@@ -15,7 +15,7 @@ export class AppError extends Error {
     this.statusCode = statusCode;
     this.isOperational = true;
     this.code = code;
-    this.requestId = uuidv4();
+    this.requestId = randomUUID();
     Error.captureStackTrace(this, this.constructor);
   }
 }
