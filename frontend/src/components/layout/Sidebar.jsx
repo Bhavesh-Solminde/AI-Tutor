@@ -11,13 +11,14 @@ import {
   BookMarked,
   Map,
   Lightbulb,
+  X,
 } from 'lucide-react';
 import NavItem from '../sidebar/NavItem';
 import CollapsibleSection from '../sidebar/CollapsibleSection';
 import ChatHistoryList from '../sidebar/ChatHistoryList';
 import NotesList from '../sidebar/NotesList';
 
-const Sidebar = () => {
+const Sidebar = ({ onClose }) => {
   const navigate = useNavigate();
 
   const coreNavItems = [
@@ -31,17 +32,29 @@ const Sidebar = () => {
   return (
     <aside className="w-[210px] flex-shrink-0 border-r border-border-light dark:border-border-dark bg-sidebar-light dark:bg-sidebar-dark flex flex-col justify-between h-screen sticky top-0 transition-colors duration-300">
       <div className="flex-grow flex flex-col overflow-y-auto min-h-0">
-        {/* Logo */}
-        <div className="p-4 border-b border-border-light dark:border-border-dark flex items-center space-x-2.5">
-          <div className="bg-primary/10 dark:bg-accent/10 p-1.5 rounded-lg text-primary dark:text-accent">
-            <Brain className="h-5 w-5" />
+        {/* Logo + mobile close button */}
+        <div className="p-4 border-b border-border-light dark:border-border-dark flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <div className="bg-primary/10 dark:bg-accent/10 p-1.5 rounded-lg text-primary dark:text-accent">
+              <Brain className="h-5 w-5" />
+            </div>
+            <span
+              className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white cursor-pointer"
+              onClick={() => { navigate('/dashboard'); onClose?.(); }}
+            >
+              NEURALNEST
+            </span>
           </div>
-          <span
-            className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white cursor-pointer"
-            onClick={() => navigate('/dashboard')}
-          >
-            NEURALNEST
-          </span>
+          {/* Close button — only visible on mobile */}
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="md:hidden p-1.5 rounded-lg text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+              aria-label="Close sidebar"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
 
         {/* Core Nav */}

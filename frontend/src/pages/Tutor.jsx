@@ -195,22 +195,22 @@ const Tutor = () => {
 
   return (
     <MainLayout>
-      <div className="font-inter absolute inset-0 pt-6 px-6 pb-2 md:pt-8 md:px-8 md:pb-3 flex flex-col justify-between overflow-hidden text-left bg-background-light dark:bg-background-dark">
+      <div className="font-inter absolute inset-0 pt-4 px-4 pb-2 md:pt-8 md:px-8 md:pb-3 flex flex-col justify-between overflow-hidden text-left bg-background-light dark:bg-background-dark">
         {messages.length > 0 && (
-          <div className="flex items-center justify-between border-b border-border-light dark:border-border-dark pb-4 mb-4">
-            <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center justify-between gap-y-2 border-b border-border-light dark:border-border-dark pb-4 mb-4">
+            <div className="flex items-center space-x-3 min-w-0">
               <button
                 onClick={() => navigate('/roadmap')}
-                className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+                className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
-              <div>
+              <div className="min-w-0">
                 <span className="text-[10px] font-sans tracking-wider uppercase text-primary dark:text-accent">Active Session</span>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">{topicName}</h2>
+                <h2 className="text-base md:text-lg font-bold text-slate-900 dark:text-white truncate">{topicName}</h2>
               </div>
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-shrink-0">
               {error && (
                 <button
                   onClick={retryLastMessage}
@@ -220,13 +220,12 @@ const Tutor = () => {
                   <span>Retry</span>
                 </button>
               )}
-              {/* Hide quiz button for open-mode — no topicId to quiz on */}
               {!isNewSession && (
                 <button
                   onClick={() => navigate(`/quiz/${topicId}`)}
-                  className="flex items-center space-x-2 px-4 py-2 text-xs font-bold text-white bg-primary hover:bg-primary-hover dark:bg-accent dark:hover:bg-accent/90 rounded-xl shadow-md transition-all duration-300"
+                  className="flex items-center space-x-1.5 md:space-x-2 px-3 md:px-4 py-1.5 md:py-2 text-xs font-bold text-white bg-primary hover:bg-primary-hover dark:bg-accent dark:hover:bg-accent/90 rounded-xl shadow-md transition-all duration-300"
                 >
-                  <span>Proceed to Quiz</span>
+                  <span>Quiz</span>
                   <ArrowRight className="h-4 w-4" />
                 </button>
               )}
