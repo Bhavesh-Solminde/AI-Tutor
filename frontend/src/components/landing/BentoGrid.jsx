@@ -50,7 +50,7 @@ const BentoGrid = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-16">
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">The ecosystem for mastery.</h2>
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">The ecosystem for mastery.</h2>
           <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl">Stop jumping between PDFs, generic ChatGPT tabs, and flashcard apps. NeuralNest natively integrates every tool you need.</p>
         </div>
 

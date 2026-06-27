@@ -66,8 +66,9 @@ module.exports = {
         }
       },
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        mono: ['JetBrains Mono', 'monospace']
+        display: ['"Bricolage Grotesque"', 'sans-serif'],  /* headlines / hero */
+        sans: ['"Plus Jakarta Sans"', 'sans-serif'],        /* body / UI text   */
+        mono: ['"Geist Mono"', 'monospace'],                /* code / labels    */
       }
     }
   },

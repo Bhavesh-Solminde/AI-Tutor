@@ -121,7 +121,7 @@ const HeroParallax = () => {
             style={reduceMotion ? {} : { y: fgY }}
             className="w-full flex flex-col items-center text-center"
           >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight flex flex-wrap justify-center">
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight flex flex-wrap justify-center">
               {words.map((word, idx) => (
                 <motion.span
                   key={idx}

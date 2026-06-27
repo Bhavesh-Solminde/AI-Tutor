@@ -130,7 +130,7 @@ const PinnedAgentGraph = () => {
           style={{ opacity: headerOp, y: headerY }}
           className="absolute top-[9%] text-center px-6 pointer-events-none w-full"
         >
-          <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
             Powered by <span className="text-[#3B6BFF]">LangGraph</span>.
           </h2>
           <p className="mt-3 text-slate-500 dark:text-slate-400 max-w-xl mx-auto text-base md:text-lg">

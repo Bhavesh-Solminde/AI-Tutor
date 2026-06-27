@@ -19,7 +19,7 @@ const HorizontalScrollSteps = () => {
     return (
       <section className="py-24 px-6 bg-white dark:bg-[#0B0F19] relative z-10 space-y-16">
         <div className="text-center">
-          <h2 className="text-3xl font-extrabold text-slate-900 dark:text-white">How it works</h2>
+          <h2 className="font-display text-3xl font-extrabold text-slate-900 dark:text-white">How it works</h2>
         </div>
         
         {/* Panel 1 */}
@@ -61,7 +61,7 @@ const HorizontalScrollSteps = () => {
           <div className="w-[100vw] h-full flex flex-col md:flex-row items-center justify-center p-12 md:p-24 relative">
             <div className="w-full md:w-1/2 pr-8">
               <div className="inline-block text-xs font-bold tracking-widest text-primary mb-4 uppercase">Step 01</div>
-              <h2 className="text-5xl font-extrabold text-slate-900 dark:text-white mb-6">Upload your syllabus.</h2>
+              <h2 className="font-display text-5xl font-extrabold text-slate-900 dark:text-white mb-6">Upload your syllabus.</h2>
               <p className="text-xl text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
                 NeuralNest extracts every topic, due date, and reading assignment directly from your course materials.
               </p>
@@ -92,7 +92,7 @@ const HorizontalScrollSteps = () => {
           <div className="w-[100vw] h-full flex flex-col md:flex-row items-center justify-center p-12 md:p-24 relative bg-slate-50 dark:bg-[#0f1322]">
             <div className="w-full md:w-1/2 pr-8">
               <div className="inline-block text-xs font-bold tracking-widest text-amber-500 mb-4 uppercase">Step 02</div>
-              <h2 className="text-5xl font-extrabold text-slate-900 dark:text-white mb-6">Agents build your map.</h2>
+              <h2 className="font-display text-5xl font-extrabold text-slate-900 dark:text-white mb-6">Agents build your map.</h2>
               <p className="text-xl text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
                 Our multi-agent system constructs a dynamic cognitive map, identifying dependencies and pre-requisite knowledge gaps.
               </p>
@@ -117,7 +117,7 @@ const HorizontalScrollSteps = () => {
           <div className="w-[100vw] h-full flex flex-col md:flex-row items-center justify-center p-12 md:p-24 relative">
             <div className="w-full md:w-1/2 pr-8">
               <div className="inline-block text-xs font-bold tracking-widest text-emerald-500 mb-4 uppercase">Step 03</div>
-              <h2 className="text-5xl font-extrabold text-slate-900 dark:text-white mb-6">Master the material.</h2>
+              <h2 className="font-display text-5xl font-extrabold text-slate-900 dark:text-white mb-6">Master the material.</h2>
               <p className="text-xl text-slate-600 dark:text-slate-400 max-w-md leading-relaxed">
                 As you learn and pass adaptive quizzes, your mastery rating deterministically increases until you're ready for the exam.
               </p>

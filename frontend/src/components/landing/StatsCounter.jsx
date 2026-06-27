@@ -69,7 +69,7 @@ const StatsCounter = () => {
         >
           {stats.map((stat, i) => (
             <motion.div key={i} variants={itemVariants} className="pt-8 md:pt-0 md:px-8 first:md:pl-0 last:md:pr-0 flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter mb-4 tabular-nums">
+              <h3 className="font-display text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter mb-4 tabular-nums">
                 <AnimatedCounter from={0} to={stat.value} suffix={stat.suffix} />
               </h3>
               <p className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">{stat.label}</p>

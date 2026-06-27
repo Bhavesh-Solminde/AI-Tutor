@@ -53,7 +53,7 @@ const FinalCTA = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 text-center"
+            className="font-display text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 text-center"
           >
             {words.map((word, index) => (
               <motion.span variants={child} key={index} className="inline-block mr-3 mb-2">

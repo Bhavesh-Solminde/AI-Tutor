@@ -27,7 +27,7 @@ const Testimonials = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-16 md:w-1/2"
+          className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-16 md:w-1/2"
         >
           Real learners. Real mastery.
         </motion.h2>
