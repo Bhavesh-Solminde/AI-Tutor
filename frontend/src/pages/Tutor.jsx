@@ -195,7 +195,7 @@ const Tutor = () => {
 
   return (
     <MainLayout>
-      <div className="absolute inset-0 pt-6 px-6 pb-2 md:pt-8 md:px-8 md:pb-3 flex flex-col justify-between overflow-hidden text-left bg-background-light dark:bg-background-dark">
+      <div className="font-inter absolute inset-0 pt-6 px-6 pb-2 md:pt-8 md:px-8 md:pb-3 flex flex-col justify-between overflow-hidden text-left bg-background-light dark:bg-background-dark">
         {messages.length > 0 && (
           <div className="flex items-center justify-between border-b border-border-light dark:border-border-dark pb-4 mb-4">
             <div className="flex items-center space-x-3">

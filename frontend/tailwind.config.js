@@ -69,6 +69,7 @@ module.exports = {
         display: ['"Bricolage Grotesque"', 'sans-serif'],  /* headlines / hero */
         sans: ['"Plus Jakarta Sans"', 'sans-serif'],        /* body / UI text   */
         mono: ['"Geist Mono"', 'monospace'],                /* code / labels    */
+        inter: ['Inter', 'sans-serif'],                     /* tutor / chat UI  */
       }
     }
   },
