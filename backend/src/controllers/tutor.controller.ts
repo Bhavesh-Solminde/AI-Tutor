@@ -7,6 +7,7 @@ import { runTutorGraph } from "../agents/graph";
 import { User } from "../models/User";
 import mongoose from "mongoose";
 import { createLogger } from "../config/logger";
+import { createEmitter } from "../utils/agentLogger";
 
 const log = createLogger("controller:tutor");
 
@@ -81,6 +82,9 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
         `Preferred explanation style: ${lp.preferredExplanationStyle}.`;
     }
 
+    // Create a bound emitter so all graph nodes can stream agent_log events
+    const emit = createEmitter(res);
+
     // Run LangGraph tutor graph
     const result = await runTutorGraph({
       userId,
@@ -97,7 +101,24 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       loopCount: 0, // Reset loop counter for each new user message
       learningProfile: profileStr,                      // ← ADD
       selfRatingBefore: topic?.selfRatingBefore ?? 0,   // ← ADD
-    });
+    }, emit);
+
+    // ── Resolve / auto-create ChatHistory BEFORE streaming ────────────────────
+    // IMPORTANT: Must happen before res.write([DONE]) because the frontend
+    // returns out of the SSE loop on [DONE] and never reads events after it.
+    let resolvedChatId = chatHistoryId;
+    if (!resolvedChatId) {
+      const autoChat = await ChatHistory.create({
+        userId,
+        section: "other",
+        title: message.length > 40 ? message.slice(0, 40) + "…" : message,
+        messages: [],
+      });
+      resolvedChatId = autoChat._id.toString();
+      log.info("Auto-created chat (no chatHistoryId supplied)", { newChatId: resolvedChatId, userId });
+      // Send ID immediately — frontend receives this BEFORE [DONE] and sets chatHistoryId
+      res.write(`data: ${JSON.stringify({ chatHistoryId: resolvedChatId })}\n\n`);
+    }
 
     // Stream the response in rapid batches of ~10 words with 5ms delay
     const words = result.explanation.split(" ");
@@ -118,22 +139,6 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       gradeClassification: result.gradeClassification ?? "UNDERSTOOD",
     })}\n\n`);
     res.write("data: [DONE]\n\n");
-
-    // Save message to ChatHistory
-    // If no chatHistoryId was supplied (open-mode lazy creation), auto-create one
-    let resolvedChatId = chatHistoryId;
-    if (!resolvedChatId) {
-      const autoChat = await ChatHistory.create({
-        userId,
-        section: "other",
-        title: message.length > 40 ? message.slice(0, 40) + "…" : message,
-        messages: [],
-      });
-      resolvedChatId = autoChat._id.toString();
-      log.info("Auto-created chat (no chatHistoryId supplied)", { newChatId: resolvedChatId, userId });
-      // Let the client know so it can store the ID for subsequent messages
-      res.write(`data: ${JSON.stringify({ chatHistoryId: resolvedChatId })}\n\n`);
-    }
 
     const chat = await ChatHistory.findByIdAndUpdate(
       resolvedChatId,
