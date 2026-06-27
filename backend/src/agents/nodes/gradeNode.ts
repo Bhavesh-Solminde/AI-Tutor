@@ -3,6 +3,7 @@ import { z } from "zod";
 import { AgentStateType } from "../state";
 import { env } from "../../config/env";
 import { createLogger } from "../../config/logger";
+import { type AgentLogFn } from "../../utils/agentLogger";
 
 const log = createLogger("agent:gradeNode");
 
@@ -25,8 +26,14 @@ const gradeSchema = z.object({
  * Uses withStructuredOutput so the enum is enforced — no JSON parsing needed.
  */
 export async function gradeNode(
-  state: AgentStateType
+  state: AgentStateType,
+  emit?: AgentLogFn
 ): Promise<Partial<AgentStateType>> {
+  const studentSnippet = state.message.length > 80
+    ? state.message.slice(0, 80) + "..."
+    : state.message;
+  emit?.("GRADE_NODE", `Student response received: "${studentSnippet}"`, "info");
+  emit?.("GRADE_NODE", `Grading response...`, "info");
   const model = new ChatOpenAI({
     model: "gpt-4o",
     temperature: 0.1,
@@ -80,6 +87,31 @@ Classify now.`,
     loopCount: state.loopCount,
   });
 
+  // Emit the verdict — this is the money moment
+  const currentLoop = state.loopCount ?? 0;
+  const nextAttempt = currentLoop + 1;
+  const loopCapHit = nextAttempt >= 3; // graph.ts caps at loopCount >= 3
+
+  const classificationMessages: Record<string, { msg: string; logType: "success" | "warn" | "info" }> = {
+    UNDERSTOOD: { msg: `Classification \u2192 UNDERSTOOD \u2713 \u00b7 advancing curriculum`, logType: "success" },
+    CONFUSED: {
+      msg: loopCapHit
+        ? `Classification \u2192 CONFUSED \u00b7 loop cap reached (3/3) \u00b7 ending session`
+        : `Classification \u2192 CONFUSED \u00b7 re-routing to simpler explanation mode`,
+      logType: "warn",
+    },
+    PARTIAL: {
+      msg: loopCapHit
+        ? `Classification \u2192 PARTIAL \u00b7 loop cap reached (3/3) \u00b7 ending session`
+        : `Classification \u2192 PARTIAL \u00b7 missing context \u00b7 re-routing to step_by_step mode (attempt ${nextAttempt}/3)`,
+      logType: "warn",
+    },
+    DOUBT: { msg: `Classification \u2192 DOUBT \u00b7 student has a specific question \u00b7 routing to doubtNode`, logType: "info" },
+  };
+  const verdict = classificationMessages[result.classification];
+  if (verdict) {
+    emit?.("GRADE_NODE", verdict.msg, verdict.logType);
+  }
   // Map classification to the nextAction and explanationMode that tutorNode will use
   // on the next loop iteration
   const actionMap: Record<

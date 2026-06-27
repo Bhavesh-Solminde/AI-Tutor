@@ -10,6 +10,7 @@ import {
 } from "../../pipelines/retriever";
 import { env } from "../../config/env";
 import { createLogger } from "../../config/logger";
+import { emitLog, type AgentLogFn } from "../../utils/agentLogger";
 
 const log = createLogger("agent:tutorNode");
 
@@ -34,8 +35,15 @@ const log = createLogger("agent:tutorNode");
  * can enforce the 3-loop safety cap.
  */
 export async function tutorNode(
-  state: AgentStateType
+  state: AgentStateType,
+  emit?: AgentLogFn
 ): Promise<Partial<AgentStateType>> {
+  const loop = state.loopCount ?? 0;
+  if (loop === 0) {
+    emit?.("TUTOR_NODE", `Starting explanation for "${state.topicName}" (mode: standard)`, "info");
+  } else {
+    emit?.("TUTOR_NODE", `Re-explaining in ${state.explanationMode} mode (attempt ${loop + 1}/3)`, "info");
+  }
   // ── Build namespace list for material search tool ─────────────────────────
   const allNamespaces: string[] = [];
   if (state.sessionId) {
@@ -49,10 +57,15 @@ export async function tutorNode(
   const searchMaterialsTool = tool(
     async ({ query }: { query: string }): Promise<string> => {
       log.info("Tool call: search_uploaded_materials", { query });
+      emit?.("TUTOR_NODE", `Searching uploaded materials: "${query}"`, "info");
       if (allNamespaces.length > 1) {
-        return await retrieveFromMultipleNamespaces(query, allNamespaces);
+        const result = await retrieveFromMultipleNamespaces(query, allNamespaces);
+        emit?.("TUTOR_NODE", `Retrieved context from ${allNamespaces.length} namespaces`, "info");
+        return result;
       } else if (allNamespaces.length === 1) {
-        return await retrieveContextByNamespace(query, allNamespaces[0]);
+        const result = await retrieveContextByNamespace(query, allNamespaces[0]);
+        emit?.("TUTOR_NODE", `Retrieved context from namespace (score ready)`, "info");
+        return result;
       } else if (state.userId) {
         return await retrieveFromAllUserSessions(query, state.userId);
       }
@@ -77,6 +90,7 @@ export async function tutorNode(
   const searchWebTool = tool(
     async ({ query }: { query: string }): Promise<string> => {
       log.info("Tool call: search_web", { query });
+      emit?.("TUTOR_NODE", `Searching web for supplementary examples: "${query}"`, "info");
       try {
         const { TavilySearch } = await import("@langchain/tavily");
         const search = new TavilySearch({ maxResults: 3 });
@@ -177,6 +191,8 @@ export async function tutorNode(
         toolCallsMade: toolCallCount,
         nextAction: parsed.next_action,
       });
+      emit?.("TUTOR_NODE", `Explanation generated · invoking GPT-4o (temp: 0.7)`, "info");
+      emit?.("TUTOR_NODE", `Explanation streamed · checkpoint question generated`, "success");
       return buildOutput(state, ragContext, parsed);
     }
 
