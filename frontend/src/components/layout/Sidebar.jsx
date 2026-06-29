@@ -44,17 +44,15 @@ const Sidebar = ({ onClose }) => {
             className="flex items-center space-x-2.5 cursor-pointer"
             onClick={() => go('/dashboard')}
           >
-            <div className="bg-primary/10 dark:bg-accent/10 p-1.5 rounded-lg text-primary dark:text-accent">
-              <Brain className="h-5 w-5" />
-            </div>
-            <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
+            <img src="/logo_without_text.png" alt="NeuralNest Logo" className="h-10 w-auto object-contain dark:invert dark:brightness-200" />
+            <span className="text-base font-extrabold tracking-tight text-[#333333] dark:text-white">
               NEURALNEST
             </span>
           </div>
           {/* Close button — only visible on mobile */}
           <button
             onClick={onClose}
-            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+            className="md:hidden p-1.5 rounded-lg text-[#666666] hover:text-[#333333] dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10 transition-colors"
             aria-label="Close sidebar"
           >
             <X className="h-4 w-4" />
@@ -80,7 +78,7 @@ const Sidebar = ({ onClose }) => {
                 { key: 'other', label: 'Other', Icon: Lightbulb, color: 'text-amber-500/80 dark:text-amber-400/80' },
               ].map(({ key, label, Icon, color }) => (
                 <div key={key}>
-                  <span className="text-[10px] font-sans font-bold tracking-widest uppercase text-slate-500 dark:text-slate-400 flex items-center gap-1.5 mb-1.5 mt-3 px-1">
+                  <span className="text-[10px] font-sans font-bold tracking-widest uppercase text-[#555555] dark:text-[#666666] flex items-center gap-1.5 mb-1.5 mt-3 px-1">
                     <Icon className={`h-3.5 w-3.5 ${color}`} />
                     {label}
                   </span>
@@ -100,7 +98,7 @@ const Sidebar = ({ onClose }) => {
       </div>
 
       {/* Footer: New Session */}
-      <div className="p-3 border-t border-border-light dark:border-border-dark bg-slate-50/50 dark:bg-sidebar-dark/40">
+      <div className="p-3 border-t border-border-light dark:border-border-dark bg-white/60/50 dark:bg-sidebar-dark/40">
         <button
           onClick={() => go('/tutor/new?section=other')}
           className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-cta hover:bg-cta-hover text-white text-xs font-bold rounded-xl shadow-md transition-all duration-300"
