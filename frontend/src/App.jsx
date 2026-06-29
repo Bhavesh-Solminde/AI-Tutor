@@ -6,6 +6,7 @@ import { ThemeProvider } from './hooks/useTheme';
 
 import useAuthStore from './stores/useAuthStore';
 import GlobalErrorFallback from './components/ui/ErrorFallback';
+import StudyMusicPlayer from './components/music/StudyMusicPlayer';
 
 // Pages
 import Landing from './pages/Landing';
@@ -119,6 +120,9 @@ function App() {
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>
+
+        {/* Study music player — mounted ONCE outside routes so it never remounts on navigation */}
+        <StudyMusicPlayer />
 
         {/* Global toast notifications — never silent failures */}
         <Toaster
