@@ -7,29 +7,29 @@ import { useTheme } from "../hooks/useTheme";
 
 // --- AGENT LOG SIMULATION DATA ---
 const LOG_LINES = [
-  { delay: 0,    node: "ROUTER",     msg: "Message classified → teach", type: "info" },
-  { delay: 600,  node: "TUTOR_NODE",  msg: "Searching ML_Syllabus.pdf (namespace: user_sess_42)...", type: "info" },
-  { delay: 1200, node: "TUTOR_NODE",  msg: "Retrieved 5 chunks · top score 0.94 · GPT-4o invoked", type: "info" },
-  { delay: 2800, node: "TUTOR_NODE",  msg: "Explanation streamed · checkpoint question generated", type: "success" },
-  { delay: 3600, node: "GRADE_NODE",  msg: "Student response received: \"the time quantum\"", type: "info" },
-  { delay: 4400, node: "GRADE_NODE",  msg: "Classification → PARTIAL · missing preemption mechanism", type: "warn" },
-  { delay: 5000, node: "GRADE_NODE",  msg: "Re-routing tutorNode · mode=step_by_step · attempt 2/3", type: "warn" },
-  { delay: 5800, node: "TUTOR_NODE",  msg: "Switching to step-by-step breakdown mode...", type: "info" },
-  { delay: 7200, node: "TUTOR_NODE",  msg: "Re-explanation streamed", type: "success" },
-  { delay: 8000, node: "GRADE_NODE",  msg: "Classification → UNDERSTOOD ✓ · advancing curriculum", type: "success" },
+  { delay: 0, node: "ROUTER", msg: "Message classified → teach", type: "info" },
+  { delay: 600, node: "TUTOR_NODE", msg: "Searching ML_Syllabus.pdf (namespace: user_sess_42)...", type: "info" },
+  { delay: 1200, node: "TUTOR_NODE", msg: "Retrieved 5 chunks · top score 0.94 · GPT-4o invoked", type: "info" },
+  { delay: 2800, node: "TUTOR_NODE", msg: "Explanation streamed · checkpoint question generated", type: "success" },
+  { delay: 3600, node: "GRADE_NODE", msg: "Student response received: \"the time quantum\"", type: "info" },
+  { delay: 4400, node: "GRADE_NODE", msg: "Classification → PARTIAL · missing preemption mechanism", type: "warn" },
+  { delay: 5000, node: "GRADE_NODE", msg: "Re-routing tutorNode · mode=step_by_step · attempt 2/3", type: "warn" },
+  { delay: 5800, node: "TUTOR_NODE", msg: "Switching to step-by-step breakdown mode...", type: "info" },
+  { delay: 7200, node: "TUTOR_NODE", msg: "Re-explanation streamed", type: "success" },
+  { delay: 8000, node: "GRADE_NODE", msg: "Classification → UNDERSTOOD ✓ · advancing curriculum", type: "success" },
 ];
 
 const NODE_COLORS = {
-  ROUTER:       "text-blue-400",
-  TUTOR_NODE:   "text-violet-400",
-  GRADE_NODE:   "text-amber-400",
-  DOUBT_NODE:   "text-emerald-400",
+  ROUTER: "text-blue-400",
+  TUTOR_NODE: "text-violet-400",
+  GRADE_NODE: "text-amber-400",
+  DOUBT_NODE: "text-emerald-400",
 };
 
 const TYPE_COLORS = {
-  info:    "text-slate-300",
+  info: "text-slate-300",
   success: "text-emerald-400",
-  warn:    "text-amber-400",
+  warn: "text-amber-400",
 };
 
 function AgentLog() {
@@ -116,11 +116,13 @@ const STEPS = [
     pinColor: "#e57a5b",
     pinHighlight: "#f4a98e",
     pinShadow: "#b8512e",
+    pinRim: "#8c3a1e",
     cardBg: "#fff8f5",
     cardBgDark: "#221915",
-    rotate: "-2.5deg",
+    rotate: "6deg",
     label: "Upload your syllabus",
-    detail: "NeuralNest extracts every topic, due date, and reading assignment directly from your course materials.",
+    detail:
+      "NeuralNest extracts every topic, due date, and reading assignment directly from your course materials — PDF, DOCX, or plain text.",
     tag: "topicExtractor.ts → Pinecone",
   },
   {
@@ -128,11 +130,13 @@ const STEPS = [
     pinColor: "#7a90e5",
     pinHighlight: "#a8b8f4",
     pinShadow: "#4a63c8",
+    pinRim: "#2e40a0",
     cardBg: "#f5f6ff",
     cardBgDark: "#161826",
-    rotate: "1.8deg",
+    rotate: "-7deg",
     label: "Agents build your map.",
-    detail: "Our multi-agent system constructs a dynamic cognitive map, identifying dependencies and pre-requisite knowledge gaps.",
+    detail:
+      "Our multi-agent system constructs a dynamic cognitive map, identifying concept dependencies and prerequisite knowledge gaps across your entire curriculum.",
     tag: "router → tutorNode → gradeNode",
   },
   {
@@ -140,11 +144,41 @@ const STEPS = [
     pinColor: "#7abbe5",
     pinHighlight: "#a8d8f4",
     pinShadow: "#4a8fb8",
+    pinRim: "#2e6a8c",
     cardBg: "#f5fbff",
     cardBgDark: "#131d2b",
-    rotate: "-1.5deg",
+    rotate: "5deg",
+    label: "Get a personalised study plan.",
+    detail:
+      "Based on your mastery gaps and exam timeline, the AI schedules daily micro-sessions — balancing spaced repetition with your real-world availability.",
+    tag: "plannerAgent.ts → scheduleEngine",
+  },
+  {
+    number: "04",
+    pinColor: "#e5c07a",
+    pinHighlight: "#f4d9a8",
+    pinShadow: "#b88c2e",
+    pinRim: "#8c6010",
+    cardBg: "#fffdf0",
+    cardBgDark: "#222115",
+    rotate: "-8deg",
+    label: "Learn through dialogue.",
+    detail:
+      "Chat with your AI tutor in real time. Ask questions, request re-explanations, and get worked examples — all grounded in your specific syllabus.",
+    tag: "tutorNode → OpenAI · GPT-4o",
+  },
+  {
+    number: "05",
+    pinColor: "#b07ae5",
+    pinHighlight: "#cea8f4",
+    pinShadow: "#7a4ac8",
+    pinRim: "#551e9e",
+    cardBg: "#faf5ff",
+    cardBgDark: "#1d1626",
+    rotate: "6deg",
     label: "Master the material.",
-    detail: "As you learn and pass adaptive quizzes, your mastery rating deterministically increases until you're ready for the exam.",
+    detail:
+      "As you pass adaptive quizzes, your mastery rating deterministically increases. When you hit 100% on every topic, you are exam-ready — no guesswork.",
     tag: "masteryCalculator.ts · no LLM",
   },
 ];
@@ -160,14 +194,14 @@ const STATS = [
 
 // --- COMPARISON ---
 const VS_ROWS = [
-  { feature: "Verifies student understood before moving on", nn: true,  others: false },
-  { feature: "Re-teaches in a different mode when confused",  nn: true,  others: false },
-  { feature: "Prerequisite dependency graph from your PDF",   nn: true,  others: false },
+  { feature: "Verifies student understood before moving on", nn: true, others: false },
+  { feature: "Re-teaches in a different mode when confused", nn: true, others: false },
+  { feature: "Prerequisite dependency graph from your PDF", nn: true, others: false },
   { feature: "Mastery = weighted formula, not quiz score only", nn: true, others: false },
   { feature: "PYQ frequency analysis for exam prioritization", nn: true, others: false },
-  { feature: "Persistent learning profile across sessions",   nn: true,  others: false },
-  { feature: "Generates a study plan around your exam date",  nn: true,  others: true  },
-  { feature: "Adaptive quizzes",                              nn: true,  others: true  },
+  { feature: "Persistent learning profile across sessions", nn: true, others: false },
+  { feature: "Generates a study plan around your exam date", nn: true, others: true },
+  { feature: "Adaptive quizzes", nn: true, others: true },
 ];
 
 // --- MAIN COMPONENT ---
@@ -187,9 +221,8 @@ export default function LandingPage() {
     <div className="min-h-screen bg-[#181818] text-white">
 
       {/* ── NAVBAR ── */}
-      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-[#181818]/90 backdrop-blur border-b border-white/10" : ""
-      }`}>
+      <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? "bg-[#181818]/90 backdrop-blur border-b border-white/10" : ""
+        }`}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-7 h-7 rounded-lg bg-[#3B6BFF] flex items-center justify-center text-sm font-black">
@@ -289,8 +322,29 @@ export default function LandingPage() {
         id="how"
         className="relative py-24 px-6 overflow-hidden bg-[#f6f5f1] dark:bg-[#181818]"
       >
+        {/* Horizontal ruled dashed lines spanning full section width (notebook-paper effect) */}
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ zIndex: 0 }}
+          aria-hidden="true"
+        >
+          {Array.from({ length: 28 }).map((_, idx) => (
+            <div
+              key={idx}
+              style={{
+                position: "absolute",
+                left: 0,
+                right: 0,
+                top: `${(idx + 1) * (100 / 29)}%`,
+                height: 0,
+                borderTop: `1.5px dashed ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
+              }}
+            />
+          ))}
+        </div>
+
         {/* ── Section header ── */}
-        <div className="text-center mb-20">
+        <div className="relative z-10 text-center mb-20">
           <p
             className="text-xs font-mono uppercase tracking-widest mb-3"
             style={{ color: "#9b8f7e" }}
@@ -300,107 +354,179 @@ export default function LandingPage() {
           <h2
             className="font-display text-4xl font-black tracking-tight text-[#1a1a1a] dark:text-white"
           >
-            Three steps. One agent loop.
+            Five steps. One agent loop.
           </h2>
         </div>
 
         {/* ── Timeline ── */}
-        <div className="relative max-w-4xl mx-auto mb-20">
-          {/* Curved connecting line (hidden on mobile) */}
-          <svg
-            className="hidden md:block absolute inset-0 w-full h-full pointer-events-none"
-            viewBox="0 0 100 100"
-            preserveAspectRatio="none"
-            style={{ zIndex: 0 }}
-          >
-            <path
-              d="M 22.5,12 Q 50,31 77.5,50 T 22.5,88"
-              fill="none"
-              stroke={isDark ? "rgba(255, 255, 255, 0.15)" : "#c8c4ba"}
-              strokeWidth="0.25"
-              strokeDasharray="1.2,1.2"
-            />
-          </svg>
-
+        <div className="relative max-w-4xl mx-auto mb-20" style={{ zIndex: 1 }}>
           <div className="flex flex-col gap-12 md:gap-0">
             {STEPS.map((step, i) => {
               const isLeft = i % 2 === 0;
+              // Diagonal connector definitions: left pin at 22%, right pin at 78%
+              const connectors = [
+                { x1: "22%", y1: "0%", x2: "78%", y2: "100%" },
+                { x1: "78%", y1: "0%", x2: "22%", y2: "100%" },
+                { x1: "22%", y1: "0%", x2: "78%", y2: "100%" },
+                { x1: "78%", y1: "0%", x2: "22%", y2: "100%" },
+              ];
+              const connector = connectors[i];
               return (
-                <div
-                  key={step.number}
-                  className={`relative z-10 flex flex-col md:flex-row ${
-                    isLeft ? "md:justify-start" : "md:justify-end"
-                  } ${i > 0 ? "md:-mt-20" : ""}`}
-                >
-                  <motion.div
-                    initial={{ opacity: 0, y: 32 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: "-80px" }}
-                    transition={{ duration: 0.5, delay: i * 0.1 }}
-                    whileHover={{ rotate: 0, scale: 1.02, transition: { duration: 0.25 } }}
-                    className="w-full md:w-[45%] max-w-[420px] rounded-3xl p-3 pt-12 relative bg-white dark:bg-[#222222] cursor-default"
-                    style={{
-                      border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
-                      boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.3)" : "0 10px 30px rgba(0,0,0,0.08)",
-                      rotate: step.rotate,
-                      transformOrigin: "center top",
-                    }}
+                <div key={step.number} className="relative">
+                  {/* Card row */}
+                  <div
+                    className={`relative z-10 flex flex-col md:flex-row ${isLeft ? "md:justify-start" : "md:justify-end"
+                      } ${i > 0 ? "md:-mt-16" : ""}`}
                   >
-                    {/* 3D Pin attached to the white outer card header */}
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+                    <div className="relative w-full md:w-[45%] max-w-[420px]">
+                      {/* Push-pin — matching reference exactly (placed outside motion.div to stay static and neutral) */}
                       <div
+                        className="absolute z-20"
                         style={{
-                          width: "22px",
-                          height: "22px",
-                          borderRadius: "50%",
-                          background: `radial-gradient(circle at 35% 35%, ${step.pinHighlight}, ${step.pinColor} 60%, ${step.pinShadow} 100%)`,
-                          boxShadow: `0 4px 10px ${step.pinColor}66, inset 0 -2px 4px rgba(0,0,0,0.2)`,
+                          top: "-22px",
+                          left: "50%",
+                          transform: "translateX(-50%)",
+                          width: "48px",
+                          height: "62px",
                         }}
-                      />
-                    </div>
+                      >
+                        {/* Soft oval shadow cast on card surface */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "2px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            width: "32px",
+                            height: "10px",
+                            borderRadius: "50%",
+                            background: `radial-gradient(ellipse, rgba(0,0,0,0.18) 0%, transparent 70%)`,
+                            zIndex: 0,
+                          }}
+                        />
+                        {/* Metallic spike/needle — thin tapered point */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            bottom: "4px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            width: "4px",
+                            height: "20px",
+                            background: `linear-gradient(to bottom, ${step.pinShadow}, #888 40%, #aaa 100%)`,
+                            borderRadius: "2px 2px 1px 1px",
+                            clipPath: "polygon(30% 0%, 70% 0%, 55% 100%, 45% 100%)",
+                            zIndex: 1,
+                          }}
+                        />
+                        {/* Base rim — small disc where head meets spike */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "34px",
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            width: "16px",
+                            height: "6px",
+                            borderRadius: "50%",
+                            background: `linear-gradient(to bottom, ${step.pinShadow}, ${step.pinRim})`,
+                            boxShadow: `0 1px 3px rgba(0,0,0,0.2)`,
+                            zIndex: 3,
+                          }}
+                        />
+                        {/* Main sphere dome — slightly oblate for 3/4 view */}
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 0,
+                            left: "50%",
+                            transform: "translateX(-50%)",
+                            width: "44px",
+                            height: "38px",
+                            borderRadius: "50%",
+                            background: `
+                              radial-gradient(ellipse at 32% 25%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 18%, transparent 40%),
+                              radial-gradient(ellipse at 40% 35%, ${step.pinHighlight} 0%, ${step.pinColor} 50%, ${step.pinShadow} 100%)
+                            `,
+                            boxShadow: `
+                              inset 0 -5px 12px rgba(0,0,0,0.25),
+                              inset 2px 2px 8px rgba(255,255,255,0.15),
+                              0 4px 14px ${step.pinColor}66
+                            `,
+                            zIndex: 4,
+                          }}
+                        />
+                      </div>
 
-                    {/* Inner colored card */}
+                      <motion.div
+                        initial={{ opacity: 0, y: 32 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        whileHover={{ rotate: 0, scale: 1.03, transition: { duration: 0.2 } }}
+                        viewport={{ once: true, margin: "-80px" }}
+                        transition={{ duration: 0.5, delay: i * 0.1 }}
+                        className="w-full rounded-3xl p-3 pt-14 relative bg-white dark:bg-[#222222] cursor-pointer"
+                        style={{
+                          border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                          boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.3)" : "0 10px 30px rgba(0,0,0,0.06)",
+                          rotate: (window.innerWidth < 768) ? "0deg" : step.rotate,
+                          transformOrigin: "center top",
+                        }}
+                      >
+                        {/* Inner coloured card */}
+                        <div
+                          className="rounded-2xl p-6"
+                          style={{ backgroundColor: isDark ? step.cardBgDark : step.cardBg }}
+                        >
+                          <p
+                            className="mb-2"
+                            style={{
+                              fontFamily: "'Caveat', cursive",
+                              fontWeight: 700,
+                              fontSize: "1.75rem",
+                              color: "#9b8f7e",
+                              letterSpacing: "0.02em",
+                              lineHeight: 1,
+                            }}
+                          >
+                            {step.number}
+                          </p>
+                          <h3 className="text-xl font-bold mb-3 text-[#1a1a1a] dark:text-white">
+                            {step.label}
+                          </h3>
+                          <p className="text-sm leading-relaxed text-[#555555] dark:text-slate-300">
+                            {step.detail}
+                          </p>
+                        </div>
+                      </motion.div>
+                    </div>
+                  </div>
+
+                  {/* Curved dashed connector to the next card — desktop only */}
+                  {connector && (
                     <div
-                      className="rounded-2xl p-6"
-                      style={{
-                        backgroundColor: isDark ? step.cardBgDark : step.cardBg,
-                      }}
+                      className="hidden md:block absolute pointer-events-none"
+                      style={{ left: 0, right: 0, top: "60%", height: "160px", zIndex: 0 }}
+                      aria-hidden="true"
                     >
-                      {/* Step number — handwritten style */}
-                      <p
-                        className="mb-2"
-                        style={{
-                          fontFamily: "'Caveat', cursive",
-                          fontWeight: 700,
-                          fontSize: "1.75rem",
-                          color: "#9b8f7e",
-                          letterSpacing: "0.02em",
-                          lineHeight: 1,
-                        }}
-                      >
-                        {step.number}
-                      </p>
-
-                      {/* Heading */}
-                      <h3
-                        className="text-xl font-bold mb-3 text-[#1a1a1a] dark:text-white"
-                      >
-                        {step.label}
-                      </h3>
-
-                      {/* Body */}
-                      <p
-                        className="text-sm leading-relaxed text-[#555555] dark:text-slate-300"
-                      >
-                        {step.detail}
-                      </p>
+                      <svg width="100%" height="100%" viewBox="0 0 800 160" preserveAspectRatio="xMidYMid meet">
+                        <path
+                          d={isLeft
+                            ? "M 180,0 Q 400,-40 620,160"
+                            : "M 620,0 Q 400,-40 180,160"
+                          }
+                          fill="none"
+                          stroke={isDark ? "rgba(255,255,255,0.3)" : "#9b9690"}
+                          strokeWidth="2"
+                          strokeDasharray="8 6"
+                          strokeLinecap="round"
+                        />
+                      </svg>
                     </div>
-                  </motion.div>
+                  )}
                 </div>
               );
             })}
           </div>
-
         </div>
 
         {/* Agent graph visual */}
@@ -464,9 +590,8 @@ export default function LandingPage() {
           {VS_ROWS.map((row, i) => (
             <div
               key={row.feature}
-              className={`grid grid-cols-3 px-6 py-4 text-sm items-center border-t border-white/5 ${
-                i % 2 === 0 ? "bg-[#0d1220]" : "bg-transparent"
-              }`}
+              className={`grid grid-cols-3 px-6 py-4 text-sm items-center border-t border-white/5 ${i % 2 === 0 ? "bg-[#0d1220]" : "bg-transparent"
+                }`}
             >
               <div className="text-slate-300 col-span-1 pr-4">{row.feature}</div>
               <div className="text-center text-xl">{row.nn ? "✓" : "✗"}</div>

@@ -1,16 +1,17 @@
-# Steps Section — Layout Redesign Spec
+﻿# Steps Section � Layout Redesign Spec
 
 ## Overview
 
-Change the **"How it works"** steps section on the landing page from the current **horizontal-scroll / full-viewport-panel** layout to a **staggered sticky-note / pinboard layout** — alternating left-right cards connected by a dashed vertical timeline.
+Change the **"How it works"** steps section on the landing page from the current **horizontal-scroll / full-viewport-panel** layout to a **staggered sticky-note / pinboard layout** � alternating left-right cards connected by a dashed vertical timeline.
 
 | | Current | Target |
 |---|---|---|
-| **Layout** | Horizontal scroll — 3 full-screen panels side-by-side | Vertical timeline — cards alternate left / right |
-| **Scroll behaviour** | `position: sticky` + scroll-jacked `translateX` | Normal page scroll — no scroll-jacking |
-| **Card style** | Dark glass-card (`bg-[#1A1F2E]`, white border) | Light "sticky note" card with a coloured pin icon |
+| **Layout** | Horizontal scroll � 3 full-screen panels side-by-side | Vertical timeline � cards alternate left / right |
+| **Scroll behaviour** | `position: sticky` + scroll-jacked `translateX` | Normal page scroll � no scroll-jacking |
+| **Card style** | Dark glass-card (`bg-[#1A1F2E]`, white border) | Light "sticky note" card, **strongly tilted**, with a 3D thumbtack pin |
 | **Background** | Dark (`#181818`) | Warm off-white `#f6f5f1` |
 | **Connection** | None | Dashed vertical line connecting the cards |
+| **Steps** | 3 | **5** |
 
 ---
 
@@ -18,112 +19,221 @@ Change the **"How it works"** steps section on the landing page from the current
 
 ### 1. [`frontend/src/components/landing/HorizontalScrollSteps.jsx`](file:///c:/Users/dhruv/Desktop/adaptive_ai/frontend/src/components/landing/HorizontalScrollSteps.jsx)
 
-Replace the entire component with the sticky-note layout below.  
-**Keep the same default export name** so existing imports don't break.
+Replace the entire component with the sticky-note layout below.
+**Keep the same default export name** so existing imports do not break.
 
 #### Layout Structure
 
 ```
 Section wrapper  (bg #f6f5f1, py-24, relative)
-│
-├── Section header  (centred)
-│     "How it works"
-│     "Three steps. One agent loop."
-│
-└── Timeline wrapper  (max-w-4xl mx-auto, relative)
-     │
-     ├── Vertical dashed line  (absolute, centred, full height)
-     │
-     ├── Step 01 card  ── LEFT-aligned  (45% width on md+)
-     │   ├── Pin — 3D sphere  (#e57a5b, centred top, radial-gradient + drop-shadow)
-     │   ├── "01"  (muted serif, #9b8f7e)
-     │   ├── Heading
-     │   ├── Body text
-     │   └── Tag pill
-     │
-     ├── Step 02 card  ── RIGHT-aligned
-     │   ├── Pin — 3D sphere  (#7a90e5)
-     │   └── ...
-     │
-     └── Step 03 card  ── LEFT-aligned
-         ├── Pin — 3D sphere  (#7abbe5)
-         └── ...
+|
++-- Section header  (centred)
+|     "How it works"
+|     "Five steps. One agent loop."
+|
++-- Timeline wrapper  (max-w-4xl mx-auto, relative)
+     |
+     +-- Vertical dashed line  (absolute, centred, full height)
+     |
+     +-- Step 01 card  -- LEFT-aligned  (45% width on md+, rotate -6deg)
+     |   +-- 3D Thumbtack Pin  (#e57a5b)
+     |   +-- "01"  (muted serif, #9b8f7e)
+     |   +-- Heading
+     |   +-- Body text
+     |   +-- Tag pill
+     |
+     +-- Step 02 card  -- RIGHT-aligned  (rotate +7deg)
+     |   +-- 3D Thumbtack Pin  (#7a90e5)
+     |
+     +-- Step 03 card  -- LEFT-aligned  (rotate -5deg)
+     |   +-- 3D Thumbtack Pin  (#7abbe5)
+     |
+     +-- Step 04 card  -- RIGHT-aligned  (rotate +8deg)
+     |   +-- 3D Thumbtack Pin  (#e5c07a)
+     |
+     +-- Step 05 card  -- LEFT-aligned  (rotate -6deg)
+         +-- 3D Thumbtack Pin  (#b07ae5)
 ```
 
 ---
 
-## Step Data (content unchanged)
+## Step Data (5 steps)
 
 ```js
 const STEPS = [
   {
     number: "01",
-    pinColor: "#e57a5b",   // warm orange-red
-    cardBg:  "#fff8f5",    // peachy warm white
-    label:  "Upload your syllabus",
-    detail: "NeuralNest extracts every topic, due date, and reading assignment directly from your course materials.",
-    tag:    "topicExtractor.ts → Pinecone",
+    pinColor: "#e57a5b",
+    pinHighlight: "#f4a98e",
+    pinShadow: "#b8512e",
+    pinRim: "#8c3a1e",
+    cardBg: "#fff8f5",
+    rotate: "-6deg",
+    label: "Upload your syllabus",
+    detail:
+      "NeuralNest extracts every topic, due date, and reading assignment directly from your course materials � PDF, DOCX, or plain text.",
+    tag: "topicExtractor.ts ? Pinecone",
   },
   {
     number: "02",
-    pinColor: "#7a90e5",   // periwinkle blue
-    cardBg:  "#f5f6ff",    // soft lavender
-    label:  "Agents build your map.",
-    detail: "Our multi-agent system constructs a dynamic cognitive map, identifying dependencies and pre-requisite knowledge gaps.",
-    tag:    "router → tutorNode → gradeNode",
+    pinColor: "#7a90e5",
+    pinHighlight: "#a8b8f4",
+    pinShadow: "#4a63c8",
+    pinRim: "#2e40a0",
+    cardBg: "#f5f6ff",
+    rotate: "7deg",
+    label: "Agents build your map.",
+    detail:
+      "Our multi-agent system constructs a dynamic cognitive map, identifying concept dependencies and prerequisite knowledge gaps across your entire curriculum.",
+    tag: "router ? tutorNode ? gradeNode",
   },
   {
     number: "03",
-    pinColor: "#7abbe5",   // sky blue
-    cardBg:  "#f5fbff",    // sky tint
-    label:  "Master the material.",
-    detail: "As you learn and pass adaptive quizzes, your mastery rating deterministically increases until you're ready for the exam.",
-    tag:    "masteryCalculator.ts · no LLM",
+    pinColor: "#7abbe5",
+    pinHighlight: "#a8d8f4",
+    pinShadow: "#4a8fb8",
+    pinRim: "#2e6a8c",
+    cardBg: "#f5fbff",
+    rotate: "-5deg",
+    label: "Get a personalised study plan.",
+    detail:
+      "Based on your mastery gaps and exam timeline, the AI schedules daily micro-sessions � balancing spaced repetition with your real-world availability.",
+    tag: "plannerAgent.ts ? scheduleEngine",
+  },
+  {
+    number: "04",
+    pinColor: "#e5c07a",
+    pinHighlight: "#f4d9a8",
+    pinShadow: "#b88c2e",
+    pinRim: "#8c6010",
+    cardBg: "#fffdf0",
+    rotate: "8deg",
+    label: "Learn through dialogue.",
+    detail:
+      "Chat with your AI tutor in real time. Ask questions, request re-explanations, and get worked examples � all grounded in your specific syllabus.",
+    tag: "tutorNode ? OpenAI � GPT-4o",
+  },
+  {
+    number: "05",
+    pinColor: "#b07ae5",
+    pinHighlight: "#cea8f4",
+    pinShadow: "#7a4ac8",
+    pinRim: "#551e9e",
+    cardBg: "#faf5ff",
+    rotate: "-6deg",
+    label: "Master the material.",
+    detail:
+      "As you pass adaptive quizzes, your mastery rating deterministically increases. When you hit 100% on every topic, you are exam-ready � no guesswork.",
+    tag: "masteryCalculator.ts � no LLM",
   },
 ];
 ```
 
 ---
 
-## 3D Pin Design
+## Card Tilt Design
 
-The pin icon on top of each card should have a **3D sphere appearance** using CSS radial gradients and a drop shadow:
+Each card is rotated using CSS `transform: rotate(Ndeg)`. Left-side cards tilt slightly **counter-clockwise** (negative); right-side cards tilt **clockwise** (positive).
+
+**Updated rotation values (more pronounced than before):**
+
+| Step | Side | Rotation |
+|---|---|---|
+| 01 | Left | `-6deg` |
+| 02 | Right | `+7deg` |
+| 03 | Left | `-5deg` |
+| 04 | Right | `+8deg` |
+| 05 | Left | `-6deg` |
+
+Apply via inline style on the `motion.div` wrapper:
 
 ```jsx
-{/* 3D Pin */}
-<div className="flex justify-center mb-5">
-  <div
-    style={{
-      width: "22px",
-      height: "22px",
-      borderRadius: "50%",
-      background: `radial-gradient(circle at 35% 35%, ${lighten(step.pinColor)}, ${step.pinColor} 60%, ${darken(step.pinColor)} 100%)`,
-      boxShadow: `0 4px 10px ${step.pinColor}88, inset 0 -2px 4px rgba(0,0,0,0.2)`,
-    }}
-  />
+style={{
+  transform: `rotate(${step.rotate})`,
+  border: "1px solid rgba(0,0,0,0.08)",
+  boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
+}}
+```
+
+> **Tip:** Add a `whileHover={{ rotate: 0, scale: 1.03 }}` on the `motion.div` so the card snaps upright on hover � gives a satisfying "picked up" feel.
+
+---
+
+## 3D Thumbtack Pin Design
+
+The pin must look like a **real physical thumbtack** � you should see both the **shiny domed top** and a hint of the **coloured underside rim**, giving true 3D depth.
+
+### Visual anatomy
+
+```
+        .-------.      <- shiny dome top  (radial highlight top-left)
+       /  bright \
+      |   base    |    <- main colour body
+       \   dark  /
+        `-------'
+        #########      <- flat rim / underside  (darker shade, visible below dome)
+```
+
+### CSS approach � two-layer stack
+
+```jsx
+{/* 3D Thumbtack Pin */}
+<div className="flex justify-center mb-5" style={{ perspective: "80px" }}>
+  <div style={{ position: "relative", width: "26px", height: "30px" }}>
+
+    {/* Dome (top face) */}
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        width: "26px",
+        height: "26px",
+        borderRadius: "50%",
+        background: `radial-gradient(
+          circle at 32% 30%,
+          ${step.pinHighlight} 0%,
+          ${step.pinColor}     55%,
+          ${step.pinShadow}    100%
+        )`,
+        boxShadow: `
+          0 4px 12px ${step.pinColor}88,
+          inset 0 -3px 6px rgba(0,0,0,0.25),
+          inset 2px 2px 4px rgba(255,255,255,0.35)
+        `,
+        transform: "rotateX(-20deg)",
+        transformOrigin: "center bottom",
+        zIndex: 2,
+      }}
+    />
+
+    {/* Rim / underside */}
+    <div
+      style={{
+        position: "absolute",
+        bottom: 0,
+        left: "3px",
+        width: "20px",
+        height: "6px",
+        borderRadius: "0 0 50% 50%",
+        background: `linear-gradient(to bottom, ${step.pinShadow}, ${step.pinRim})`,
+        zIndex: 1,
+      }}
+    />
+
+  </div>
 </div>
 ```
 
-Since React doesn't have built-in lighten/darken, use **hardcoded highlight colors** per step:
+### Per-step pin colours
 
-| Step | Base color | Highlight (top-left) | Shadow color |
-|---|---|---|---|
-| 01 | `#e57a5b` | `#f4a98e` | `#b8512e` |
-| 02 | `#7a90e5` | `#a8b8f4` | `#4a63c8` |
-| 03 | `#7abbe5` | `#a8d8f4` | `#4a8fb8` |
-
-```jsx
-// Add pinHighlight to each STEPS entry, then use:
-<div
-  style={{
-    width: "22px",
-    height: "22px",
-    borderRadius: "50%",
-    background: `radial-gradient(circle at 35% 35%, ${step.pinHighlight}, ${step.pinColor} 60%, ${step.pinShadow} 100%)`,
-    boxShadow: `0 4px 10px ${step.pinColor}88, inset 0 -2px 4px rgba(0,0,0,0.2)`,
-  }}
-/>
-```
+| Step | Base | Highlight | Shadow | Rim |
+|---|---|---|---|---|
+| 01 | `#e57a5b` | `#f4a98e` | `#b8512e` | `#8c3a1e` |
+| 02 | `#7a90e5` | `#a8b8f4` | `#4a63c8` | `#2e40a0` |
+| 03 | `#7abbe5` | `#a8d8f4` | `#4a8fb8` | `#2e6a8c` |
+| 04 | `#e5c07a` | `#f4d9a8` | `#b88c2e` | `#8c6010` |
+| 05 | `#b07ae5` | `#cea8f4` | `#7a4ac8` | `#551e9e` |
 
 ---
 
@@ -138,33 +248,65 @@ const STEPS = [
     pinColor: "#e57a5b",
     pinHighlight: "#f4a98e",
     pinShadow: "#b8512e",
+    pinRim: "#8c3a1e",
     cardBg: "#fff8f5",
+    rotate: "-6deg",
     label: "Upload your syllabus",
     detail:
-      "NeuralNest extracts every topic, due date, and reading assignment directly from your course materials.",
-    tag: "topicExtractor.ts → Pinecone",
+      "NeuralNest extracts every topic, due date, and reading assignment directly from your course materials � PDF, DOCX, or plain text.",
+    tag: "topicExtractor.ts ? Pinecone",
   },
   {
     number: "02",
     pinColor: "#7a90e5",
     pinHighlight: "#a8b8f4",
     pinShadow: "#4a63c8",
+    pinRim: "#2e40a0",
     cardBg: "#f5f6ff",
+    rotate: "7deg",
     label: "Agents build your map.",
     detail:
-      "Our multi-agent system constructs a dynamic cognitive map, identifying dependencies and pre-requisite knowledge gaps.",
-    tag: "router → tutorNode → gradeNode",
+      "Our multi-agent system constructs a dynamic cognitive map, identifying concept dependencies and prerequisite knowledge gaps across your entire curriculum.",
+    tag: "router ? tutorNode ? gradeNode",
   },
   {
     number: "03",
     pinColor: "#7abbe5",
     pinHighlight: "#a8d8f4",
     pinShadow: "#4a8fb8",
+    pinRim: "#2e6a8c",
     cardBg: "#f5fbff",
+    rotate: "-5deg",
+    label: "Get a personalised study plan.",
+    detail:
+      "Based on your mastery gaps and exam timeline, the AI schedules daily micro-sessions � balancing spaced repetition with your real-world availability.",
+    tag: "plannerAgent.ts ? scheduleEngine",
+  },
+  {
+    number: "04",
+    pinColor: "#e5c07a",
+    pinHighlight: "#f4d9a8",
+    pinShadow: "#b88c2e",
+    pinRim: "#8c6010",
+    cardBg: "#fffdf0",
+    rotate: "8deg",
+    label: "Learn through dialogue.",
+    detail:
+      "Chat with your AI tutor in real time. Ask questions, request re-explanations, and get worked examples � all grounded in your specific syllabus.",
+    tag: "tutorNode ? OpenAI � GPT-4o",
+  },
+  {
+    number: "05",
+    pinColor: "#b07ae5",
+    pinHighlight: "#cea8f4",
+    pinShadow: "#7a4ac8",
+    pinRim: "#551e9e",
+    cardBg: "#faf5ff",
+    rotate: "-6deg",
     label: "Master the material.",
     detail:
-      "As you learn and pass adaptive quizzes, your mastery rating deterministically increases until you're ready for the exam.",
-    tag: "masteryCalculator.ts · no LLM",
+      "As you pass adaptive quizzes, your mastery rating deterministically increases. When you hit 100% on every topic, you are exam-ready � no guesswork.",
+    tag: "masteryCalculator.ts � no LLM",
   },
 ];
 
@@ -174,7 +316,7 @@ export default function HorizontalScrollSteps() {
       id="how"
       className="relative py-24 px-6 overflow-hidden bg-[#f6f5f1] dark:bg-[#181818]"
     >
-      {/* ── Section header ── */}
+      {/* Section header */}
       <div className="text-center mb-20">
         <p
           className="text-xs font-mono uppercase tracking-widest mb-3"
@@ -185,11 +327,11 @@ export default function HorizontalScrollSteps() {
         <h2
           className="font-display text-4xl font-black tracking-tight text-[#1a1a1a] dark:text-white"
         >
-          Three steps. One agent loop.
+          Five steps. One agent loop.
         </h2>
       </div>
 
-      {/* ── Timeline ── */}
+      {/* Timeline */}
       <div className="relative max-w-4xl mx-auto">
 
         {/* Curved connecting line (hidden on mobile) */}
@@ -200,7 +342,7 @@ export default function HorizontalScrollSteps() {
           style={{ zIndex: 0 }}
         >
           <path
-            d="M 22.5,12 Q 50,31 77.5,50 T 22.5,88"
+            d="M 22.5,8 Q 50,23 77.5,38 T 22.5,58 T 77.5,78 T 22.5,95"
             fill="none"
             stroke="#c8c4ba"
             strokeWidth="0.25"
@@ -216,62 +358,82 @@ export default function HorizontalScrollSteps() {
                 key={step.number}
                 className={`relative z-10 flex flex-col md:flex-row ${
                   isLeft ? "md:justify-start" : "md:justify-end"
-                } ${i > 0 ? "md:-mt-20" : ""}`}
+                } ${i > 0 ? "md:-mt-16" : ""}`}
               >
                 <motion.div
                   initial={{ opacity: 0, y: 32 }}
                   whileInView={{ opacity: 1, y: 0 }}
+                  whileHover={{ rotate: 0, scale: 1.03, transition: { duration: 0.2 } }}
                   viewport={{ once: true, margin: "-80px" }}
                   transition={{ duration: 0.5, delay: i * 0.1 }}
-                  className="w-full md:w-[45%] max-w-[420px] rounded-3xl p-3 pt-12 relative bg-white"
+                  className="w-full md:w-[45%] max-w-[420px] rounded-3xl p-3 pt-12 relative bg-white cursor-pointer"
                   style={{
+                    rotate: step.rotate,
                     border: "1px solid rgba(0,0,0,0.08)",
                     boxShadow: "0 10px 30px rgba(0,0,0,0.06)",
                   }}
                 >
-                  {/* 3D Pin attached to the white outer card header */}
-                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
-                    <div
-                      style={{
-                        width: "22px",
-                        height: "22px",
-                        borderRadius: "50%",
-                        background: `radial-gradient(circle at 35% 35%, ${step.pinHighlight}, ${step.pinColor} 60%, ${step.pinShadow} 100%)`,
-                        boxShadow: `0 4px 10px ${step.pinColor}66, inset 0 -2px 4px rgba(0,0,0,0.2)`,
-                      }}
-                    />
+                  {/* 3D Thumbtack Pin */}
+                  <div
+                    className="absolute top-3 left-1/2 -translate-x-1/2 z-20"
+                    style={{ perspective: "80px" }}
+                  >
+                    <div style={{ position: "relative", width: "26px", height: "30px" }}>
+                      {/* Dome */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          top: 0,
+                          left: 0,
+                          width: "26px",
+                          height: "26px",
+                          borderRadius: "50%",
+                          background: `radial-gradient(circle at 32% 30%, ${step.pinHighlight} 0%, ${step.pinColor} 55%, ${step.pinShadow} 100%)`,
+                          boxShadow: `0 4px 12px ${step.pinColor}88, inset 0 -3px 6px rgba(0,0,0,0.25), inset 2px 2px 4px rgba(255,255,255,0.35)`,
+                          transform: "rotateX(-20deg)",
+                          transformOrigin: "center bottom",
+                          zIndex: 2,
+                        }}
+                      />
+                      {/* Rim / underside */}
+                      <div
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: "3px",
+                          width: "20px",
+                          height: "6px",
+                          borderRadius: "0 0 50% 50%",
+                          background: `linear-gradient(to bottom, ${step.pinShadow}, ${step.pinRim})`,
+                          zIndex: 1,
+                        }}
+                      />
+                    </div>
                   </div>
 
-                  {/* Inner colored card */}
+                  {/* Inner coloured card */}
                   <div
                     className="rounded-2xl p-6"
-                    style={{
-                      backgroundColor: step.cardBg,
-                    }}
+                    style={{ backgroundColor: step.cardBg }}
                   >
-                    {/* Step number */}
                     <p
                       className="text-2xl font-bold mb-2"
                       style={{ color: "#9b8f7e", fontFamily: "Georgia, serif" }}
                     >
                       {step.number}
                     </p>
-
-                    {/* Heading */}
-                    <h3
-                      className="text-xl font-bold mb-3"
-                      style={{ color: "#1a1a1a" }}
-                    >
+                    <h3 className="text-xl font-bold mb-3" style={{ color: "#1a1a1a" }}>
                       {step.label}
                     </h3>
-
-                    {/* Body */}
-                    <p
-                      className="text-sm leading-relaxed"
-                      style={{ color: "#555555" }}
-                    >
+                    <p className="text-sm leading-relaxed mb-4" style={{ color: "#555555" }}>
                       {step.detail}
                     </p>
+                    <span
+                      className="text-xs font-mono px-3 py-1 rounded-full"
+                      style={{ background: "rgba(0,0,0,0.05)", color: "#6b6b6b" }}
+                    >
+                      {step.tag}
+                    </span>
                   </div>
                 </motion.div>
               </div>
@@ -291,12 +453,16 @@ export default function HorizontalScrollSteps() {
 | Usage | Hex |
 |---|---|
 | Section background | `#f6f5f1` |
-| Card bg — Step 01 | `#fff8f5` (peachy warm white) |
-| Card bg — Step 02 | `#f5f6ff` (soft lavender) |
-| Card bg — Step 03 | `#f5fbff` (sky tint) |
-| Pin — Step 01 | `#e57a5b` (warm orange-red) |
-| Pin — Step 02 | `#7a90e5` (periwinkle blue) |
-| Pin — Step 03 | `#7abbe5` (sky blue) |
+| Card bg � Step 01 | `#fff8f5` (peachy warm white) |
+| Card bg � Step 02 | `#f5f6ff` (soft lavender) |
+| Card bg � Step 03 | `#f5fbff` (sky tint) |
+| Card bg � Step 04 | `#fffdf0` (warm cream) |
+| Card bg � Step 05 | `#faf5ff` (lavender mist) |
+| Pin � Step 01 | `#e57a5b` (warm orange-red) |
+| Pin � Step 02 | `#7a90e5` (periwinkle blue) |
+| Pin � Step 03 | `#7abbe5` (sky blue) |
+| Pin � Step 04 | `#e5c07a` (golden yellow) |
+| Pin � Step 05 | `#b07ae5` (soft violet) |
 | Dashed connector line | `#c8c4ba` |
 | Step number | `#9b8f7e` (muted warm tan) |
 | Heading text | `#1a1a1a` |
@@ -306,14 +472,15 @@ export default function HorizontalScrollSteps() {
 
 ---
 
-## Also Update: `LandingPage2.jsx` (lines 262–329)
+## Also Update: `LandingPage2.jsx` (lines 262�329)
 
 The inline "How it works" section in [`LandingPage2.jsx`](file:///c:/Users/dhruv/Desktop/adaptive_ai/frontend/src/pages/LandingPage2.jsx) uses a dark `grid lg:grid-cols-3 gap-6` layout.
 
 Apply the same pinboard style there:
 - Change the `<section>` background to `style={{ backgroundColor: "#f6f5f1" }}`
-- Replace the `grid lg:grid-cols-3` step cards with the alternating left/right layout above.
-- Keep all step text content unchanged.
+- Replace the `grid lg:grid-cols-3` step cards with the alternating left/right layout above (all 5 steps).
+- Update the subtitle to **"Five steps. One agent loop."**
+- Keep all step text content consistent with the STEPS array above.
 
 ---
 
@@ -321,8 +488,10 @@ Apply the same pinboard style there:
 
 | Breakpoint | Behaviour |
 |---|---|
-| `< md` (mobile) | All cards stacked full-width, centred; dashed line hidden |
-| `≥ md` (tablet +) | Cards alternate left / right at 45% width; dashed line visible |
+| `< md` (mobile) | All cards stacked full-width, centred, **no rotation** (reset to 0deg for readability); dashed line hidden |
+| `>= md` (tablet +) | Cards alternate left / right at 45% width; dashed line visible; tilts applied |
+
+> **Note:** On mobile, set `rotate: "0deg"` to prevent tilted cards from clipping the viewport edges.
 
 ---
 
@@ -331,6 +500,9 @@ Apply the same pinboard style there:
 1. **Remove** the `h-[300vh]` scroll-jack container, `sticky` positioning, and `motion.div x` transform from `HorizontalScrollSteps.jsx`.
 2. **Replace** with a vertically stacked, alternating left/right "sticky note" card layout.
 3. **Change** section background from dark (`#181818`) to warm off-white (`#f6f5f1`).
-4. **Updated** step content to new labels and detail text.
-5. **3D pins** via `radial-gradient` with per-step highlight, base, and shadow colors + `box-shadow` glow.
-6. **Update** any parent wrapper in `Landing.jsx` that applies a dark background colour to this section.
+4. **Expand** steps from **3 to 5**: added _"Get a personalised study plan"_ (Step 03) and _"Learn through dialogue"_ (Step 04).
+5. **Stronger card tilts**: `-6 / +7 / -5 / +8 / -6 deg` (previously �3�4 deg).
+6. **True 3D thumbtack pin**: dome layer (`rotateX(-20deg)`) + flat rim underside � both top and underside are visible.
+7. **Hover interaction**: cards snap to `rotate(0)` + slight scale-up on hover.
+8. **Updated** SVG connector path to span all 5 steps with a longer serpentine curve.
+9. **Update** any parent wrapper in `Landing.jsx` that applies a dark background colour to this section.
