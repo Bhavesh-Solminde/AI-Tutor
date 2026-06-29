@@ -9,24 +9,24 @@ module.exports = {
     extend: {
       colors: {
         background: {
-          light: '#F9FAFB',
-          dark: '#000000'
+          light: '#F6F5F1',
+          dark: '#181818'
         },
         sidebar: {
           light: '#F3F4F6',
-          dark: '#090909'
+          dark: '#1C1C1C'
         },
         surface: {
           light: '#FFFFFF',
-          dark: '#121212'
+          dark: '#222222'
         },
         elevated: {
           light: '#FFFFFF',
-          dark: '#1E1E1E'
+          dark: '#2A2A2A'
         },
         border: {
           light: '#E5E7EB',
-          dark: '#262626'
+          dark: '#333333'
         },
         cta: {
           DEFAULT: '#3B6BFF',
@@ -34,14 +34,14 @@ module.exports = {
         },
         'active-sidebar': {
           light: '#EFF6FF',
-          dark: '#222222'
+          dark: '#333333'
         },
         'text-primary': {
-          light: '#1F2937',
+          light: '#333333',
           dark: '#F3F4F6'
         },
         'text-muted': {
-          light: '#6B7280',
+          light: '#555555',
           dark: '#9CA3AF'
         },
         'wrong-answer': {
@@ -66,10 +66,10 @@ module.exports = {
         }
       },
       fontFamily: {
-        display: ['"Bricolage Grotesque"', 'sans-serif'],  /* headlines / hero */
-        sans: ['"Plus Jakarta Sans"', 'sans-serif'],        /* body / UI text   */
-        mono: ['"Geist Mono"', 'monospace'],                /* code / labels    */
-        inter: ['Inter', 'sans-serif'],                     /* tutor / chat UI  */
+        display: ['"Instrument Serif"', 'serif'],
+        sans: ['"SF Pro"', '-apple-system', 'BlinkMacSystemFont', 'Helvetica', 'Poppins', 'sans-serif'],
+        mono: ['"Geist Mono"', 'monospace'],
+        inter: ['Poppins', 'sans-serif'],
       }
     }
   },
