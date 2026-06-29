@@ -16,7 +16,7 @@ const Landing = () => {
   return (
     // Removed Forced Dark Wrapper so ThemeToggle can work globally
     // Removed overflow-x-hidden because it breaks position: sticky for all children
-    <div className="min-h-screen bg-[#F6F5F1] dark:bg-[#0B0F19] text-[#333333] dark:text-slate-200 font-sans selection:bg-primary/30 relative transition-colors duration-300">
+    <div className="min-h-screen bg-[#F6F5F1] dark:bg-[#181818] text-[#333333] dark:text-slate-200 font-sans selection:bg-primary/30 relative transition-colors duration-300">
 
       {/* Basic global fade animation for demo */}
       <style>{`
@@ -58,7 +58,7 @@ const Landing = () => {
       <FinalCTA />
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-slate-200 dark:border-white/5 py-12 px-6 relative z-10">
+      <footer className="border-t border-[#EAE8E1] dark:border-white/5 py-12 px-6 relative z-10">
         {/* Prototype Disclaimer */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="flex items-start space-x-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs">
@@ -73,16 +73,16 @@ const Landing = () => {
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between">
           <div className="flex items-center space-x-2 mb-4 md:mb-0">
             <Brain className="h-5 w-5 text-primary" />
-            <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+            <span className="text-lg font-bold tracking-tight text-[#333333] dark:text-white">
               NEURALNEST
             </span>
           </div>
-          <div className="flex space-x-6 text-sm text-slate-500 dark:text-slate-400 mb-4 md:mb-0">
-            <Link to="/privacy" className="hover:text-slate-700 dark:hover:text-white transition-colors">Privacy</Link>
-            <Link to="/terms" className="hover:text-slate-700 dark:hover:text-white transition-colors">Terms</Link>
-            <Link to="/contact" className="hover:text-slate-700 dark:hover:text-white transition-colors">Contact</Link>
+          <div className="flex space-x-6 text-sm text-[#555555] dark:text-[#666666] mb-4 md:mb-0">
+            <Link to="/privacy" className="hover:text-[#333333] dark:hover:text-white transition-colors">Privacy</Link>
+            <Link to="/terms" className="hover:text-[#333333] dark:hover:text-white transition-colors">Terms</Link>
+            <Link to="/contact" className="hover:text-[#333333] dark:hover:text-white transition-colors">Contact</Link>
           </div>
-          <div className="text-sm text-slate-500 dark:text-slate-600">
+          <div className="text-sm text-[#555555] dark:text-[#4A4A4A]">
             &copy; {new Date().getFullYear()} NeuralNest OS. All rights reserved.
           </div>
         </div>

@@ -62,13 +62,13 @@ function AgentLog() {
   const timeStr = `${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
   return (
-    <div className="rounded-xl border border-white/10 bg-[#0B0F19] overflow-hidden shadow-2xl shadow-blue-950/50">
+    <div className="rounded-xl border border-white/10 bg-[#181818] overflow-hidden shadow-2xl shadow-blue-950/50">
       {/* Terminal header */}
       <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10 bg-[#0d1220]">
         <span className="w-3 h-3 rounded-full bg-red-500/70" />
         <span className="w-3 h-3 rounded-full bg-yellow-500/70" />
         <span className="w-3 h-3 rounded-full bg-emerald-500/70" />
-        <span className="ml-3 text-xs text-slate-500 font-mono tracking-widest uppercase">
+        <span className="ml-3 text-xs text-[#555555] font-mono tracking-widest uppercase">
           Agent System Log — Live
         </span>
         <span className="ml-auto flex items-center gap-1.5">
@@ -88,8 +88,8 @@ function AgentLog() {
             key={line.id}
             className="flex gap-3 animate-fadeIn"
           >
-            <span className="text-slate-600 shrink-0">[{timeStr}]</span>
-            <span className={`shrink-0 font-bold ${NODE_COLORS[line.node] || "text-slate-400"}`}>
+            <span className="text-[#4A4A4A] shrink-0">[{timeStr}]</span>
+            <span className={`shrink-0 font-bold ${NODE_COLORS[line.node] || "text-[#666666]"}`}>
               {line.node}
             </span>
             <span className={TYPE_COLORS[line.type]}>{line.msg}</span>
@@ -97,8 +97,8 @@ function AgentLog() {
         ))}
         {/* blinking cursor */}
         <div className="flex gap-3">
-          <span className="text-slate-600">[{timeStr}]</span>
-          <span className="text-slate-600 animate-pulse">█</span>
+          <span className="text-[#4A4A4A]">[{timeStr}]</span>
+          <span className="text-[#4A4A4A] animate-pulse">█</span>
         </div>
       </div>
     </div>
@@ -159,11 +159,11 @@ export default function LandingPage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0B0F19] text-white">
+    <div className="min-h-screen bg-[#181818] text-white">
 
       {/* ── NAVBAR ── */}
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
-        scrolled ? "bg-[#0B0F19]/90 backdrop-blur border-b border-white/10" : ""
+        scrolled ? "bg-[#181818]/90 backdrop-blur border-b border-white/10" : ""
       }`}>
         <div className="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -173,15 +173,15 @@ export default function LandingPage() {
             <span className="font-bold tracking-tight text-white">NeuralNest</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#how" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">
+            <a href="#how" className="text-sm text-[#666666] hover:text-white transition-colors hidden sm:block">
               How it works
             </a>
-            <a href="#compare" className="text-sm text-slate-400 hover:text-white transition-colors hidden sm:block">
+            <a href="#compare" className="text-sm text-[#666666] hover:text-white transition-colors hidden sm:block">
               Compare
             </a>
             <button
               onClick={() => navigate("/login")}
-              className="text-sm text-slate-400 hover:text-white transition-colors"
+              className="text-sm text-[#666666] hover:text-white transition-colors"
             >
               Log in
             </button>
@@ -210,7 +210,7 @@ export default function LandingPage() {
             {" "}and re-teaches until you're not.
           </h1>
 
-          <p className="text-slate-400 text-lg leading-relaxed max-w-lg">
+          <p className="text-[#666666] text-lg leading-relaxed max-w-lg">
             Upload your syllabus. NeuralNest maps every topic, teaches you one concept at a time,
             grades your understanding after each explanation, and only advances when you've actually got it.
           </p>
@@ -230,18 +230,18 @@ export default function LandingPage() {
             </button>
           </div>
 
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-[#4A4A4A]">
             No credit card. Works with any PDF syllabus.
           </p>
         </div>
 
         {/* Right: live agent log */}
         <div className="lg:pl-4">
-          <p className="text-xs text-slate-500 font-mono mb-3 uppercase tracking-widest">
+          <p className="text-xs text-[#555555] font-mono mb-3 uppercase tracking-widest">
             Live agent activity — teaching Round Robin Scheduling
           </p>
           <AgentLog />
-          <p className="text-xs text-slate-600 mt-3 text-center">
+          <p className="text-xs text-[#4A4A4A] mt-3 text-center">
             This is the actual LangGraph loop running right now
           </p>
         </div>
@@ -253,7 +253,7 @@ export default function LandingPage() {
           {STATS.map((s) => (
             <div key={s.label} className="space-y-1">
               <div className="text-2xl font-black text-[#3B6BFF] font-mono">{s.value}</div>
-              <div className="text-xs text-slate-500 leading-snug">{s.label}</div>
+              <div className="text-xs text-[#555555] leading-snug">{s.label}</div>
             </div>
           ))}
         </div>
@@ -262,7 +262,7 @@ export default function LandingPage() {
       {/* ── HOW IT WORKS ── */}
       <section id="how" className="max-w-6xl mx-auto px-6 py-24 space-y-16">
         <div className="space-y-3">
-          <p className="text-xs text-slate-500 font-mono uppercase tracking-widest">How it works</p>
+          <p className="text-xs text-[#555555] font-mono uppercase tracking-widest">How it works</p>
           <h2 className="text-3xl font-black tracking-tight">
             Three steps. One agent loop.
           </h2>
@@ -277,7 +277,7 @@ export default function LandingPage() {
               <div className="text-4xl font-black text-white/10 font-mono">{step.number}</div>
               <div className="space-y-2">
                 <h3 className="font-bold text-lg">{step.label}</h3>
-                <p className="text-slate-400 text-sm leading-relaxed">{step.detail}</p>
+                <p className="text-[#666666] text-sm leading-relaxed">{step.detail}</p>
               </div>
               <div className="font-mono text-xs text-blue-400/70 bg-blue-500/5 border border-blue-500/15 rounded-lg px-3 py-2">
                 {step.tag}
@@ -288,7 +288,7 @@ export default function LandingPage() {
 
         {/* Agent graph visual */}
         <div className="rounded-xl border border-white/10 bg-[#0d1220] p-6 overflow-x-auto">
-          <p className="text-xs text-slate-500 font-mono uppercase tracking-widest mb-6">
+          <p className="text-xs text-[#555555] font-mono uppercase tracking-widest mb-6">
             LangGraph execution path
           </p>
           <div className="flex items-center gap-2 min-w-max text-xs font-mono flex-wrap gap-y-4">
@@ -302,7 +302,7 @@ export default function LandingPage() {
               { label: "gradeNode", color: "bg-amber-900/60 text-amber-300 border border-amber-500/30" },
             ].map((item, i) =>
               item.arrow ? (
-                <span key={i} className="text-slate-600">→</span>
+                <span key={i} className="text-[#4A4A4A]">→</span>
               ) : (
                 <span key={i} className={`px-3 py-1.5 rounded-lg ${item.color}`}>
                   {item.label}
@@ -317,10 +317,10 @@ export default function LandingPage() {
                 { result: "DOUBT", next: "doubtNode", color: "text-blue-400" },
               ].map((r) => (
                 <div key={r.result} className="flex items-center gap-2">
-                  <span className="text-slate-600">├─</span>
+                  <span className="text-[#4A4A4A]">├─</span>
                   <span className={`font-bold ${r.color}`}>{r.result}</span>
-                  <span className="text-slate-600">→</span>
-                  <span className="text-slate-400">{r.next}</span>
+                  <span className="text-[#4A4A4A]">→</span>
+                  <span className="text-[#666666]">{r.next}</span>
                 </div>
               ))}
             </div>
@@ -331,7 +331,7 @@ export default function LandingPage() {
       {/* ── COMPARISON ── */}
       <section id="compare" className="max-w-6xl mx-auto px-6 pb-24 space-y-8">
         <div className="space-y-3">
-          <p className="text-xs text-slate-500 font-mono uppercase tracking-widest">Why NeuralNest</p>
+          <p className="text-xs text-[#555555] font-mono uppercase tracking-widest">Why NeuralNest</p>
           <h2 className="text-3xl font-black tracking-tight">
             Other tools generate content.{" "}
             <span className="text-[#3B6BFF]">NeuralNest verifies understanding.</span>
@@ -339,7 +339,7 @@ export default function LandingPage() {
         </div>
 
         <div className="rounded-xl border border-white/10 overflow-hidden">
-          <div className="grid grid-cols-3 bg-[#1A1F2E] px-6 py-3 text-xs font-mono uppercase tracking-widest text-slate-500">
+          <div className="grid grid-cols-3 bg-[#1A1F2E] px-6 py-3 text-xs font-mono uppercase tracking-widest text-[#555555]">
             <div className="col-span-1">Capability</div>
             <div className="text-center text-[#3B6BFF]">NeuralNest</div>
             <div className="text-center">Others</div>
@@ -353,7 +353,7 @@ export default function LandingPage() {
             >
               <div className="text-slate-300 col-span-1 pr-4">{row.feature}</div>
               <div className="text-center text-xl">{row.nn ? "✓" : "✗"}</div>
-              <div className={`text-center text-xl ${row.others ? "text-slate-400" : "text-slate-700"}`}>
+              <div className={`text-center text-xl ${row.others ? "text-[#666666]" : "text-[#333333]"}`}>
                 {row.others ? "✓" : "✗"}
               </div>
             </div>
@@ -367,7 +367,7 @@ export default function LandingPage() {
           <h2 className="text-4xl font-black tracking-tight">
             Your syllabus is already sitting on your desktop.
           </h2>
-          <p className="text-slate-400 text-lg">
+          <p className="text-[#666666] text-lg">
             Upload it. Let the agent map what you need to know,
             teach you concept by concept, and tell you exactly when you're ready for the exam.
           </p>
@@ -377,7 +377,7 @@ export default function LandingPage() {
           >
             Start Learning Free →
           </button>
-          <p className="text-xs text-slate-600">
+          <p className="text-xs text-[#4A4A4A]">
             Built on LangGraph · GPT-4o · Cohere · Pinecone
           </p>
         </div>

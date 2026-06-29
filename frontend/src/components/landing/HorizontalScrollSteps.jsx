@@ -23,7 +23,7 @@ const HorizontalScrollSteps = () => {
         </div>
         
         {/* Panel 1 */}
-        <div className="bg-slate-50 dark:bg-[#121622] rounded-3xl p-8 border border-slate-200 dark:border-white/5">
+        <div className="bg-white/60 dark:bg-[#121622] rounded-3xl p-8 border border-[#EAE8E1] dark:border-white/5">
           <h3 className="text-2xl font-bold mb-4">1. Upload Syllabus</h3>
           <div className="flex flex-wrap gap-2 mt-6">
             <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">Week 1: Thermodynamics</span>
@@ -32,13 +32,13 @@ const HorizontalScrollSteps = () => {
         </div>
 
         {/* Panel 2 */}
-        <div className="bg-slate-50 dark:bg-[#121622] rounded-3xl p-8 border border-slate-200 dark:border-white/5">
+        <div className="bg-white/60 dark:bg-[#121622] rounded-3xl p-8 border border-[#EAE8E1] dark:border-white/5">
           <h3 className="text-2xl font-bold mb-4">2. AI Tutor Loop</h3>
-          <p className="text-[#4A4A4A] dark:text-slate-400">Agents build dynamic cognitive maps.</p>
+          <p className="text-[#4A4A4A] dark:text-[#666666]">Agents build dynamic cognitive maps.</p>
         </div>
 
         {/* Panel 3 */}
-        <div className="bg-slate-50 dark:bg-[#121622] rounded-3xl p-8 border border-slate-200 dark:border-white/5">
+        <div className="bg-white/60 dark:bg-[#121622] rounded-3xl p-8 border border-[#EAE8E1] dark:border-white/5">
           <h3 className="text-2xl font-bold mb-4">3. Master the material</h3>
           <div className="space-y-4">
             <div>
@@ -62,18 +62,18 @@ const HorizontalScrollSteps = () => {
             <div className="w-full md:w-1/2 pr-8">
               <div className="inline-block text-xs font-bold tracking-widest text-primary mb-4 uppercase">Step 01</div>
               <h2 className="font-display text-5xl font-extrabold text-[#333333] dark:text-white mb-6">Upload your syllabus.</h2>
-              <p className="text-xl text-[#4A4A4A] dark:text-slate-400 max-w-md leading-relaxed">
+              <p className="text-xl text-[#4A4A4A] dark:text-[#666666] max-w-md leading-relaxed">
                 NeuralNest extracts every topic, due date, and reading assignment directly from your course materials.
               </p>
             </div>
             <div className="w-full md:w-1/2 flex items-center justify-center mt-12 md:mt-0 relative">
               <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full" />
-              <div className="relative z-10 w-[80%] max-w-sm bg-slate-50 dark:bg-[#121622] border border-slate-200 dark:border-white/10 rounded-2xl p-6 shadow-2xl">
-                <div className="flex items-center space-x-4 border-b border-slate-200 dark:border-slate-800 pb-4 mb-4">
+              <div className="relative z-10 w-[80%] max-w-sm bg-white/60 dark:bg-[#121622] border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-6 shadow-2xl">
+                <div className="flex items-center space-x-4 border-b border-[#EAE8E1] dark:border-slate-800 pb-4 mb-4">
                   <FileText className="h-8 w-8 text-primary" />
                   <div>
                     <div className="font-bold text-[#333333] dark:text-white">PHYS_201_Syllabus.pdf</div>
-                    <div className="text-xs text-slate-500">Processing...</div>
+                    <div className="text-xs text-[#555555]">Processing...</div>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -93,7 +93,7 @@ const HorizontalScrollSteps = () => {
             <div className="w-full md:w-1/2 pr-8">
               <div className="inline-block text-xs font-bold tracking-widest text-amber-500 mb-4 uppercase">Step 02</div>
               <h2 className="font-display text-5xl font-extrabold text-[#333333] dark:text-white mb-6">Agents build your map.</h2>
-              <p className="text-xl text-[#4A4A4A] dark:text-slate-400 max-w-md leading-relaxed">
+              <p className="text-xl text-[#4A4A4A] dark:text-[#666666] max-w-md leading-relaxed">
                 Our multi-agent system constructs a dynamic cognitive map, identifying dependencies and pre-requisite knowledge gaps.
               </p>
             </div>
@@ -107,7 +107,7 @@ const HorizontalScrollSteps = () => {
                   <Target className="h-4 w-4 text-white -rotate-90" />
                 </div>
               </div>
-              <div className="absolute w-32 h-32 rounded-full bg-white dark:bg-[#121622] border border-slate-200 dark:border-white/10 flex items-center justify-center shadow-xl">
+              <div className="absolute w-32 h-32 rounded-full bg-white dark:bg-[#121622] border border-[#EAE8E1] dark:border-white/10 flex items-center justify-center shadow-xl">
                 <span className="text-xs font-bold font-mono">TUTOR_LOOP</span>
               </div>
             </div>
@@ -118,19 +118,19 @@ const HorizontalScrollSteps = () => {
             <div className="w-full md:w-1/2 pr-8">
               <div className="inline-block text-xs font-bold tracking-widest text-emerald-500 mb-4 uppercase">Step 03</div>
               <h2 className="font-display text-5xl font-extrabold text-[#333333] dark:text-white mb-6">Master the material.</h2>
-              <p className="text-xl text-[#4A4A4A] dark:text-slate-400 max-w-md leading-relaxed">
+              <p className="text-xl text-[#4A4A4A] dark:text-[#666666] max-w-md leading-relaxed">
                 As you learn and pass adaptive quizzes, your mastery rating deterministically increases until you're ready for the exam.
               </p>
             </div>
             <div className="w-full md:w-1/2 flex items-center justify-center mt-12 md:mt-0 relative">
-              <div className="w-[80%] max-w-md bg-white dark:bg-[#121622] border border-slate-200 dark:border-white/10 rounded-2xl p-8 shadow-2xl">
+              <div className="w-[80%] max-w-md bg-white dark:bg-[#121622] border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-8 shadow-2xl">
                 
                 <div className="mb-6">
                   <div className="flex justify-between text-xs font-bold mb-2">
                     <span className="text-[#333333] dark:text-white">Quiz Performance</span>
                     <span className="text-emerald-500">85%</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-white/80 dark:bg-slate-800 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
                       whileInView={{ width: "85%" }}
@@ -145,7 +145,7 @@ const HorizontalScrollSteps = () => {
                     <span className="text-[#333333] dark:text-white">Self Rating</span>
                     <span className="text-primary">92%</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-white/80 dark:bg-slate-800 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
                       whileInView={{ width: "92%" }}
@@ -160,7 +160,7 @@ const HorizontalScrollSteps = () => {
                     <span className="text-[#333333] dark:text-white">Engagement</span>
                     <span className="text-amber-500">78%</span>
                   </div>
-                  <div className="h-2 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div className="h-2 w-full bg-white/80 dark:bg-slate-800 rounded-full overflow-hidden">
                     <motion.div 
                       initial={{ width: 0 }}
                       whileInView={{ width: "78%" }}

@@ -40,7 +40,7 @@ const HeroParallax = () => {
         className="absolute inset-0 z-0"
       >
         <InteractiveNeuralCanvas />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F6F5F1] dark:to-[#0B0F19]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F6F5F1] dark:to-[#181818]" />
       </motion.div>
 
       <div className="relative w-full flex-grow flex flex-col justify-center">
@@ -53,7 +53,7 @@ const HeroParallax = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
           style={reduceMotion ? {} : { y: cardAY, rotate: cardARotate }}
-          className="hidden xl:block absolute top-[12%] left-[3%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 shadow-lg"
+          className="hidden xl:block absolute top-[12%] left-[3%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-xl px-4 py-3 shadow-lg"
         >
           <div className="flex items-center space-x-2">
             <div className="border border-[#3B6BFF]/30 px-2 py-1 rounded bg-[#3B6BFF]/5">
@@ -78,7 +78,7 @@ const HeroParallax = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
           style={reduceMotion ? {} : { y: cardBY, rotate: cardBRotate }}
-          className="hidden xl:flex flex-col items-center absolute top-[8%] right-[4%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-4 shadow-lg"
+          className="hidden xl:flex flex-col items-center absolute top-[8%] right-[4%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-xl p-4 shadow-lg"
         >
           <div className="relative w-14 h-14 mb-2 flex items-center justify-center">
             <svg className="absolute inset-0 w-full h-full -rotate-90 overflow-visible" viewBox="0 0 60 60">
@@ -94,7 +94,7 @@ const HeroParallax = () => {
             </svg>
             <span className="font-bold text-sm text-[#10B981]">73%</span>
           </div>
-          <span className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Round Robin Scheduling</span>
+          <span className="text-[10px] text-[#555555] dark:text-[#666666] font-medium">Round Robin Scheduling</span>
           <div className="mt-1 px-2 py-0.5 bg-[#10B981]/10 text-[#10B981] text-[9px] font-bold rounded-full">MASTERED</div>
         </motion.div>
 
@@ -104,15 +104,15 @@ const HeroParallax = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 1.0 }}
           style={reduceMotion ? {} : { y: cardCY }}
-          className="hidden xl:block absolute top-[35%] right-[8%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-xl p-4 shadow-lg min-w-[200px]"
+          className="hidden xl:block absolute top-[35%] right-[8%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-xl p-4 shadow-lg min-w-[200px]"
         >
           <div className="font-mono text-[9px] text-[#FBBF24] mb-2">GRADE_NODE</div>
           <div className="h-px w-full bg-slate-200 dark:bg-white/10 mb-2"/>
-          <div className="text-[10px] text-slate-500 dark:text-white/50 mb-1">Response classified:</div>
+          <div className="text-[10px] text-[#555555] dark:text-white/50 mb-1">Response classified:</div>
           <div className="px-3.5 py-1.5 rounded-lg border border-[#10B981]/30 bg-[#10B981]/15 text-[#10B981] font-mono font-bold text-[12px] mb-2 inline-block">
             UNDERSTOOD ✓
           </div>
-          <div className="text-[10px] text-slate-400 dark:text-white/40">Advancing curriculum →</div>
+          <div className="text-[10px] text-[#666666] dark:text-white/40">Advancing curriculum →</div>
         </motion.div>
 
         {/* LAYER 3 — Foreground hero text (centred) */}
@@ -139,7 +139,7 @@ const HeroParallax = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              className="mt-6 text-lg text-[#4A4A4A] dark:text-slate-400 max-w-2xl leading-relaxed"
+              className="mt-6 text-lg text-[#4A4A4A] dark:text-[#666666] max-w-2xl leading-relaxed"
             >
               NeuralNest is an AI tutor that builds personalized roadmaps and adaptive quizzes from your syllabus. Stop studying blindly—let the AI show you exactly what you need to know.
             </motion.p>
@@ -160,8 +160,8 @@ const HeroParallax = () => {
                 </Link>
               </MagneticNode>
               <MagneticNode>
-                <button className="w-full sm:w-auto px-8 py-3.5 bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 hover:bg-slate-50 dark:hover:bg-white/10 text-slate-900 dark:text-white font-semibold rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-sm backdrop-blur-sm">
-                  <Play className="h-4 w-4 text-slate-500 dark:text-slate-400"/>
+                <button className="w-full sm:w-auto px-8 py-3.5 bg-white dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/10 text-[#333333] dark:text-white font-semibold rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-sm backdrop-blur-sm">
+                  <Play className="h-4 w-4 text-[#555555] dark:text-[#666666]"/>
                   <span>Watch Demo</span>
                 </button>
               </MagneticNode>
@@ -174,7 +174,7 @@ const HeroParallax = () => {
           style={{ opacity: indicatorOpacity }}
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center pointer-events-none"
         >
-          <span className="font-mono text-[9px] text-slate-400 dark:text-white/30 uppercase tracking-[3px] mb-2">scroll</span>
+          <span className="font-mono text-[9px] text-[#666666] dark:text-white/30 uppercase tracking-[3px] mb-2">scroll</span>
           <div className="w-px h-12 bg-primary/40 relative overflow-hidden">
             <motion.div
               animate={{ y: [0, 48] }}

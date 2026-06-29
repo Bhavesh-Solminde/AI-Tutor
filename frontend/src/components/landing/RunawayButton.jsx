@@ -64,7 +64,7 @@ const RunawayButton = () => {
       onMouseEnter={flee}
       onFocus={flee}
       onClick={flee}
-      className="w-full sm:w-auto px-8 py-3.5 border border-slate-300 dark:border-white/10 hover:bg-slate-100 dark:hover:bg-white/5 text-slate-700 dark:text-white font-semibold rounded-xl transition-colors relative inline-flex items-center justify-center whitespace-nowrap shadow-sm"
+      className="w-full sm:w-auto px-8 py-3.5 border border-[#DFDCD4] dark:border-white/10 hover:bg-white/80 dark:hover:bg-white/5 text-[#333333] dark:text-white font-semibold rounded-xl transition-colors relative inline-flex items-center justify-center whitespace-nowrap shadow-sm"
     >
       No thanks, I'll fail my exam alone
       <AnimatePresence mode="wait">
@@ -75,7 +75,7 @@ const RunawayButton = () => {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, scale: 0.9 }}
             transition={{ duration: 0.2 }}
-            className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-slate-200 dark:border-white/10 bg-white dark:bg-slate-800 px-2.5 py-1 text-[11px] text-slate-900 dark:text-white shadow-lg"
+            className="absolute -top-9 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md border border-[#EAE8E1] dark:border-white/10 bg-white dark:bg-slate-800 px-2.5 py-1 text-[11px] text-[#333333] dark:text-white shadow-lg"
           >
             {taunt}
           </motion.span>

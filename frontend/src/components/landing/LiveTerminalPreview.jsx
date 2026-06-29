@@ -24,24 +24,24 @@ const LiveTerminalPreview = () => {
   };
 
   return (
-    <section className="py-24 px-6 relative z-10 border-y border-slate-200 dark:border-white/5 bg-transparent">
+    <section className="py-24 px-6 relative z-10 border-y border-[#EAE8E1] dark:border-white/5 bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#333333] dark:text-white">Intelligence that adapts.</h2>
-          <p className="mt-4 text-[#4A4A4A] dark:text-slate-400 max-w-2xl mx-auto">Watch your knowledge physically transform as you interact with the platform.</p>
+          <p className="mt-4 text-[#4A4A4A] dark:text-[#666666] max-w-2xl mx-auto">Watch your knowledge physically transform as you interact with the platform.</p>
         </div>
 
         <motion.div 
           layout
           transition={{ type: "spring", bounce: 0.2, duration: 0.8 }}
-          className="relative z-10 w-full max-w-4xl mx-auto backdrop-blur-2xl bg-white/60 dark:bg-[#0B0F19]/60 border border-slate-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-xl dark:shadow-[0_0_80px_rgba(59,107,255,0.15)]"
+          className="relative z-10 w-full max-w-4xl mx-auto backdrop-blur-2xl bg-white/60 dark:bg-[#181818]/60 border border-[#EAE8E1] dark:border-white/10 rounded-3xl overflow-hidden shadow-xl dark:shadow-[0_0_80px_rgba(59,107,255,0.15)]"
         >
           {/* Fake Window Header */}
-          <div className="flex items-center space-x-2 px-6 py-4 border-b border-slate-200 dark:border-white/10 bg-white/40 dark:bg-black/20">
+          <div className="flex items-center space-x-2 px-6 py-4 border-b border-[#EAE8E1] dark:border-white/10 bg-white/40 dark:bg-[#181818]/20">
             <div className="w-3 h-3 rounded-full bg-red-500/80" />
             <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
             <div className="w-3 h-3 rounded-full bg-green-500/80" />
-            <div className="flex-1 text-center font-mono text-xs text-[#555555] dark:text-slate-400 opacity-70">
+            <div className="flex-1 text-center font-mono text-xs text-[#555555] dark:text-[#666666] opacity-70">
               neuralnest/core-engine
             </div>
           </div>
@@ -58,7 +58,7 @@ const LiveTerminalPreview = () => {
                   onSubmit={handleSimulate}
                   className="w-full relative"
                 >
-                  <div className="flex items-center bg-white/60 dark:bg-black/40 border border-slate-200 dark:border-white/20 rounded-2xl p-2 focus-within:border-primary focus-within:ring-2 ring-primary/20 transition-all shadow-sm dark:shadow-none">
+                  <div className="flex items-center bg-white/60 dark:bg-[#181818]/60 border border-[#EAE8E1] dark:border-white/20 rounded-2xl p-2 focus-within:border-primary focus-within:ring-2 ring-primary/20 transition-all shadow-sm dark:shadow-none">
                     <div className="pl-6 pr-4 text-primary">
                       <Sparkles className="w-6 h-6" />
                     </div>
@@ -67,7 +67,7 @@ const LiveTerminalPreview = () => {
                       value={topic}
                       onChange={(e) => setTopic(e.target.value)}
                       placeholder="e.g. Advanced Thermodynamics, React Hooks..."
-                      className="flex-1 w-full bg-transparent border-none text-xl md:text-2xl text-[#333333] dark:text-white placeholder:text-slate-400 dark:placeholder:text-[#555555] focus:outline-none focus:ring-0 py-4 font-light"
+                      className="flex-1 w-full bg-transparent border-none text-xl md:text-2xl text-[#333333] dark:text-white placeholder:text-[#666666] dark:placeholder:text-[#555555] focus:outline-none focus:ring-0 py-4 font-light"
                     />
                     <button 
                       type="submit"
@@ -91,7 +91,7 @@ const LiveTerminalPreview = () => {
                   <motion.div 
                     animate={{ rotate: 360 }}
                     transition={{ repeat: Infinity, duration: 4, ease: "linear" }}
-                    className="w-16 h-16 border-4 border-slate-200 dark:border-white/10 border-t-primary dark:border-t-primary rounded-full"
+                    className="w-16 h-16 border-4 border-[#EAE8E1] dark:border-white/10 border-t-primary dark:border-t-primary rounded-full"
                   />
                   <div className="font-mono text-primary text-lg animate-pulse">
                     Synthesizing cognitive map for "{topic}"...
@@ -110,9 +110,9 @@ const LiveTerminalPreview = () => {
                   <div className="flex items-start justify-between">
                     <div>
                       <h3 className="text-3xl font-bold text-[#333333] dark:text-white mb-2">{topic}</h3>
-                      <p className="text-[#4A4A4A] dark:text-slate-400">Custom Syllabus Generated.</p>
+                      <p className="text-[#4A4A4A] dark:text-[#666666]">Custom Syllabus Generated.</p>
                     </div>
-                    <button onClick={handleReset} className="text-sm font-medium text-[#555555] dark:text-slate-400 hover:text-[#333333] dark:hover:text-white flex items-center transition-colors">
+                    <button onClick={handleReset} className="text-sm font-medium text-[#555555] dark:text-[#666666] hover:text-[#333333] dark:hover:text-white flex items-center transition-colors">
                       Reset Demo
                     </button>
                   </div>
@@ -128,11 +128,11 @@ const LiveTerminalPreview = () => {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.15 + 0.3 }}
-                        className="bg-white/60 dark:bg-black/30 border border-slate-200 dark:border-white/5 rounded-2xl p-6"
+                        className="bg-white/60 dark:bg-[#181818]/30 border border-[#EAE8E1] dark:border-white/5 rounded-2xl p-6"
                       >
                         <item.icon className="w-8 h-8 text-primary mb-4" />
                         <h4 className="text-[#333333] dark:text-white font-semibold mb-1">{item.title}</h4>
-                        <p className="text-[#4A4A4A] dark:text-slate-400 text-sm">{item.desc}</p>
+                        <p className="text-[#4A4A4A] dark:text-[#666666] text-sm">{item.desc}</p>
                       </motion.div>
                     ))}
                   </div>

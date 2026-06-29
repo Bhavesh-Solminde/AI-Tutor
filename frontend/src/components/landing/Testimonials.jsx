@@ -41,7 +41,7 @@ const Testimonials = () => {
                 style={{ y }}
                 className="flex flex-col"
               >
-                <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#121622] p-6 h-full flex flex-col justify-between hover:border-primary/40 transition-colors duration-300 group">
+                <div className="rounded-2xl border border-[#EAE8E1] dark:border-white/8 bg-white dark:bg-[#121622] p-6 h-full flex flex-col justify-between hover:border-primary/40 transition-colors duration-300 group">
                   <p className="text-base md:text-lg text-[#4A4A4A] dark:text-slate-300 leading-relaxed mb-6 font-medium">"{testimonial.text}"</p>
                   <div>
                     <h5 className="font-bold text-[#333333] dark:text-white text-sm group-hover:text-primary transition-colors">{testimonial.name}</h5>

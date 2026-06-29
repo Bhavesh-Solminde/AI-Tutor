@@ -38,7 +38,7 @@ const FinalCTA = () => {
 
   return (
     <section className="py-16 md:py-24 px-4 md:px-6 relative z-50">
-      <div className="max-w-5xl mx-auto rounded-3xl bg-[#EAE8E1] dark:bg-[#121622] border border-slate-200 dark:border-white/5 text-center p-8 md:p-20 relative shadow-sm dark:shadow-none overflow-hidden group">
+      <div className="max-w-5xl mx-auto rounded-3xl bg-[#EAE8E1] dark:bg-[#121622] border border-[#EAE8E1] dark:border-white/5 text-center p-8 md:p-20 relative shadow-sm dark:shadow-none overflow-hidden group">
         
         {/* Animated Background Glow */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#F6F5F1]/80 dark:from-primary/10 to-transparent pointer-events-none rounded-3xl" />
@@ -68,7 +68,7 @@ const FinalCTA = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-[#4A4A4A] dark:text-slate-400 text-lg mb-10 max-w-xl mx-auto"
+            className="text-[#4A4A4A] dark:text-[#666666] text-lg mb-10 max-w-xl mx-auto"
           >
             Stop cramming and start mastering. Free to start. No credit card required.
           </motion.p>
