@@ -41,8 +41,8 @@ const QuizResultView = () => {
     return (
       <MainLayout>
         <div className="flex flex-col items-center justify-center h-full space-y-4 text-center">
-          <Brain className="h-10 w-10 text-slate-400" />
-          <p className="text-sm font-semibold text-slate-600 dark:text-slate-300">
+          <Brain className="h-10 w-10 text-[#666666]" />
+          <p className="text-sm font-semibold text-[#4A4A4A] dark:text-slate-300">
             {error || 'Result not found.'}
           </p>
           <button
@@ -70,7 +70,7 @@ const QuizResultView = () => {
           <div className="flex items-center space-x-3">
             <button
               onClick={() => navigate('/active-quizzes')}
-              className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 transition"
+              className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-white/80 dark:hover:bg-slate-800 transition"
             >
               <ArrowLeft className="h-4 w-4" />
             </button>
@@ -78,13 +78,13 @@ const QuizResultView = () => {
               <span className="text-[10px] font-bold font-mono tracking-wider uppercase text-emerald-500">
                 Quiz Review
               </span>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">{result.topicName}</h2>
+              <h2 className="text-lg font-bold text-[#333333] dark:text-white">{result.topicName}</h2>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-xs text-slate-400 dark:text-slate-500">{completedDate}</p>
+            <p className="text-xs text-[#666666] dark:text-[#555555]">{completedDate}</p>
             <div className="flex items-center space-x-2 justify-end mt-1">
-              <span className="font-bold text-sm text-slate-800 dark:text-white font-mono">
+              <span className="font-bold text-sm text-[#333333] dark:text-white font-mono">
                 {correctCount}/{totalCount}
               </span>
               {result.passed ? (
@@ -114,8 +114,8 @@ const QuizResultView = () => {
               >
                 {/* Question header */}
                 <div className="flex items-start justify-between gap-3">
-                  <p className="text-sm font-bold text-slate-800 dark:text-white leading-snug flex-1">
-                    <span className="text-slate-400 font-mono mr-2">Q{idx + 1}.</span>
+                  <p className="text-sm font-bold text-[#333333] dark:text-white leading-snug flex-1">
+                    <span className="text-[#666666] font-mono mr-2">Q{idx + 1}.</span>
                     {q.question}
                   </p>
                   {q.isCorrect ? (
@@ -130,7 +130,7 @@ const QuizResultView = () => {
                   {q.options.map((opt, oIdx) => {
                     const isCorrectOpt = oIdx === q.correctAnswer;
                     const isUserAnswer = oIdx === q.userAnswer;
-                    let optClass = 'border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-slate-600 dark:text-slate-400';
+                    let optClass = 'border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-[#4A4A4A] dark:text-[#666666]';
                     if (isCorrectOpt) optClass = 'border border-emerald-500 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 font-bold';
                     else if (isUserAnswer && !isCorrectOpt) optClass = 'border border-red-400 bg-red-500/10 text-red-600 dark:text-red-400 line-through';
 
@@ -157,14 +157,14 @@ const QuizResultView = () => {
                     <p className="text-[11px] font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">
                       Explanation
                     </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{q.explanation}</p>
+                    <p className="text-xs text-[#4A4A4A] dark:text-[#666666] leading-relaxed">{q.explanation}</p>
                   </div>
                 )}
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 text-slate-400 text-sm">
+          <div className="text-center py-12 text-[#666666] text-sm">
             Question details not available for this attempt.
           </div>
         )}

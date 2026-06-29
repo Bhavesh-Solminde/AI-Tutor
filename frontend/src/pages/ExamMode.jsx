@@ -76,7 +76,7 @@ const ExamMode = () => {
           <div className="flex-1 flex items-center justify-center p-4">
             <div className="w-full space-y-6">
               <div className="text-center space-y-2">
-                <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white">Exam Rescue Planner</h1>
+                <h1 className="text-3xl font-extrabold text-[#333333] dark:text-white">Exam Rescue Planner</h1>
                 <p className="text-sm text-text-muted-light dark:text-text-muted-dark max-w-md mx-auto">
                   Set up your exam details and let our AI compile a prioritized, day-by-day rescue plan.
                 </p>
@@ -89,7 +89,7 @@ const ExamMode = () => {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
               <div>
                 <span className="text-[10px] font-bold font-sans tracking-wider uppercase text-primary dark:text-accent">Exam rescue plan</span>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                <h1 className="text-2xl font-bold text-[#333333] dark:text-white">
                   {exam?.subject || 'Your Exam'} Roadmap
                 </h1>
                 <p className="text-xs text-text-muted-light dark:text-text-muted-dark mt-0.5">
@@ -139,7 +139,7 @@ const ExamMode = () => {
                     </button>
                     <button
                       onClick={() => setShowResetConfirm(false)}
-                      className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                      className="text-xs font-semibold text-[#555555] hover:text-[#333333] dark:text-[#666666]"
                     >
                       Cancel
                     </button>
@@ -171,7 +171,7 @@ const ExamMode = () => {
               <div className="lg:col-span-4 border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm flex flex-col h-[500px] overflow-hidden">
                 <div className="flex items-center space-x-2 border-b border-border-light dark:border-border-dark pb-3 mb-4">
                   <Clock className="h-4 w-4 text-text-muted-light dark:text-text-muted-dark" />
-                  <h3 className="font-bold text-slate-900 dark:text-white text-base">Day-by-Day Rescue Timeline</h3>
+                  <h3 className="font-bold text-[#333333] dark:text-white text-base">Day-by-Day Rescue Timeline</h3>
                 </div>
                 <div className="flex-1 overflow-y-auto space-y-4 pr-1">
                   {loading ? (
@@ -188,8 +188,8 @@ const ExamMode = () => {
                               ? 'bg-emerald-500/5 border-emerald-500/25'
                               : block.isMockExam
                               ? 'bg-primary/5 border-primary/25 dark:bg-accent/5 dark:border-accent/25'
-                              : 'bg-slate-50 dark:bg-elevated-dark border-border-light dark:border-border-dark'
-                          } ${isExpanded ? 'shadow-sm' : 'hover:border-slate-300 dark:hover:border-slate-600'}`}
+                              : 'bg-white/60 dark:bg-elevated-dark border-border-light dark:border-border-dark'
+                          } ${isExpanded ? 'shadow-sm' : 'hover:border-[#DFDCD4] dark:hover:border-slate-600'}`}
                         >
                           {/* ── Header row — always visible, click to expand ── */}
                           <div
@@ -201,7 +201,7 @@ const ExamMode = () => {
                               <span className={`text-xs font-sans font-bold uppercase ${
                                 block.completed ? 'text-emerald-700 dark:text-emerald-300'
                                 : block.isMockExam ? 'text-primary dark:text-accent'
-                                : 'text-slate-700 dark:text-slate-200'
+                                : 'text-[#333333] dark:text-slate-200'
                               }`}>
                                {block.isMockExam
                                 ? <span className="flex items-center gap-1">
@@ -218,7 +218,7 @@ const ExamMode = () => {
                               <span className="text-[10px] font-sans text-text-muted-light dark:text-text-muted-dark">
                                 {block.date ? new Date(block.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}
                               </span>
-                              <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                              <ChevronDown className={`h-3.5 w-3.5 text-[#666666] transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
                             </div>
                           </div>
 
@@ -226,17 +226,17 @@ const ExamMode = () => {
                           {isExpanded && (
                             <div className="border-t border-border-light dark:border-border-dark px-3.5 pb-3.5 pt-3 space-y-2">
                               {(block.topics || []).length === 0 ? (
-                                <p className="text-xs text-slate-400 italic">No topics assigned to this day.</p>
+                                <p className="text-xs text-[#666666] italic">No topics assigned to this day.</p>
                               ) : (
                                 (block.topics || []).map((t, ti) => (
                                   <div key={t.topicId || t._id || ti} className="flex items-center justify-between gap-2">
                                     <div className="flex items-center gap-1.5 min-w-0">
                                       <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${dotColor}`} />
-                                      <span className="text-xs font-medium truncate text-slate-700 dark:text-slate-300">
+                                      <span className="text-xs font-medium truncate text-[#333333] dark:text-slate-300">
                                         {t.topicName || t.name || 'Unnamed topic'}
                                       </span>
                                       {t.estimatedMinutes && (
-                                        <span className="text-[10px] text-slate-400 flex-shrink-0">· {t.estimatedMinutes}m</span>
+                                        <span className="text-[10px] text-[#666666] flex-shrink-0">· {t.estimatedMinutes}m</span>
                                       )}
                                     </div>
                                     {t.topicId && !block.isMockExam && (
@@ -263,7 +263,7 @@ const ExamMode = () => {
                       );
                     })
                   ) : (
-                    <p className="text-xs text-slate-400 text-center py-4">
+                    <p className="text-xs text-[#666666] text-center py-4">
                       Your rescue timeline will appear here after setup.
                     </p>
                   )}

@@ -50,7 +50,7 @@ const QuickActionCards = ({ onActionClick }) => {
             <div className={`p-2.5 rounded-xl bg-white dark:bg-slate-900 ${card.color} flex-shrink-0 shadow-sm border border-slate-100/50 dark:border-slate-800/50`}>
               <Icon className="h-5 w-5" />
             </div>
-            <span className="font-semibold text-slate-800 dark:text-white text-sm">
+            <span className="font-semibold text-[#333333] dark:text-white text-sm">
               {card.title}
             </span>
           </button>

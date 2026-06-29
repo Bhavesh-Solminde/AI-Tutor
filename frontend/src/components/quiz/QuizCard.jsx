@@ -21,7 +21,7 @@ const QuizCard = ({
       <XPPopup show={showXpPopup} />
 
       <div className="space-y-4">
-        <span className="text-xs font-mono text-slate-400">
+        <span className="text-xs font-mono text-[#666666]">
           Question {currQ + 1} of {totalQs}
         </span>
         <h3 className="text-xl font-bold text-slate-950 dark:text-white leading-snug">
@@ -85,7 +85,7 @@ const QuizCard = ({
             <Sparkles className="h-3.5 w-3.5" />
             <span>Adaptive Tutor Explanation</span>
           </p>
-          <p className="text-slate-600 dark:text-slate-400">{question.explanation}</p>
+          <p className="text-[#4A4A4A] dark:text-[#666666]">{question.explanation}</p>
         </div>
       )}
     </div>

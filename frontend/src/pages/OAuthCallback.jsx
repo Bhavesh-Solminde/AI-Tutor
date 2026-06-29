@@ -50,12 +50,12 @@ const OAuthCallback = () => {
         {error ? (
           <>
             <p className="text-red-400 font-semibold text-sm">{error}</p>
-            <p className="text-slate-500 text-xs">Redirecting you back...</p>
+            <p className="text-[#555555] text-xs">Redirecting you back...</p>
           </>
         ) : (
           <>
             <div className="h-6 w-6 border-2 border-accent/30 border-t-accent rounded-full animate-spin mx-auto" />
-            <p className="text-slate-400 text-sm">Signing you in...</p>
+            <p className="text-[#666666] text-sm">Signing you in...</p>
           </>
         )}
       </div>

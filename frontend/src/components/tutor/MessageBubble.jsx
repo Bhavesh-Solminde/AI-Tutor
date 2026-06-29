@@ -40,35 +40,35 @@ const MessageBubble = ({ msg, children }) => {
   // Markdown components — styled to match the app's design system
   const markdownComponents = {
     p: ({ children }) => <p className="mb-2 last:mb-0 leading-relaxed">{children}</p>,
-    strong: ({ children }) => <strong className="font-semibold text-slate-900 dark:text-white">{children}</strong>,
+    strong: ({ children }) => <strong className="font-semibold text-[#333333] dark:text-white">{children}</strong>,
     em: ({ children }) => <em className="italic">{children}</em>,
     ul: ({ children }) => <ul className="list-disc list-outside space-y-2 my-3 ml-5">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal list-outside space-y-2 my-3 ml-5">{children}</ol>,
     li: ({ children }) => <li className="text-sm leading-relaxed pl-1 [&>p]:inline">{children}</li>,
-    h2: ({ children }) => <h2 className="text-base font-bold text-slate-900 dark:text-white mt-3 mb-1">{children}</h2>,
-    h3: ({ children }) => <h3 className="text-sm font-bold text-slate-800 dark:text-slate-100 mt-2 mb-1">{children}</h3>,
+    h2: ({ children }) => <h2 className="text-base font-bold text-[#333333] dark:text-white mt-3 mb-1">{children}</h2>,
+    h3: ({ children }) => <h3 className="text-sm font-bold text-[#333333] dark:text-slate-100 mt-2 mb-1">{children}</h3>,
     blockquote: ({ children }) => (
-      <blockquote className="border-l-2 border-primary dark:border-accent pl-3 my-2 text-slate-600 dark:text-slate-300 italic">
+      <blockquote className="border-l-2 border-primary dark:border-accent pl-3 my-2 text-[#4A4A4A] dark:text-slate-300 italic">
         {children}
       </blockquote>
     ),
     code: ({ inline, children }) =>
       inline ? (
-        <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs font-mono text-primary dark:text-accent">
+        <code className="bg-white/80 dark:bg-slate-800 px-1.5 py-0.5 rounded text-xs font-mono text-primary dark:text-accent">
           {children}
         </code>
       ) : (
-        <pre className="bg-slate-100 dark:bg-slate-800 rounded-lg p-3 my-2 text-xs font-mono overflow-x-auto">
+        <pre className="bg-white/80 dark:bg-slate-800 rounded-lg p-3 my-2 text-xs font-mono overflow-x-auto">
           <code>{children}</code>
         </pre>
       ),
-    hr: () => <hr className="border-slate-200 dark:border-slate-700 my-3" />,
+    hr: () => <hr className="border-[#EAE8E1] dark:border-slate-700 my-3" />,
   };
 
   if (msg.sender === 'system') {
     return (
       <div className="flex justify-center my-3 w-full">
-        <div className="bg-slate-100 dark:bg-slate-800/80 text-slate-500 dark:text-slate-400 text-xs rounded-full px-4 py-1.5 font-medium border border-slate-200/50 dark:border-slate-700/50 max-w-[85%] text-center">
+        <div className="bg-white/80 dark:bg-slate-800/80 text-[#555555] dark:text-[#666666] text-xs rounded-full px-4 py-1.5 font-medium border border-[#EAE8E1]/50 dark:border-slate-700/50 max-w-[85%] text-center">
           {msg.text}
         </div>
       </div>
@@ -81,7 +81,7 @@ const MessageBubble = ({ msg, children }) => {
         className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
           isUser
             ? 'bg-primary text-white dark:bg-primary dark:text-white rounded-tr-none shadow-md'
-            : 'border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-slate-800 dark:text-text-primary-dark rounded-tl-none shadow-sm'
+            : 'border border-border-light dark:border-border-dark bg-white dark:bg-surface-dark text-[#333333] dark:text-text-primary-dark rounded-tl-none shadow-sm'
         }`}
       >
         {isUser ? (

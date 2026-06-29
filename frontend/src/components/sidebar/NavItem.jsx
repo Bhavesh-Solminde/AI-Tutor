@@ -9,7 +9,7 @@ const NavItem = ({ to, label, icon: Icon }) => {
         `flex items-center space-x-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 ${
           isActive
             ? 'bg-nav-active-light dark:bg-nav-active-dark text-primary dark:text-text-base-dark shadow-sm border border-primary/10 dark:border-border-dark'
-            : 'text-text-muted-light dark:text-text-muted-dark hover:bg-slate-100 dark:hover:bg-surface-dark/50 hover:text-text-base-light dark:hover:text-text-base-dark'
+            : 'text-text-muted-light dark:text-text-muted-dark hover:bg-white/80 dark:hover:bg-surface-dark/50 hover:text-text-base-light dark:hover:text-text-base-dark'
         }`
       }
     >

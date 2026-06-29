@@ -30,7 +30,7 @@ const SessionLoader = () => (
   <div className="min-h-screen flex items-center justify-center bg-[#16161F]">
     <div className="flex flex-col items-center space-y-4">
       <div className="h-8 w-8 border-2 border-accent/30 border-t-accent rounded-full animate-spin" />
-      <p className="text-sm text-slate-400">Loading NeuralNest...</p>
+      <p className="text-sm text-[#666666]">Loading NeuralNest...</p>
     </div>
   </div>
 );

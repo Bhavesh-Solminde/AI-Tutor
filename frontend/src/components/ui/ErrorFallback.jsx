@@ -14,7 +14,7 @@ export default function GlobalErrorFallback({ error, resetErrorBoundary }) {
         </div>
         <div className="space-y-2">
           <h1 className="text-xl font-bold text-white">Something went wrong</h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm text-[#666666]">
             {error?.message && !error.message.includes('chunk')
               ? error.message
               : 'An unexpected error occurred. Your progress has been saved.'}
@@ -22,7 +22,7 @@ export default function GlobalErrorFallback({ error, resetErrorBoundary }) {
         </div>
         {process.env.NODE_ENV !== 'production' && error?.stack && (
           <details className="text-left">
-            <summary className="text-xs text-slate-500 cursor-pointer hover:text-slate-400">
+            <summary className="text-xs text-[#555555] cursor-pointer hover:text-[#666666]">
               Technical details
             </summary>
             <pre className="mt-2 text-xs text-red-400 bg-red-500/5 border border-red-500/10 rounded-lg p-3 overflow-auto max-h-40">

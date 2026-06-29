@@ -61,8 +61,8 @@ const Dashboard = () => {
     <MainLayout>
       <div className="space-y-8 text-left">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Workspace Overview</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold text-[#333333] dark:text-white">Workspace Overview</h1>
+          <p className="text-sm text-[#555555] dark:text-[#666666]">
             Welcome back, {user?.name || '—'}. Track your rescue plan and mastery status.
           </p>
         </div>
@@ -79,7 +79,7 @@ const Dashboard = () => {
               <ExamCountdownWidget daysRemaining={daysLeft || 0} examDate={exam.examDate} />
             ) : (
               <div className="p-6 border border-dashed border-border-light dark:border-border-dark rounded-2xl flex flex-col items-center justify-center text-center space-y-2 h-full">
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">No exam set</p>
+                <p className="text-sm font-semibold text-[#555555] dark:text-[#666666]">No exam set</p>
                 <button onClick={() => navigate('/exam')} className="text-xs text-primary dark:text-accent hover:underline">
                   Set up Exam Mode →
                 </button>
@@ -126,7 +126,7 @@ const Dashboard = () => {
               <RescuePlanTimeline rescuePlan={rescuePlan.days || []} />
             ) : (
               <div className="p-6 border border-dashed border-border-light dark:border-border-dark rounded-2xl flex flex-col items-center justify-center text-center space-y-2 h-full">
-                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">No rescue plan yet</p>
+                <p className="text-sm font-semibold text-[#555555] dark:text-[#666666]">No rescue plan yet</p>
                 <button onClick={() => navigate('/exam')} className="text-xs text-primary dark:text-accent hover:underline">
                   Generate Plan →
                 </button>

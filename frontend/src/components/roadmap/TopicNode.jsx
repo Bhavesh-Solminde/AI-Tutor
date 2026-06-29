@@ -39,11 +39,11 @@ const TopicNode = ({ data }) => {
     statusLabel = 'In Progress';
     statusColor = 'text-amber-500 bg-amber-500/10 border-amber-500/20';
   } else {
-    cardBg      = 'bg-white border-slate-200/70 dark:bg-slate-900/60 dark:border-slate-700/50';
-    iconBg      = 'bg-slate-100 dark:bg-slate-800';
-    iconColor   = 'text-slate-400 dark:text-slate-500';
+    cardBg      = 'bg-white border-[#EAE8E1]/70 dark:bg-slate-900/60 dark:border-slate-700/50';
+    iconBg      = 'bg-white/80 dark:bg-slate-800';
+    iconColor   = 'text-[#666666] dark:text-[#555555]';
     statusLabel = 'Not Started';
-    statusColor = 'text-slate-400 bg-slate-100/80 dark:bg-slate-800/80 border-slate-200/50 dark:border-slate-700/30';
+    statusColor = 'text-[#666666] bg-white/80/80 dark:bg-slate-800/80 border-[#EAE8E1]/50 dark:border-slate-700/30';
   }
 
   return (
@@ -65,7 +65,7 @@ const TopicNode = ({ data }) => {
       <div className="p-4 space-y-3">
         {/* ── Top row: index badge + icon ── */}
         <div className="flex items-center justify-between">
-          <span className="text-[10px] font-mono font-bold text-slate-400 dark:text-slate-500 tracking-widest">
+          <span className="text-[10px] font-mono font-bold text-[#666666] dark:text-[#555555] tracking-widest">
             #{String(index + 1).padStart(2, '0')}
           </span>
           <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 shadow-sm ${iconBg}`}>
@@ -76,7 +76,7 @@ const TopicNode = ({ data }) => {
         </div>
 
         {/* ── Topic name ── */}
-        <p className="text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2">
+        <p className="text-sm font-bold text-[#333333] dark:text-white leading-snug line-clamp-2">
           {topicName}
         </p>
 
@@ -87,13 +87,13 @@ const TopicNode = ({ data }) => {
             <span className={`text-[10px] font-semibold ${diff.text}`}>{diff.label}</span>
             {estTime && (
               <>
-                <span className="text-slate-300 dark:text-slate-700">·</span>
-                <Clock className="h-2.5 w-2.5 text-slate-400" />
-                <span className="text-[10px] font-mono text-slate-400">{estTime}</span>
+                <span className="text-slate-300 dark:text-[#333333]">·</span>
+                <Clock className="h-2.5 w-2.5 text-[#666666]" />
+                <span className="text-[10px] font-mono text-[#666666]">{estTime}</span>
               </>
             )}
           </div>
-          <ChevronRight className="h-3.5 w-3.5 text-slate-300 dark:text-slate-600 group-hover:text-slate-500 dark:group-hover:text-slate-400 transition-colors" />
+          <ChevronRight className="h-3.5 w-3.5 text-slate-300 dark:text-[#4A4A4A] group-hover:text-[#555555] dark:group-hover:text-[#666666] transition-colors" />
         </div>
 
         {/* ── Status pill ── */}
@@ -111,7 +111,7 @@ const TopicNode = ({ data }) => {
         {/* ── Mastery bar ── */}
         {(topic?.masteryScore ?? 0) > 0 && (
           <div className="pt-1">
-            <div className="h-1 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+            <div className="h-1 w-full rounded-full bg-white/80 dark:bg-slate-800 overflow-hidden">
               <div
                 className={`h-full rounded-full transition-all duration-700 ${
                   isMastered ? 'bg-emerald-500' : isLearning ? 'bg-amber-500' : 'bg-slate-300'

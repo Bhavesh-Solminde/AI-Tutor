@@ -5,9 +5,9 @@ const ScoreSummary = ({ score, total, xp, passed, masteryDelta, onRetry, onBack 
   const renderMasteryDelta = () => {
     if (!masteryDelta) {
       return (
-        <div className="p-4 rounded-xl bg-slate-50/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/80 flex justify-between items-center animate-pulse">
+        <div className="p-4 rounded-xl bg-white/60/50 dark:bg-slate-900/30 border border-slate-100 dark:border-slate-800/80 flex justify-between items-center animate-pulse">
           <div className="text-left space-y-1">
-            <p className="text-[10px] font-mono text-slate-400 uppercase">Topic Mastery</p>
+            <p className="text-[10px] font-mono text-[#666666] uppercase">Topic Mastery</p>
             <div className="h-4 w-32 bg-slate-200 dark:bg-slate-700 rounded mt-1" />
           </div>
           <div className="h-6 w-16 bg-slate-200 dark:bg-slate-700 rounded" />
@@ -47,13 +47,13 @@ const ScoreSummary = ({ score, total, xp, passed, masteryDelta, onRetry, onBack 
     return (
       <div className={`p-4 rounded-xl ${bannerBgClass} border ${bannerBorderClass} flex justify-between items-center`}>
         <div className="text-left">
-          <p className="text-[10px] font-mono text-slate-400 uppercase">Topic Mastery</p>
+          <p className="text-[10px] font-mono text-[#666666] uppercase">Topic Mastery</p>
           <p className={`text-sm font-bold ${statusTextClass} flex items-center mt-0.5`}>
             {statusLabel} ({deltaSign}{delta}% delta)
           </p>
         </div>
         <div className="flex items-baseline space-x-1">
-          <span className="text-sm line-through text-slate-400">{before}%</span>
+          <span className="text-sm line-through text-[#666666]">{before}%</span>
           <DeltaIcon className={`h-3.5 w-3.5 ${valueTextClass}`} />
           <span className={`text-xl font-bold ${valueTextClass}`}>{after}%</span>
         </div>
@@ -79,11 +79,11 @@ const ScoreSummary = ({ score, total, xp, passed, masteryDelta, onRetry, onBack 
 
       <div className="grid grid-cols-2 gap-4 py-4 border-y border-border-light/40 dark:border-border-dark/40 font-mono">
         <div className="flex flex-col items-center">
-          <span className="text-xs text-slate-400">Correct Answers</span>
-          <span className="text-xl font-bold text-slate-800 dark:text-white">{score} / {total}</span>
+          <span className="text-xs text-[#666666]">Correct Answers</span>
+          <span className="text-xl font-bold text-[#333333] dark:text-white">{score} / {total}</span>
         </div>
         <div className="flex flex-col items-center">
-          <span className="text-xs text-slate-400">XP Earned</span>
+          <span className="text-xs text-[#666666]">XP Earned</span>
           <span className="text-xl font-bold text-primary dark:text-accent">+{xp} XP</span>
         </div>
       </div>
@@ -94,7 +94,7 @@ const ScoreSummary = ({ score, total, xp, passed, masteryDelta, onRetry, onBack 
       <div className="flex space-x-3 pt-2">
         <button
           onClick={onRetry}
-          className="flex-1 py-2.5 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 transition"
+          className="flex-1 py-2.5 rounded-xl text-sm font-bold border border-border-light dark:border-border-dark text-[#4A4A4A] dark:text-[#666666] hover:bg-white/60 dark:hover:bg-slate-900 transition"
         >
           Retry Quiz
         </button>

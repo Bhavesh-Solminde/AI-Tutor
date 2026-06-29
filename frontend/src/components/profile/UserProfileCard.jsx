@@ -12,7 +12,7 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
   return (
     <div className="flex flex-col items-center justify-center text-center py-6">
       {/* Large Avatar */}
-      <div className="h-28 w-28 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl flex-shrink-0 bg-slate-100 dark:bg-slate-900">
+      <div className="h-28 w-28 rounded-full overflow-hidden border-4 border-white dark:border-slate-800 shadow-xl flex-shrink-0 bg-white/80 dark:bg-slate-900">
         <img
           src="/aryan_avatar.png"
           alt={name}
@@ -25,8 +25,8 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
       </div>
 
       {/* User Details */}
-      <h2 className="text-2xl font-extrabold text-slate-800 dark:text-white mt-4 tracking-tight">{name}</h2>
-      <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">{email}</p>
+      <h2 className="text-2xl font-extrabold text-[#333333] dark:text-white mt-4 tracking-tight">{name}</h2>
+      <p className="text-sm text-[#555555] dark:text-[#666666] mt-1">{email}</p>
 
       {/* Mastery Badge — dynamic based on XP */}
       {(() => {
@@ -47,7 +47,7 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
           <span className="text-xl md:text-2xl font-extrabold text-primary dark:text-accent tracking-tight">
             {totalXP.toLocaleString()}
           </span>
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-[#666666] dark:text-[#555555] uppercase tracking-wider">
             Total XP
           </span>
         </div>
@@ -58,7 +58,7 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
           <span className="text-xl md:text-2xl font-extrabold text-primary dark:text-accent tracking-tight">
             {streakDays} Days
           </span>
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-[#666666] dark:text-[#555555] uppercase tracking-wider">
             Current Streak
           </span>
         </div>
@@ -69,7 +69,7 @@ const UserProfileCard = ({ user, streakDays = 0, topicsDone = 0 }) => {
           <span className="text-xl md:text-2xl font-extrabold text-emerald-500 tracking-tight">
             {topicsDone}
           </span>
-          <span className="text-[10px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
+          <span className="text-[10px] font-bold text-[#666666] dark:text-[#555555] uppercase tracking-wider">
             Topics Done
           </span>
         </div>

@@ -39,7 +39,7 @@ const ChatHistoryList = ({ category }) => {
           <li key={item._id}>
             <button
               onClick={() => navigate(destination)}
-              className="w-full flex items-center justify-between p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-elevated-dark text-xs text-text-muted-light dark:text-text-muted-dark hover:text-text-base-light dark:hover:text-text-base-dark transition-colors duration-200 text-left"
+              className="w-full flex items-center justify-between p-1.5 rounded-lg hover:bg-white/80 dark:hover:bg-elevated-dark text-xs text-text-muted-light dark:text-text-muted-dark hover:text-text-base-light dark:hover:text-text-base-dark transition-colors duration-200 text-left"
             >
               <div className="flex items-center space-x-2 truncate min-w-0">
                 <MessageSquare className="h-3.5 w-3.5 flex-shrink-0" />

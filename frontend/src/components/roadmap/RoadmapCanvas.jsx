@@ -157,7 +157,7 @@ const RoadmapCanvasInner = ({
           {/* Subtle dot grid background */}
           <Background
             color="currentColor"
-            className="text-slate-200 dark:text-slate-800"
+            className="text-slate-200 dark:text-[#333333]"
             gap={24}
             size={1.5}
             style={{ opacity: 0.6 }}
@@ -166,7 +166,7 @@ const RoadmapCanvasInner = ({
           {/* Controls */}
           <Controls
             showInteractive={false}
-            className="bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark text-slate-800 dark:text-white rounded-xl shadow-md overflow-hidden"
+            className="bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark text-[#333333] dark:text-white rounded-xl shadow-md overflow-hidden"
           />
 
           {/* Mini-map */}
@@ -182,7 +182,7 @@ const RoadmapCanvasInner = ({
 
           {/* Legend */}
           <Panel position="top-right">
-            <div className="flex items-center space-x-3 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur border border-slate-200/60 dark:border-slate-700/40 shadow-sm text-[10px] font-semibold text-slate-500">
+            <div className="flex items-center space-x-3 px-3 py-1.5 rounded-xl bg-white/80 dark:bg-slate-900/80 backdrop-blur border border-[#EAE8E1]/60 dark:border-slate-700/40 shadow-sm text-[10px] font-semibold text-[#555555]">
               <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-emerald-500 inline-block" /><span>Mastered</span></span>
               <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-amber-500 inline-block" /><span>Active</span></span>
               <span className="flex items-center space-x-1"><span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 inline-block" /><span>Locked</span></span>

@@ -96,7 +96,7 @@ const ExamSetupWizard = ({ onComplete }) => {
                   <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold transition-all duration-300 ${
                     isActive ? 'bg-primary text-white dark:bg-accent'
                     : isCompleted ? 'bg-emerald-500 text-white'
-                    : 'bg-slate-100 dark:bg-elevated-dark text-text-muted-light dark:text-text-muted-dark'
+                    : 'bg-white/80 dark:bg-elevated-dark text-text-muted-light dark:text-text-muted-dark'
                   }`}>
                     {stepNum}
                   </div>
@@ -107,7 +107,7 @@ const ExamSetupWizard = ({ onComplete }) => {
                   </span>
                 </div>
                 {index < stepsList.length - 1 && (
-                  <div className="h-0.5 flex-grow mx-4 bg-slate-100 dark:bg-border-dark hidden sm:block" />
+                  <div className="h-0.5 flex-grow mx-4 bg-white/80 dark:bg-border-dark hidden sm:block" />
                 )}
               </div>
             );
@@ -163,7 +163,7 @@ const ExamSetupWizard = ({ onComplete }) => {
           onClick={handleNext}
           disabled={loading}
           className={`flex items-center space-x-2 px-5 py-2.5 text-sm font-semibold text-white rounded-xl shadow-md transition-all duration-300 ${
-            loading ? 'bg-slate-300 dark:bg-elevated-dark text-slate-400 cursor-not-allowed shadow-none' : 'bg-cta hover:bg-cta-hover'
+            loading ? 'bg-slate-300 dark:bg-elevated-dark text-[#666666] cursor-not-allowed shadow-none' : 'bg-cta hover:bg-cta-hover'
           }`}
         >
           {loading ? (

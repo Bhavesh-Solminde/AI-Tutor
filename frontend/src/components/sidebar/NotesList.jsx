@@ -64,7 +64,7 @@ const NotesList = () => {
           <div
             className="w-full flex items-center space-x-2 p-1.5 rounded-lg text-xs
               text-text-muted-light dark:text-text-muted-dark
-              hover:bg-slate-100 dark:hover:bg-elevated-dark transition-colors cursor-default"
+              hover:bg-white/80 dark:hover:bg-elevated-dark transition-colors cursor-default"
             title={`${m.title} — reference material for AI chat context`}
           >
             <span className="text-primary dark:text-accent">{iconFor(m.inputMethod)}</span>

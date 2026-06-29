@@ -14,7 +14,7 @@ export const useMastery = () => {
       case 'learning':
         return 'border-yellow-500 bg-yellow-500/10 text-yellow-500 dark:text-yellow-400 animate-pulse-glow';
       default:
-        return 'border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900/60 text-slate-400';
+        return 'border-[#DFDCD4] dark:border-slate-700 bg-white/80 dark:bg-slate-900/60 text-[#666666]';
     }
   }, []);
 

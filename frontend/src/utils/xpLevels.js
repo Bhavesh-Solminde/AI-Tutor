@@ -9,7 +9,7 @@ const LEVELS = [
   { threshold: 1500, title: 'Advanced Learner', emoji: '🎓', color: 'text-blue-500' },
   { threshold: 500,  title: 'College Scholar', emoji: '📚', color: 'text-emerald-500' },
   { threshold: 100,  title: 'Rising Student', emoji: '⭐', color: 'text-cyan-500' },
-  { threshold: 0,    title: 'Novice', emoji: '🌱', color: 'text-slate-400' },
+  { threshold: 0,    title: 'Novice', emoji: '🌱', color: 'text-[#666666]' },
 ];
 
 export function getXpLevel(totalXp) {

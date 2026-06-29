@@ -9,10 +9,10 @@ const AnswerOptionButton = ({ opt, idx, isSelected, isCorrect, isAnswered, onSel
     } else if (isSelected) {
       optClasses += 'border-red-500 bg-red-500/10 text-red-600 dark:text-red-400';
     } else {
-      optClasses += 'border-border-light dark:border-border-dark opacity-60 text-slate-400';
+      optClasses += 'border-border-light dark:border-border-dark opacity-60 text-[#666666]';
     }
   } else {
-    optClasses += 'border-border-light dark:border-border-dark hover:border-primary dark:hover:border-accent hover:bg-slate-50 dark:hover:bg-slate-900 bg-slate-50/20 dark:bg-slate-900/10 text-slate-700 dark:text-slate-300';
+    optClasses += 'border-border-light dark:border-border-dark hover:border-primary dark:hover:border-accent hover:bg-white/60 dark:hover:bg-slate-900 bg-white/60/20 dark:bg-slate-900/10 text-[#333333] dark:text-slate-300';
   }
 
   return (

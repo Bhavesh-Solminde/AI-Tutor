@@ -65,7 +65,7 @@ const DropZone = ({ onFileSelected, selectedFileName }) => {
           ? 'border-primary dark:border-accent bg-primary/5 dark:bg-accent/5'
           : selectedFileName
           ? 'border-emerald-500 bg-emerald-500/5'
-          : 'border-border-light dark:border-border-dark hover:border-primary dark:hover:border-accent bg-slate-50 dark:bg-slate-900/30'
+          : 'border-border-light dark:border-border-dark hover:border-primary dark:hover:border-accent bg-white/60 dark:bg-slate-900/30'
       }`}
     >
       <input
@@ -76,7 +76,7 @@ const DropZone = ({ onFileSelected, selectedFileName }) => {
         onChange={handleFileInput}
       />
       <label htmlFor="file-upload-input" className="cursor-pointer space-y-3 block w-full h-full">
-        <div className="mx-auto w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-900 flex items-center justify-center text-slate-400 transition-colors">
+        <div className="mx-auto w-12 h-12 rounded-xl bg-white/80 dark:bg-slate-900 flex items-center justify-center text-[#666666] transition-colors">
           {selectedFileName ? (
             <CheckCircle2 className="h-6 w-6 text-emerald-500" />
           ) : (
@@ -84,10 +84,10 @@ const DropZone = ({ onFileSelected, selectedFileName }) => {
           )}
         </div>
         <div>
-          <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
+          <p className="text-sm font-semibold text-[#333333] dark:text-slate-300">
             {selectedFileName ? `Selected: ${selectedFileName}` : 'Drag & drop your syllabus here'}
           </p>
-          <p className="text-xs text-slate-400 mt-1">Accepts PDF, DOCX, TXT, MD — up to 10MB</p>
+          <p className="text-xs text-[#666666] mt-1">Accepts PDF, DOCX, TXT, MD — up to 10MB</p>
         </div>
       </label>
       {typeError && (

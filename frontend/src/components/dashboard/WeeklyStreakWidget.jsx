@@ -7,7 +7,7 @@ const WeeklyStreakWidget = ({ streakDays = 4, xpToday = 180, totalXp = 0 }) => {
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 flex items-center justify-between shadow-sm text-left h-28 group hover:border-amber-500/50 transition-colors">
       <div className="space-y-1">
         <h3 className="text-xs font-mono text-text-muted-light dark:text-text-muted-dark uppercase tracking-wider">Weekly Streak</h3>
-        <p className="text-3xl font-extrabold text-slate-900 dark:text-white leading-none mt-0.5">
+        <p className="text-3xl font-extrabold text-[#333333] dark:text-white leading-none mt-0.5">
           {streakDays} {streakDays === 1 ? 'Day' : 'Days'}
         </p>
         <div className="flex items-center space-x-2 pt-1">

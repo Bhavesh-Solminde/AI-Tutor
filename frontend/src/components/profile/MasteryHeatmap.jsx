@@ -7,14 +7,14 @@ const MasteryHeatmap = ({ heatmapDays }) => {
       case 2: return 'bg-primary/50 dark:bg-accent/40';
       case 3: return 'bg-primary/75 dark:bg-accent/65';
       case 4: return 'bg-primary dark:bg-accent';
-      default: return 'bg-slate-100 dark:bg-slate-800/80';
+      default: return 'bg-white/80 dark:bg-slate-800/80';
     }
   };
 
   return (
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm space-y-4 text-left">
       <div>
-        <h3 className="font-bold text-slate-900 dark:text-white text-base">Study Activity — Last 12 Weeks</h3>
+        <h3 className="font-bold text-[#333333] dark:text-white text-base">Study Activity — Last 12 Weeks</h3>
       </div>
       
       <div className="flex flex-col space-y-4">
@@ -32,9 +32,9 @@ const MasteryHeatmap = ({ heatmapDays }) => {
         </div>
 
         {/* Legend */}
-        <div className="flex justify-end items-center space-x-2 text-xs text-slate-400 dark:text-slate-500 pr-2">
+        <div className="flex justify-end items-center space-x-2 text-xs text-[#666666] dark:text-[#555555] pr-2">
           <span>Less</span>
-          <div className="w-3 h-3 rounded-[2px] bg-slate-100 dark:bg-slate-800/80" />
+          <div className="w-3 h-3 rounded-[2px] bg-white/80 dark:bg-slate-800/80" />
           <div className="w-3 h-3 rounded-[2px] bg-primary/25 dark:bg-accent/20" />
           <div className="w-3 h-3 rounded-[2px] bg-primary/50 dark:bg-accent/40" />
           <div className="w-3 h-3 rounded-[2px] bg-primary/75 dark:bg-accent/65" />

@@ -21,7 +21,7 @@ const NextTopicCard = ({
 
         {/* Progress bar */}
         <div className="space-y-1">
-          <div className="w-full h-1.5 bg-slate-100 dark:bg-border-dark rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-white/80 dark:bg-border-dark rounded-full overflow-hidden">
             <div 
               className="h-full bg-primary dark:bg-accent transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -42,7 +42,7 @@ const NextTopicCard = ({
         </button>
         <button
           onClick={onTakeQuiz}
-          className="py-2.5 border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-elevated-dark text-text-base-light dark:text-text-base-dark text-xs font-bold rounded-xl transition-all duration-300 text-center"
+          className="py-2.5 border border-border-light dark:border-border-dark hover:bg-white/60 dark:hover:bg-elevated-dark text-text-base-light dark:text-text-base-dark text-xs font-bold rounded-xl transition-all duration-300 text-center"
         >
           Take Quiz
         </button>

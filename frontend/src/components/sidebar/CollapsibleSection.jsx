@@ -8,7 +8,7 @@ const CollapsibleSection = ({ title, children, defaultOpen = true }) => {
     <div className="space-y-1.5">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between px-4 py-2 text-xs font-sans font-semibold tracking-wider uppercase text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 transition-colors duration-200"
+        className="w-full flex items-center justify-between px-4 py-2 text-xs font-sans font-semibold tracking-wider uppercase text-[#555555] dark:text-[#666666] hover:text-[#333333] dark:hover:text-slate-200 transition-colors duration-200"
       >
         <span>{title}</span>
         {isOpen ? (

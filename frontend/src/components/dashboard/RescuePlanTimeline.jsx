@@ -20,12 +20,12 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm space-y-6 text-left flex flex-col h-full min-h-[350px]">
       <div className="flex items-center space-x-2 border-b border-border-light/45 dark:border-border-dark/45 pb-3">
         <Clock className="h-5 w-5 text-red-500" />
-        <h3 className="font-bold text-slate-900 dark:text-white text-base">Exam Rescue Timeline</h3>
+        <h3 className="font-bold text-[#333333] dark:text-white text-base">Exam Rescue Timeline</h3>
       </div>
 
       <div className="relative flex-1 pl-4 space-y-6 text-xs overflow-y-auto pr-2">
         {/* Left vertical timeline bar */}
-        <div className="absolute left-[23px] top-2 bottom-2 w-0.5 bg-slate-100 dark:bg-border-dark -z-0" />
+        <div className="absolute left-[23px] top-2 bottom-2 w-0.5 bg-white/80 dark:bg-border-dark -z-0" />
 
         {timelineSteps.length > 0 ? timelineSteps.map((step, idx) => {
           const isFirstUncompleted = !step.completed && timelineSteps.slice(0, idx).every(s => s.completed);
@@ -37,7 +37,7 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
             } else if (status === 'active') {
               return 'bg-primary dark:bg-accent border-primary dark:border-accent ring-4 ring-primary/20 dark:ring-accent/20 text-white';
             } else {
-              return 'bg-slate-200 dark:bg-border-dark border-slate-300 dark:border-slate-800 text-transparent';
+              return 'bg-slate-200 dark:bg-border-dark border-[#DFDCD4] dark:border-slate-800 text-transparent';
             }
           };
 
@@ -60,10 +60,10 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
                   className="flex items-center justify-between cursor-pointer group"
                   onClick={() => setExpandedDay(isExpanded ? null : stepKey)}
                 >
-                  <h4 className="font-bold text-slate-800 dark:text-text-primary-dark group-hover:text-primary dark:group-hover:text-accent transition-colors">
+                  <h4 className="font-bold text-[#333333] dark:text-text-primary-dark group-hover:text-primary dark:group-hover:text-accent transition-colors">
                     {title}
                   </h4>
-                  <ChevronDown className={`h-3.5 w-3.5 text-slate-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-3.5 w-3.5 text-[#666666] transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
                 </div>
                 
                 {isExpanded && (
@@ -74,7 +74,7 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
                       </p>
                     ))}
                     {(step.topics || []).length === 0 && !step.isMockExam && (
-                      <p className="text-xs text-slate-400 italic">No topics assigned.</p>
+                      <p className="text-xs text-[#666666] italic">No topics assigned.</p>
                     )}
                     {step.isMockExam && (
                       <p className="text-xs text-purple-600 dark:text-purple-400 font-medium pt-1">
@@ -87,7 +87,7 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
             </div>
           );
         }) : (
-          <p className="text-xs text-slate-400 italic">Timeline will appear here.</p>
+          <p className="text-xs text-[#666666] italic">Timeline will appear here.</p>
         )}
       </div>
     </div>

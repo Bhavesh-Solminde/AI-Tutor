@@ -201,13 +201,13 @@ const Tutor = () => {
             <div className="flex items-center space-x-2 md:space-x-3 min-w-0">
               <button
                 onClick={() => navigate('/roadmap')}
-                className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-slate-800 transition flex-shrink-0"
+                className="p-1.5 rounded-lg border border-border-light dark:border-border-dark hover:bg-white/80 dark:hover:bg-slate-800 transition flex-shrink-0"
               >
                 <ArrowLeft className="h-4 w-4" />
               </button>
               <div className="min-w-0">
                 <span className="text-[10px] font-sans tracking-wider uppercase text-primary dark:text-accent">Active Session</span>
-                <h2 className="text-base md:text-lg font-bold text-slate-900 dark:text-white truncate max-w-[140px] sm:max-w-xs md:max-w-none">{topicName}</h2>
+                <h2 className="text-base md:text-lg font-bold text-[#333333] dark:text-white truncate max-w-[140px] sm:max-w-xs md:max-w-none">{topicName}</h2>
               </div>
             </div>
             <div className="flex items-center space-x-2 flex-shrink-0">

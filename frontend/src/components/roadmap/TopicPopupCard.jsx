@@ -20,14 +20,14 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
       
       {/* Title & Badge */}
       <div className="flex justify-between items-start">
-        <h3 className="text-lg font-bold text-slate-900 dark:text-white leading-tight pr-2">
+        <h3 className="text-lg font-bold text-[#333333] dark:text-white leading-tight pr-2">
           {topic.name}
         </h3>
         <div className="flex flex-shrink-0 items-center space-x-4">
           {getStatusBadge()}
           <button 
             onClick={onClose}
-            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-elevated-dark transition-colors focus:outline-none"
+            className="p-1 rounded-lg text-[#666666] hover:text-[#333333] dark:hover:text-slate-200 hover:bg-white/80 dark:hover:bg-elevated-dark transition-colors focus:outline-none"
             aria-label="Close"
           >
             <X className="h-5 w-5" />
@@ -38,30 +38,30 @@ const TopicPopupCard = ({ topic, onClose, onStart, onQuiz }) => {
       {/* Grid Stats */}
       <div className="grid grid-cols-3 gap-3">
         {/* Time */}
-        <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[11px] font-sans font-bold text-slate-500 dark:text-slate-400 flex items-center mb-1">
+        <div className="border border-slate-100 dark:border-border-dark bg-white/60/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
+          <span className="text-[11px] font-sans font-bold text-[#555555] dark:text-[#666666] flex items-center mb-1">
             <Clock className="h-4 w-4 mr-1.5 text-blue-500/70 dark:text-blue-400/80" />
             <span>Time</span>
           </span>
-          <span className="text-sm font-bold text-slate-800 dark:text-white">
+          <span className="text-sm font-bold text-[#333333] dark:text-white">
             {topic.timeEst || '2h 45m'}
           </span>
         </div>
 
         {/* Level */}
-        <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[11px] font-sans font-bold text-slate-500 dark:text-slate-400 flex items-center mb-1">
+        <div className="border border-slate-100 dark:border-border-dark bg-white/60/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
+          <span className="text-[11px] font-sans font-bold text-[#555555] dark:text-[#666666] flex items-center mb-1">
             <BarChart2 className="h-4 w-4 mr-1.5 text-purple-500/70 dark:text-purple-400/80" />
             <span>Level</span>
           </span>
-          <span className="text-sm font-bold text-slate-800 dark:text-white">
+          <span className="text-sm font-bold text-[#333333] dark:text-white">
             {topic.difficulty || 'Medium'}
           </span>
         </div>
 
         {/* Mastery */}
-        <div className="border border-slate-100 dark:border-border-dark bg-slate-50/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
-          <span className="text-[11px] font-sans font-bold text-slate-500 dark:text-slate-400 flex items-center mb-1">
+        <div className="border border-slate-100 dark:border-border-dark bg-white/60/50 dark:bg-elevated-dark/20 rounded-2xl p-3 flex flex-col items-center justify-center text-center">
+          <span className="text-[11px] font-sans font-bold text-[#555555] dark:text-[#666666] flex items-center mb-1">
             <Target className="h-4 w-4 mr-1.5 text-emerald-500/70 dark:text-emerald-400/80" />
             <span>Mastery</span>
           </span>

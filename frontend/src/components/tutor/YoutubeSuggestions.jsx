@@ -50,7 +50,7 @@ const YoutubeSuggestions = ({ topic, hideHeader = false, onLoaded }) => {
 
   if (loading) {
     return (
-      <div className={`${hideHeader ? '' : 'mt-4'} p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 animate-pulse`}>
+      <div className={`${hideHeader ? '' : 'mt-4'} p-4 rounded-2xl border border-slate-100 dark:border-slate-800 bg-white/60/50 dark:bg-slate-900/30 animate-pulse`}>
         {!hideHeader && <div className="h-4 w-40 bg-slate-200 dark:bg-slate-700 rounded mb-3" />}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           {[1, 2, 3].map((n) => (
@@ -72,7 +72,7 @@ const YoutubeSuggestions = ({ topic, hideHeader = false, onLoaded }) => {
           <div className="flex items-center justify-center w-6 h-6 rounded-lg bg-red-500/10 dark:bg-red-500/20 text-red-600 dark:text-red-400">
             <Youtube className="h-4 w-4" />
           </div>
-          <h4 className="text-xs font-extrabold uppercase tracking-wider text-slate-800 dark:text-slate-200">
+          <h4 className="text-xs font-extrabold uppercase tracking-wider text-[#333333] dark:text-slate-200">
             Related Videos on {topic}
           </h4>
         </div>
@@ -88,7 +88,7 @@ const YoutubeSuggestions = ({ topic, hideHeader = false, onLoaded }) => {
             className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-100 dark:border-slate-800/80 bg-white dark:bg-surface-dark/95 shadow-sm hover:shadow-md hover:border-red-200 dark:hover:border-red-900/40 transition-all duration-300"
           >
             {/* Thumbnail aspect-video container */}
-            <div className="relative aspect-video w-full overflow-hidden bg-slate-100 dark:bg-slate-900">
+            <div className="relative aspect-video w-full overflow-hidden bg-white/80 dark:bg-slate-900">
               {vid.thumbnail ? (
                 <img
                   src={vid.thumbnail}
@@ -96,12 +96,12 @@ const YoutubeSuggestions = ({ topic, hideHeader = false, onLoaded }) => {
                   className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-slate-900 text-slate-400">
+                <div className="flex h-full w-full items-center justify-center bg-white/80 dark:bg-slate-900 text-[#666666]">
                   <Play className="h-8 w-8 stroke-[1.5]" />
                 </div>
               )}
               {/* Hover overlay with play button */}
-              <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+              <div className="absolute inset-0 bg-[#181818]/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                 <div className="flex h-9 w-9 items-center justify-center rounded-full bg-red-600 text-white shadow-lg transform scale-90 group-hover:scale-100 transition-transform duration-300">
                   <Play className="h-4.5 w-4.5 fill-current" />
                 </div>
@@ -110,18 +110,18 @@ const YoutubeSuggestions = ({ topic, hideHeader = false, onLoaded }) => {
 
             {/* Video info */}
             <div className="p-2.5 flex-1 flex flex-col justify-between text-left">
-              <h5 className="text-xs font-bold text-slate-800 dark:text-slate-100 line-clamp-2 leading-snug group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
+              <h5 className="text-xs font-bold text-[#333333] dark:text-slate-100 line-clamp-2 leading-snug group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">
                 {vid.title}
               </h5>
               {vid.channelName && (
-                <p className="mt-1 text-[10px] font-semibold text-slate-400 dark:text-slate-500 truncate">
+                <p className="mt-1 text-[10px] font-semibold text-[#666666] dark:text-[#555555] truncate">
                   {vid.channelName}
                 </p>
               )}
             </div>
 
             {/* Floating top right external link icon */}
-            <div className="absolute top-1.5 right-1.5 p-1 rounded-md bg-black/60 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+            <div className="absolute top-1.5 right-1.5 p-1 rounded-md bg-[#181818]/80 text-white opacity-0 group-hover:opacity-100 transition-opacity duration-300">
               <ExternalLink className="h-3 w-3" />
             </div>
           </a>

@@ -6,7 +6,7 @@ const ProgressStepper = ({ step, totalSteps = 3, title, icon: Icon }) => {
     <header className="relative z-10 max-w-4xl mx-auto w-full px-6 py-6 flex justify-between items-center border-b border-border-light dark:border-border-dark">
       <div className="flex items-center space-x-3">
         {Icon && <Icon className="h-6 w-6 text-primary dark:text-accent" />}
-        <span className="text-lg font-bold tracking-tight text-slate-900 dark:text-white">
+        <span className="text-lg font-bold tracking-tight text-[#333333] dark:text-white">
           {title}
         </span>
       </div>

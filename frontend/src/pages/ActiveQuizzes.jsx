@@ -23,8 +23,8 @@ const ActiveQuizzes = () => {
     <MainLayout>
       <div className="space-y-8 text-left">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Active Modules & Quizzes</h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400">
+          <h1 className="text-2xl font-bold text-[#333333] dark:text-white">Active Modules & Quizzes</h1>
+          <p className="text-sm text-[#555555] dark:text-[#666666]">
             Resume in-progress practice modules or review your historical testing record.
           </p>
         </div>
@@ -60,7 +60,7 @@ const ActiveQuizzes = () => {
                       <span>Progress: {quiz.answeredCount || 0}/{quiz.totalQuestions || 10} Questions</span>
                       <span>{Math.round(((quiz.answeredCount || 0) / (quiz.totalQuestions || 10)) * 100)}%</span>
                     </div>
-                    <div className="w-full h-1.5 bg-slate-100 dark:bg-border-dark rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-white/80 dark:bg-border-dark rounded-full overflow-hidden">
                       <div
                         className="h-full bg-primary dark:bg-accent transition-all duration-300"
                         style={{ width: `${Math.round(((quiz.answeredCount || 0) / (quiz.totalQuestions || 10)) * 100)}%` }}
@@ -96,7 +96,7 @@ const ActiveQuizzes = () => {
               <div className="overflow-x-auto">
                 <table className="w-full border-collapse">
                   <thead>
-                    <tr className="border-b border-border-light dark:border-border-dark bg-slate-50 dark:bg-slate-900/10 text-text-muted-light dark:text-text-muted-dark text-[10px] font-mono uppercase tracking-wider text-left">
+                    <tr className="border-b border-border-light dark:border-border-dark bg-white/60 dark:bg-slate-900/10 text-text-muted-light dark:text-text-muted-dark text-[10px] font-mono uppercase tracking-wider text-left">
                       <th className="px-6 py-3 font-semibold">Topic Module</th>
                       <th className="px-6 py-3 font-semibold">Score</th>
                       <th className="px-6 py-3 font-semibold">Result</th>
@@ -108,7 +108,7 @@ const ActiveQuizzes = () => {
                     {quizHistory.map((row) => (
                       <tr
                         key={row._id}
-                        className="hover:bg-slate-50/50 dark:hover:bg-elevated-dark/20 transition cursor-pointer"
+                        className="hover:bg-white/60/50 dark:hover:bg-elevated-dark/20 transition cursor-pointer"
                         onClick={() => navigate(`/quiz/result/${row._id}`)}
                         title="Click to review this attempt"
                       >

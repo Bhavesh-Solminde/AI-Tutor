@@ -107,8 +107,8 @@ const Profile = () => {
           {/* Explanation Level */}
           <div className="p-5 flex justify-between items-center">
             <div className="space-y-1">
-              <h4 className="font-bold text-sm text-slate-800 dark:text-white">Explanation Level</h4>
-              <p className="text-xs text-slate-500 capitalize">{explanationLevel}</p>
+              <h4 className="font-bold text-sm text-[#333333] dark:text-white">Explanation Level</h4>
+              <p className="text-xs text-[#555555] capitalize">{explanationLevel}</p>
             </div>
             <button
               onClick={handleLevelChange}
@@ -122,14 +122,14 @@ const Profile = () => {
           {/* Exam Date */}
           <div className="p-5 flex justify-between items-center">
             <div className="space-y-1 flex-grow pr-4">
-              <h4 className="font-bold text-sm text-slate-800 dark:text-white">Exam Date</h4>
+              <h4 className="font-bold text-sm text-[#333333] dark:text-white">Exam Date</h4>
               {isEditingDate ? (
                 <div className="flex items-center space-x-2 mt-1">
                   <input
                     type="date"
                     value={examDate}
                     onChange={(e) => setExamDate(e.target.value)}
-                    className="px-2 py-1 text-xs font-mono rounded-lg border border-border-light dark:border-border-dark bg-transparent text-slate-800 dark:text-white focus:outline-none focus:border-primary dark:focus:border-accent"
+                    className="px-2 py-1 text-xs font-mono rounded-lg border border-border-light dark:border-border-dark bg-transparent text-[#333333] dark:text-white focus:outline-none focus:border-primary dark:focus:border-accent"
                   />
                   <button
                     onClick={handleSaveDate}
@@ -138,10 +138,10 @@ const Profile = () => {
                   >
                     {savingDate ? '...' : 'Save'}
                   </button>
-                  <button onClick={() => setIsEditingDate(false)} className="text-[10px] text-slate-400 hover:text-slate-600">Cancel</button>
+                  <button onClick={() => setIsEditingDate(false)} className="text-[10px] text-[#666666] hover:text-[#4A4A4A]">Cancel</button>
                 </div>
               ) : (
-                <p className="text-xs text-slate-500">{formatDate(examDate)}</p>
+                <p className="text-xs text-[#555555]">{formatDate(examDate)}</p>
               )}
             </div>
             {!isEditingDate && (
@@ -156,7 +156,7 @@ const Profile = () => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          {/* <button className="flex-1 py-3 border border-slate-200 dark:border-border-dark hover:bg-slate-50 dark:hover:bg-elevated-dark text-slate-700 dark:text-white text-sm font-bold rounded-2xl transition-all duration-300">
+          {/* <button className="flex-1 py-3 border border-[#EAE8E1] dark:border-border-dark hover:bg-white/60 dark:hover:bg-elevated-dark text-[#333333] dark:text-white text-sm font-bold rounded-2xl transition-all duration-300">
             Settings
           </button> */}
           <button

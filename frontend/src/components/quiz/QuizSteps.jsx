@@ -33,7 +33,7 @@ const QuizSteps = ({ totalQuestions = 10, currentIdx = 0, answers = {} }) => {
               labelClasses += 'text-red-500 dark:text-red-400 font-semibold';
             }
           } else {
-            bubbleClasses += 'bg-slate-100 dark:bg-elevated-dark text-text-muted-light dark:text-text-muted-dark';
+            bubbleClasses += 'bg-white/80 dark:bg-elevated-dark text-text-muted-light dark:text-text-muted-dark';
             labelClasses += 'text-text-muted-light dark:text-text-muted-dark';
           }
 

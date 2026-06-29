@@ -114,25 +114,25 @@ const Roadmap = () => {
                 className="flex items-center gap-2 group"
                 disabled={allSessions.length <= 1}
               >
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white truncate max-w-xs">
+                <h1 className="text-2xl font-bold text-[#333333] dark:text-white truncate max-w-xs">
                   {sessionName}
                 </h1>
                 {allSessions.length > 1 && (
-                  <ChevronDown className={`h-5 w-5 text-slate-400 transition-transform ${showSwitcher ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-5 w-5 text-[#666666] transition-transform ${showSwitcher ? 'rotate-180' : ''}`} />
                 )}
               </button>
 
               {showSwitcher && allSessions.length > 1 && (
                 <div className="absolute top-full left-0 mt-1 w-72 bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-xl shadow-xl z-50 overflow-hidden">
-                  <p className="text-[10px] font-mono uppercase tracking-wider text-slate-400 px-3 pt-3 pb-1">
+                  <p className="text-[10px] font-mono uppercase tracking-wider text-[#666666] px-3 pt-3 pb-1">
                     Switch Roadmap
                   </p>
                   {allSessions.map((s) => (
                     <button
                       key={s._id}
                       onClick={() => handleSwitchSession(s)}
-                      className={`w-full text-left px-3 py-2.5 text-sm flex items-center justify-between hover:bg-slate-50 dark:hover:bg-elevated-dark transition-colors ${
-                        s._id === currentSession?._id ? 'font-bold text-primary dark:text-accent' : 'text-slate-700 dark:text-slate-300'
+                      className={`w-full text-left px-3 py-2.5 text-sm flex items-center justify-between hover:bg-white/60 dark:hover:bg-elevated-dark transition-colors ${
+                        s._id === currentSession?._id ? 'font-bold text-primary dark:text-accent' : 'text-[#333333] dark:text-slate-300'
                       }`}
                     >
                       <span className="truncate">{s.name}</span>
@@ -145,7 +145,7 @@ const Roadmap = () => {
               )}
             </div>
 
-            <p className="text-sm text-slate-500 dark:text-slate-400">
+            <p className="text-sm text-[#555555] dark:text-[#666666]">
               Click any node to open details and start studying.
             </p>
           </div>
@@ -153,7 +153,7 @@ const Roadmap = () => {
           {/* Action buttons */}
           <div className="flex flex-wrap items-center gap-2">
             {total > 0 && (
-              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">
+              <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/80 dark:bg-slate-800 text-[#4A4A4A] dark:text-slate-300">
                 {total} Topics
               </span>
             )}
@@ -177,7 +177,7 @@ const Roadmap = () => {
             {currentSession && (
               <button
                 onClick={() => navigate('/onboarding')}
-                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl border border-border-light dark:border-border-dark hover:bg-slate-50 dark:hover:bg-elevated-dark text-slate-600 dark:text-slate-300 transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl border border-border-light dark:border-border-dark hover:bg-white/60 dark:hover:bg-elevated-dark text-[#4A4A4A] dark:text-slate-300 transition"
               >
                 <Plus className="h-3.5 w-3.5" />
                 New Roadmap
@@ -209,7 +209,7 @@ const Roadmap = () => {
                 </button>
                 <button
                   onClick={() => setShowDeleteConfirm(false)}
-                  className="text-xs font-semibold text-slate-500 hover:text-slate-700 dark:text-slate-400"
+                  className="text-xs font-semibold text-[#555555] hover:text-[#333333] dark:text-[#666666]"
                 >
                   Cancel
                 </button>
@@ -220,10 +220,10 @@ const Roadmap = () => {
 
         {/* YouTube Suggestions Collapsible Panel */}
         {currentSession?.name && (
-          <div className={`border border-slate-200/60 dark:border-slate-800 bg-white/80 dark:bg-surface-dark/80 backdrop-blur rounded-2xl p-4 shadow-sm transition-all duration-300 ${hasVideos ? 'block' : 'hidden'}`}>
+          <div className={`border border-[#EAE8E1]/60 dark:border-slate-800 bg-white/80 dark:bg-surface-dark/80 backdrop-blur rounded-2xl p-4 shadow-sm transition-all duration-300 ${hasVideos ? 'block' : 'hidden'}`}>
             <button
               onClick={() => setShowVideos((v) => !v)}
-              className="flex items-center justify-between w-full text-left font-bold text-sm text-slate-800 dark:text-white"
+              className="flex items-center justify-between w-full text-left font-bold text-sm text-[#333333] dark:text-white"
             >
               <div className="flex items-center space-x-2">
                 <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -232,7 +232,7 @@ const Roadmap = () => {
                 </svg>
                 <span className="font-extrabold uppercase tracking-wider text-xs">Recommended Videos for "{sessionName}"</span>
               </div>
-              <ChevronDown className={`h-4 w-4 text-slate-400 transition-transform duration-300 ${showVideos ? 'rotate-180' : ''}`} />
+              <ChevronDown className={`h-4 w-4 text-[#666666] transition-transform duration-300 ${showVideos ? 'rotate-180' : ''}`} />
             </button>
             <div className={`mt-4 transition-all duration-300 ${showVideos ? 'block' : 'hidden'}`}>
               <YoutubeSuggestions

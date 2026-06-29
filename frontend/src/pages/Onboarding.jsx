@@ -89,7 +89,7 @@ const Onboarding = () => {
   const displayError = localError || sessionError;
 
   return (
-    <div className="min-h-screen bg-background-light dark:bg-background-dark text-slate-800 dark:text-text-primary-dark transition-colors duration-300 relative overflow-hidden flex flex-col justify-between">
+    <div className="min-h-screen bg-background-light dark:bg-background-dark text-[#333333] dark:text-text-primary-dark transition-colors duration-300 relative overflow-hidden flex flex-col justify-between">
       <div className="absolute inset-0 grid-backdrop pointer-events-none opacity-40" />
       <ProgressStepper step={step} totalSteps={3} title="Setup Your Study Path" icon={GraduationCap} />
 
@@ -99,10 +99,10 @@ const Onboarding = () => {
           {step === 1 && (
             <div className="space-y-6 text-left">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Step 1: Feed your AI Tutor</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Upload files, paste study sheets, or type a topic to teach you.</p>
+                <h2 className="text-2xl font-extrabold text-[#333333] dark:text-white">Step 1: Feed your AI Tutor</h2>
+                <p className="text-sm text-[#555555] dark:text-[#666666] mt-1">Upload files, paste study sheets, or type a topic to teach you.</p>
               </div>
-              <div className="grid grid-cols-3 gap-2 p-1.5 rounded-xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200/50 dark:border-slate-800">
+              <div className="grid grid-cols-3 gap-2 p-1.5 rounded-xl bg-white/80 dark:bg-slate-900/60 border border-[#EAE8E1]/50 dark:border-slate-800">
                 {[
                   { id: 'pdf', label: 'Upload Syllabus', icon: Upload },
                   { id: 'notes', label: 'Paste Notes', icon: FileText },
@@ -112,8 +112,8 @@ const Onboarding = () => {
                   return (
                     <button key={tab.id} onClick={() => { setInputType(tab.id); setLocalError(''); }}
                       className={`flex items-center justify-center space-x-2 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${inputType === tab.id
-                          ? 'bg-white dark:bg-elevated-dark text-primary dark:text-accent shadow-sm border border-slate-200 dark:border-border-dark'
-                          : 'text-slate-500 dark:text-text-muted-dark hover:text-slate-800 dark:hover:text-text-primary-dark'
+                          ? 'bg-white dark:bg-elevated-dark text-primary dark:text-accent shadow-sm border border-[#EAE8E1] dark:border-border-dark'
+                          : 'text-[#555555] dark:text-text-muted-dark hover:text-[#333333] dark:hover:text-text-primary-dark'
                         }`}>
                       <Icon className="h-4 w-4" />
                       <span className="hidden sm:inline">{tab.label}</span>
@@ -130,25 +130,25 @@ const Onboarding = () => {
                 )}
                 {inputType === 'notes' && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Paste Your Notes</label>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#555555]">Paste Your Notes</label>
                     <textarea
                       placeholder="Paste your typed class notes, textbook chapters, or handwritten transcripts here..."
                       rows={5}
                       value={rawNotes}
                       onChange={(e) => setRawNotes(e.target.value)}
-                      className="w-full px-4 py-3 text-sm rounded-xl border border-border-light dark:border-border-dark bg-slate-50 dark:bg-elevated-dark text-slate-900 dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none focus:border-primary dark:focus:border-primary transition-all duration-300 resize-none"
+                      className="w-full px-4 py-3 text-sm rounded-xl border border-border-light dark:border-border-dark bg-white/60 dark:bg-elevated-dark text-[#333333] dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none focus:border-primary dark:focus:border-primary transition-all duration-300 resize-none"
                     />
                   </div>
                 )}
                 {inputType === 'topic' && (
                   <div className="space-y-2">
-                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500">Target Topic</label>
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-[#666666] dark:text-[#555555]">Target Topic</label>
                     <input
                       type="text"
                       placeholder="e.g. Operating System Scheduling Algorithms"
                       value={singleTopic}
                       onChange={(e) => setSingleTopic(e.target.value)}
-                      className="w-full px-4 py-3 text-sm rounded-xl border border-border-light dark:border-border-dark bg-slate-50 dark:bg-elevated-dark text-slate-900 dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none focus:border-primary dark:focus:border-primary transition-all duration-300"
+                      className="w-full px-4 py-3 text-sm rounded-xl border border-border-light dark:border-border-dark bg-white/60 dark:bg-elevated-dark text-[#333333] dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none focus:border-primary dark:focus:border-primary transition-all duration-300"
                     />
                   </div>
                 )}
@@ -159,8 +159,8 @@ const Onboarding = () => {
           {step === 2 && (
             <div className="space-y-6 text-left">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Step 2: Choose Explanation Style</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Calibrate how simple or technical the AI should explain concepts.</p>
+                <h2 className="text-2xl font-extrabold text-[#333333] dark:text-white">Step 2: Choose Explanation Style</h2>
+                <p className="text-sm text-[#555555] dark:text-[#666666] mt-1">Calibrate how simple or technical the AI should explain concepts.</p>
               </div>
               <div className="space-y-4">
                 {[
@@ -184,8 +184,8 @@ const Onboarding = () => {
           {step === 3 && (
             <div className="space-y-6 text-left">
               <div>
-                <h2 className="text-2xl font-extrabold text-slate-900 dark:text-white">Step 3: What do you already know?</h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Rate your baseline familiarity (1–3). Adjusts starting difficulty.</p>
+                <h2 className="text-2xl font-extrabold text-[#333333] dark:text-white">Step 3: What do you already know?</h2>
+                <p className="text-sm text-[#555555] dark:text-[#666666] mt-1">Rate your baseline familiarity (1–3). Adjusts starting difficulty.</p>
               </div>
 
               {/* Processing banner — shown while o4-mini extracts topics in background */}
@@ -194,7 +194,7 @@ const Onboarding = () => {
                   <div className="h-5 w-5 border-2 border-primary/30 border-t-primary rounded-full animate-spin flex-shrink-0" />
                   <div>
                     <p className="text-sm font-bold text-primary dark:text-accent">Generating your roadmap…</p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">AI is analysing your syllabus and building study nodes. This takes ~60s.</p>
+                    <p className="text-xs text-[#555555] dark:text-[#666666] mt-0.5">AI is analysing your syllabus and building study nodes. This takes ~60s.</p>
                   </div>
                 </div>
               )}
@@ -215,7 +215,7 @@ const Onboarding = () => {
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-slate-500 dark:text-slate-400">No topics extracted. You can adjust later from the roadmap.</p>
+                <p className="text-sm text-[#555555] dark:text-[#666666]">No topics extracted. You can adjust later from the roadmap.</p>
               )}
             </div>
           )}
@@ -230,7 +230,7 @@ const Onboarding = () => {
             <button
               onClick={() => setStep((p) => Math.max(1, p - 1))}
               disabled={step === 1}
-              className={`flex items-center space-x-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold border border-border-light dark:border-border-dark text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 transition ${step === 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
+              className={`flex items-center space-x-1.5 px-5 py-2.5 rounded-xl text-sm font-semibold border border-border-light dark:border-border-dark text-[#4A4A4A] dark:text-[#666666] hover:bg-white/60 dark:hover:bg-slate-900 transition ${step === 1 ? 'opacity-30 cursor-not-allowed' : ''}`}
             >
               <ChevronLeft className="h-4 w-4" />
               <span>Back</span>
@@ -240,7 +240,7 @@ const Onboarding = () => {
                 <button
                   onClick={handleNextStep}
                   disabled={nextLoading || uploading}
-                  className="px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200 transition"
+                  className="px-4 py-2.5 text-sm font-semibold text-[#555555] hover:text-[#333333] dark:text-[#666666] dark:hover:text-slate-200 transition"
                 >
                   Skip
                 </button>
@@ -264,7 +264,7 @@ const Onboarding = () => {
         </div>
       </main>
 
-      <footer className="relative z-10 max-w-4xl mx-auto w-full px-6 py-4 flex justify-between items-center text-xs text-slate-500 dark:text-slate-400">
+      <footer className="relative z-10 max-w-4xl mx-auto w-full px-6 py-4 flex justify-between items-center text-xs text-[#555555] dark:text-[#666666]">
         <span>Logged in as: {user?.name || '—'}</span>
         <span>NeuralNest-OS</span>
       </footer>

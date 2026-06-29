@@ -81,7 +81,7 @@ const PYQUpload = ({ file, onFileChange, onSkip }) => {
           </>
         ) : (
           <>
-            <div className="p-3 bg-slate-100 dark:bg-elevated-dark text-text-muted-light dark:text-text-muted-dark rounded-full">
+            <div className="p-3 bg-white/80 dark:bg-elevated-dark text-text-muted-light dark:text-text-muted-dark rounded-full">
               <Upload className="h-8 w-8" />
             </div>
             <div>

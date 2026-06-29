@@ -12,7 +12,7 @@ const QuizTimer = ({ seconds, maxSeconds = 60, formattedTime }) => {
   }
 
   return (
-    <div className="flex items-center space-x-3 bg-slate-50 dark:bg-elevated-dark px-3 py-1.5 rounded-xl border border-slate-100 dark:border-border-dark flex-shrink-0">
+    <div className="flex items-center space-x-3 bg-white/60 dark:bg-elevated-dark px-3 py-1.5 rounded-xl border border-slate-100 dark:border-border-dark flex-shrink-0">
       <Timer className={`h-4 w-4 ${percentRemaining < 25 ? 'text-red-500 animate-spin-slow' : 'text-text-muted-light dark:text-text-muted-dark'}`} />
       
       <div className="flex flex-col space-y-1">
