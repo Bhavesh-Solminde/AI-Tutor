@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import TopBar from './TopBar';
+import useAutoplayNature from '../../hooks/useAutoplayNature';
 
 const MainLayout = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  // Autoplay nature sounds on first user interaction across all logged-in pages
+  useAutoplayNature();
 
   return (
     <div className="flex h-screen overflow-hidden bg-background-light dark:bg-background-dark text-[#333333] dark:text-text-primary-dark transition-colors duration-300">

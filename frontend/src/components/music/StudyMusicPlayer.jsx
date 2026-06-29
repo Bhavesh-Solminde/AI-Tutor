@@ -24,9 +24,11 @@ const WaveformBars = ({ active, color = '#C4A882' }) => (
         key={i}
         style={{ backgroundColor: color, height: 18 * h, width: 3, borderRadius: 99, originY: 1 }}
         animate={active
-          ? { scaleY: [1, 1.6, 0.8, 1.4, 1] }
+          ? { scaleY: [1, 1.6, 0.8, 1.4, 1], opacity: 1 }
           : { scaleY: 0.3, opacity: 0.4 }}
-        transition={{ duration: 0.85 + i * 0.15, repeat: Infinity, ease: 'easeInOut', delay: i * 0.12 }}
+        transition={active 
+          ? { duration: 0.85 + i * 0.15, repeat: Infinity, ease: 'easeInOut', delay: i * 0.12 }
+          : { duration: 0.3, ease: 'easeOut' }}
       />
     ))}
   </div>
@@ -146,6 +148,7 @@ const AudioCore = ({ videoId, isPlaying, volume, onReady }) => {
 const StudyMusicPlayer = () => {
   const {
     isOpen, isPlaying, isMinimized, currentGenre, volume,
+    hasEverPlayed,
     openPlayer, closePlayer, toggleMinimize,
     togglePlay, setGenre, setVolume,
   } = useMusicStore();
@@ -172,21 +175,43 @@ const StudyMusicPlayer = () => {
       {/* ── FAB — shown when player is closed ── */}
       <AnimatePresence>
         {!isOpen && (
-          <motion.button
-            key="fab"
+          <motion.div
+            key="fab-wrapper"
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0, opacity: 0 }}
             transition={{ type: 'spring', stiffness: 300, damping: 22 }}
-            onClick={openPlayer}
-            title="Study Music"
-            className="fixed bottom-6 right-6 z-[9990] w-14 h-14 rounded-full
-              bg-[#F6F5F1] dark:bg-[#2A2A2A] border border-[#EAE8E1] dark:border-[#444444]
-              shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95
-              transition-all duration-200 flex items-center justify-center"
+            className="fixed bottom-6 right-6 z-[9990] flex items-center gap-3"
           >
-            <Music className="h-5 w-5 text-[#333333] dark:text-white" />
-          </motion.button>
+            {/* "Click anywhere" hint — only visible before first play */}
+            {!hasEverPlayed && (
+              <motion.div
+                initial={{ opacity: 0, x: 12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 12 }}
+                transition={{ delay: 0.6, duration: 0.4 }}
+                className="flex items-center gap-2 px-3 py-2 rounded-xl
+                  bg-[#F6F5F1]/90 dark:bg-[#2A2A2A]/90 backdrop-blur-md
+                  border border-[#EAE8E1] dark:border-[#444444]
+                  shadow-lg pointer-events-none"
+              >
+                <p className="text-[11px] font-medium text-[#555555] dark:text-[#AAAAAA] whitespace-nowrap">
+                  Click anywhere to start music
+                </p>
+              </motion.div>
+            )}
+
+            <button
+              onClick={openPlayer}
+              title="Study Music"
+              className="w-14 h-14 rounded-full flex-shrink-0
+                bg-[#F6F5F1] dark:bg-[#2A2A2A] border border-[#EAE8E1] dark:border-[#444444]
+                shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95
+                transition-all duration-200 flex items-center justify-center"
+            >
+              <Music className="h-5 w-5 text-[#333333] dark:text-white" />
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
 

@@ -10,8 +10,12 @@ import StatsCounter from '../components/landing/StatsCounter';
 import Testimonials from '../components/landing/Testimonials';
 import FinalCTA from '../components/landing/FinalCTA';
 import LiveTerminalPreview from '../components/landing/LiveTerminalPreview';
+import useAutoplay from '../hooks/useAutoplay';
+import { CLASSICAL_GENRE } from '../stores/useMusicStore';
 
 const Landing = () => {
+  // Autoplay classical music on first user interaction with the landing page
+  useAutoplay(CLASSICAL_GENRE);
 
   return (
     // Removed Forced Dark Wrapper so ThemeToggle can work globally

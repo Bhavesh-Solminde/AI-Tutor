@@ -11,10 +11,8 @@ import api from '../lib/axiosClient';
 import TutorChatPanel from '../components/tutor/TutorChatPanel';
 import MaterialsModal from '../components/tutor/MaterialsModal';
 import AgentLogPanel from '../components/tutor/AgentLogPanel';
-import useAutoplayNature from '../hooks/useAutoplayNature';
 
 const Tutor = () => {
-  useAutoplayNature();
   const { topicId } = useParams();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();

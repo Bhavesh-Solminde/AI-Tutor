@@ -13,10 +13,8 @@ import ScoreSummary from '../components/quiz/ScoreSummary';
 import QuizSteps from '../components/quiz/QuizSteps';
 import QuizTimer from '../components/quiz/QuizTimer';
 import { QuizSkeleton } from '../components/ui/LoadingSkeleton';
-import useAutoplayNature from '../hooks/useAutoplayNature';
 
 const Quiz = () => {
-  useAutoplayNature();
   const { topicId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuthStore();

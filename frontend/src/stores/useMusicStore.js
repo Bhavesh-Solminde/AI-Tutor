@@ -6,48 +6,48 @@ export const STUDY_GENRES = [
     id: 'lofi',
     label: 'Lo-Fi Hip Hop',
     description: 'Chill beats for deep focus',
-    videoId: 'lTRiuFIWV54',  // Lo-Fi Hip Hop study mix
+    videoId: 'lTRiuFIWV54',
     color: '#C4A882',
   },
   {
     id: 'classical',
     label: 'Classical',
     description: 'Mozart, Bach & Beethoven',
-    videoId: 'jgpJVI3tDbY',  // Classical Music For Studying & Brain Power — 3hr upload
+    videoId: 'jgpJVI3tDbY',
     color: '#B8A99A',
   },
   {
     id: 'nature',
     label: 'Nature Sounds',
     description: 'Rain, forest & ocean ambience',
-    videoId: 'eKFTSSKCzWA',  // Relaxing Nature Sounds
+    videoId: 'eKFTSSKCzWA',
     color: '#8FAF8F',
-    autoplayOnStudy: true,
   },
   {
     id: 'binaural',
     label: 'Binaural Beats',
     description: 'Deep focus alpha waves',
-    videoId: 'WPni755-Krg',  // Binaural Beats for Focus
+    videoId: 'WPni755-Krg',
     color: '#9B8EC4',
   },
   {
     id: 'jazz',
     label: 'Jazz',
     description: 'Smooth jazz for studying',
-    videoId: 'Dx5qFachd3A',  // Jazz Café Music
+    videoId: 'Dx5qFachd3A',
     color: '#C49A6C',
   },
   {
     id: 'ambient',
     label: 'Ambient',
     description: 'Space & atmospheric sounds',
-    videoId: 'UfcAVejslrU',  // Deep Ambient Music
+    videoId: 'UfcAVejslrU',
     color: '#7A9BBF',
   },
 ];
 
-const NATURE_GENRE = STUDY_GENRES.find((g) => g.id === 'nature');
+export const NATURE_GENRE    = STUDY_GENRES.find((g) => g.id === 'nature');
+export const CLASSICAL_GENRE = STUDY_GENRES.find((g) => g.id === 'classical');
 
 const useMusicStore = create((set, get) => ({
   isOpen: false,
@@ -55,23 +55,44 @@ const useMusicStore = create((set, get) => ({
   isMinimized: true,
   currentGenre: NATURE_GENRE,
   volume: 60,
+  hasEverPlayed: false,
+  // userClosedPlayer: true means the user explicitly hit X — respect their choice
+  // and don't auto-trigger again until they manually open it.
+  userClosedPlayer: false,
 
-  openPlayer: () => set({ isOpen: true, isMinimized: false, isPlaying: true }),
-  closePlayer: () => set({ isOpen: false, isPlaying: false }),
+  // Manual open via the music icon — resets userClosedPlayer
+  openPlayer: () => set({ isOpen: true, isMinimized: false, isPlaying: true, hasEverPlayed: true, userClosedPlayer: false }),
+
+  // X button — mark as intentionally closed
+  closePlayer: () => set({ isOpen: false, isPlaying: false, userClosedPlayer: true }),
+
   toggleMinimize: () => set((s) => ({ isMinimized: !s.isMinimized })),
 
-  play: () => set({ isPlaying: true }),
-  pause: () => set({ isPlaying: false }),
-  togglePlay: () => set((s) => ({ isPlaying: !s.isPlaying })),
+  play:       () => set({ isPlaying: true, hasEverPlayed: true }),
+  pause:      () => set({ isPlaying: false }),
+  togglePlay: () => set((s) => {
+    const nextPlaying = !s.isPlaying;
+    return { isPlaying: nextPlaying, hasEverPlayed: nextPlaying ? true : s.hasEverPlayed };
+  }),
 
-  setGenre: (genre) => set({ currentGenre: genre, isPlaying: true, isOpen: true, isMinimized: false }),
-  setVolume: (v) => set({ volume: v }),
+  setGenre:  (genre) => set({ currentGenre: genre, isPlaying: true, isOpen: true, isMinimized: false, hasEverPlayed: true }),
+  setVolume: (v)     => set({ volume: v }),
 
-  autoplayNature: () => {
-    const { isPlaying } = get();
-    if (!isPlaying) {
-      set({ isOpen: true, isPlaying: true, isMinimized: true, currentGenre: NATURE_GENRE });
-    }
+  /**
+   * Trigger autoplay for a specific genre on first user interaction.
+   * Does nothing if:
+   *  - Music is already playing
+   *  - The user has explicitly closed the player
+   */
+  autoplay: (genre) => {
+    const { isPlaying, userClosedPlayer } = get();
+    if (isPlaying || userClosedPlayer) return;
+    set({
+      isOpen: true,
+      isPlaying: true,
+      isMinimized: true,
+      currentGenre: genre,
+    });
   },
 }));
 
