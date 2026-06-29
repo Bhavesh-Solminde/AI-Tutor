@@ -16,7 +16,7 @@ const Landing = () => {
   return (
     // Removed Forced Dark Wrapper so ThemeToggle can work globally
     // Removed overflow-x-hidden because it breaks position: sticky for all children
-    <div className="min-h-screen bg-white dark:bg-[#0B0F19] text-slate-800 dark:text-slate-200 font-sans selection:bg-primary/30 relative transition-colors duration-300">
+    <div className="min-h-screen bg-[#F6F5F1] dark:bg-[#0B0F19] text-[#333333] dark:text-slate-200 font-sans selection:bg-primary/30 relative transition-colors duration-300">
 
       {/* Basic global fade animation for demo */}
       <style>{`

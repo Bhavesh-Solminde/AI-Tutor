@@ -21,13 +21,13 @@ const Testimonials = () => {
   ];
 
   return (
-    <section ref={containerRef} id="testimonials" className="py-24 px-6 relative z-10 bg-white dark:bg-transparent overflow-hidden">
+    <section ref={containerRef} id="testimonials" className="py-24 px-6 relative z-10 bg-transparent overflow-hidden">
       <div className="max-w-7xl mx-auto">
         <motion.h2 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white mb-16 md:w-1/2"
+          className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-[#333333] dark:text-white mb-16 md:w-1/2"
         >
           Real learners. Real mastery.
         </motion.h2>
@@ -42,10 +42,10 @@ const Testimonials = () => {
                 className="flex flex-col"
               >
                 <div className="rounded-2xl border border-slate-200 dark:border-white/8 bg-white dark:bg-[#121622] p-6 h-full flex flex-col justify-between hover:border-primary/40 transition-colors duration-300 group">
-                  <p className="text-base md:text-lg text-slate-700 dark:text-slate-300 leading-relaxed mb-6 font-medium">"{testimonial.text}"</p>
+                  <p className="text-base md:text-lg text-[#4A4A4A] dark:text-slate-300 leading-relaxed mb-6 font-medium">"{testimonial.text}"</p>
                   <div>
-                    <h5 className="font-bold text-slate-900 dark:text-white text-sm group-hover:text-primary transition-colors">{testimonial.name}</h5>
-                    <p className="text-xs text-slate-500 mt-0.5">{testimonial.role}</p>
+                    <h5 className="font-bold text-[#333333] dark:text-white text-sm group-hover:text-primary transition-colors">{testimonial.name}</h5>
+                    <p className="text-xs text-[#4A4A4A] mt-0.5">{testimonial.role}</p>
                   </div>
                 </div>
               </motion.div>

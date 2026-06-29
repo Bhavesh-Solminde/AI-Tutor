@@ -32,7 +32,7 @@ const HeroParallax = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-screen pt-20 pb-20 overflow-hidden flex flex-col z-10 perspective-[1000px] bg-white dark:bg-[#060A12]"
+      className="relative min-h-screen pt-20 pb-20 overflow-hidden flex flex-col z-10 perspective-[1000px] bg-transparent"
     >
       {/* LAYER 1 — Background canvas */}
       <motion.div
@@ -40,7 +40,7 @@ const HeroParallax = () => {
         className="absolute inset-0 z-0"
       >
         <InteractiveNeuralCanvas />
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-white dark:to-[#060A12]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F6F5F1] dark:to-[#0B0F19]" />
       </motion.div>
 
       <div className="relative w-full flex-grow flex flex-col justify-center">
@@ -121,7 +121,7 @@ const HeroParallax = () => {
             style={reduceMotion ? {} : { y: fgY }}
             className="w-full flex flex-col items-center text-center"
           >
-            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight flex flex-wrap justify-center">
+            <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-extrabold tracking-tight text-[#333333] dark:text-white leading-tight flex flex-wrap justify-center">
               {words.map((word, idx) => (
                 <motion.span
                   key={idx}
@@ -139,7 +139,7 @@ const HeroParallax = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8, duration: 0.8 }}
-              className="mt-6 text-lg text-slate-600 dark:text-slate-400 max-w-2xl leading-relaxed"
+              className="mt-6 text-lg text-[#4A4A4A] dark:text-slate-400 max-w-2xl leading-relaxed"
             >
               NeuralNest is an AI tutor that builds personalized roadmaps and adaptive quizzes from your syllabus. Stop studying blindly—let the AI show you exactly what you need to know.
             </motion.p>

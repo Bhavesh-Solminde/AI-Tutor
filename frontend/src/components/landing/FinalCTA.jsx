@@ -38,13 +38,13 @@ const FinalCTA = () => {
 
   return (
     <section className="py-16 md:py-24 px-4 md:px-6 relative z-50">
-      <div className="max-w-5xl mx-auto rounded-3xl bg-slate-50 dark:bg-[#121622] border border-slate-200 dark:border-white/5 text-center p-8 md:p-20 relative shadow-sm dark:shadow-none overflow-hidden group">
+      <div className="max-w-5xl mx-auto rounded-3xl bg-[#EAE8E1] dark:bg-[#121622] border border-slate-200 dark:border-white/5 text-center p-8 md:p-20 relative shadow-sm dark:shadow-none overflow-hidden group">
         
         {/* Animated Background Glow */}
-        <div className="absolute inset-0 bg-gradient-to-t from-primary/5 dark:from-primary/10 to-transparent pointer-events-none rounded-3xl" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#F6F5F1]/80 dark:from-primary/10 to-transparent pointer-events-none rounded-3xl" />
         
         {/* "Moving Border" simulated with a rotating gradient background behind a slightly smaller inner mask, or just a glow on hover */}
-        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-[radial-gradient(circle_at_50%_120%,rgba(59,107,255,0.1),transparent)] pointer-events-none rounded-3xl" />
+        <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-1000 bg-[radial-gradient(circle_at_50%_120%,rgba(246,245,241,1),transparent)] dark:bg-[radial-gradient(circle_at_50%_120%,rgba(59,107,255,0.1),transparent)] pointer-events-none rounded-3xl" />
 
         <div className="relative z-10">
           
@@ -53,7 +53,7 @@ const FinalCTA = () => {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: "-50px" }}
-            className="font-display text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-6 text-center"
+            className="font-display text-4xl md:text-5xl font-extrabold text-[#333333] dark:text-white mb-6 text-center"
           >
             {words.map((word, index) => (
               <motion.span variants={child} key={index} className="inline-block mr-3 mb-2">
@@ -68,7 +68,7 @@ const FinalCTA = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6, duration: 0.8 }}
             viewport={{ once: true }}
-            className="text-slate-600 dark:text-slate-400 text-lg mb-10 max-w-xl mx-auto"
+            className="text-[#4A4A4A] dark:text-slate-400 text-lg mb-10 max-w-xl mx-auto"
           >
             Stop cramming and start mastering. Free to start. No credit card required.
           </motion.p>

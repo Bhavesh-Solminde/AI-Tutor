@@ -46,12 +46,12 @@ const BentoGrid = () => {
     <motion.section 
       ref={containerRef}
       id="features" 
-      className="py-24 px-6 relative z-10 bg-slate-50 dark:bg-transparent"
+      className="py-24 px-6 relative z-10 bg-transparent"
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-16">
-          <h2 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">The ecosystem for mastery.</h2>
-          <p className="mt-4 text-slate-600 dark:text-slate-400 max-w-2xl">Stop jumping between PDFs, generic ChatGPT tabs, and flashcard apps. NeuralNest natively integrates every tool you need.</p>
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-[#333333] dark:text-white">The ecosystem for mastery.</h2>
+          <p className="mt-4 text-[#4A4A4A] dark:text-slate-400 max-w-2xl">Stop jumping between PDFs, generic ChatGPT tabs, and flashcard apps. NeuralNest natively integrates every tool you need.</p>
         </div>
 
         <motion.div 
@@ -69,8 +69,8 @@ const BentoGrid = () => {
               <div className="w-12 h-12 rounded-xl bg-primary/10 dark:bg-primary/20 text-primary flex items-center justify-center mb-6">
                 <MessageSquareText className="h-6 w-6" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">AI Tutor — Ask Anything</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed max-w-md">Chat with an AI tutor that deeply understands your exact syllabus. It uses simple analogies tailored to your learning style.</p>
+              <h3 className="text-2xl font-bold text-[#333333] dark:text-white mb-3">AI Tutor — Ask Anything</h3>
+              <p className="text-[#4A4A4A] dark:text-slate-400 leading-relaxed max-w-md">Chat with an AI tutor that deeply understands your exact syllabus. It uses simple analogies tailored to your learning style.</p>
             </div>
             {/* Mini Preview UI */}
             <div className="mt-auto p-8 pt-10 z-10">
@@ -101,14 +101,14 @@ const BentoGrid = () => {
               <div className="w-12 h-12 rounded-xl bg-amber-500/10 dark:bg-amber-500/20 text-amber-500 flex items-center justify-center mb-6">
                 <Zap className="h-6 w-6" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Adaptive Quizzes</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Test your knowledge as you learn. Our AI generates strict multiple-choice questions to validate mastery.</p>
+              <h3 className="text-2xl font-bold text-[#333333] dark:text-white mb-3">Adaptive Quizzes</h3>
+              <p className="text-[#4A4A4A] dark:text-slate-400 leading-relaxed">Test your knowledge as you learn. Our AI generates strict multiple-choice questions to validate mastery.</p>
             </div>
             <div className="mt-auto px-8 pb-0 z-10">
               <div className="bg-slate-50 dark:bg-[#0B0F19] rounded-t-2xl border border-slate-200 dark:border-white/5 border-b-0 p-5 shadow-sm translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                <p className="text-sm font-semibold text-slate-900 dark:text-white mb-3">Which activation function suffers from the vanishing gradient problem?</p>
+                <p className="text-sm font-semibold text-[#333333] dark:text-white mb-3">Which activation function suffers from the vanishing gradient problem?</p>
                 <div className="space-y-2">
-                  <div className="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-white/5 rounded-xl p-3 text-sm text-slate-600 dark:text-slate-400 flex items-center"><span className="w-6 h-6 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center mr-3 text-xs font-medium">A</span> ReLU</div>
+                  <div className="bg-white dark:bg-slate-800/50 border border-slate-200 dark:border-white/5 rounded-xl p-3 text-sm text-[#4A4A4A] dark:text-slate-400 flex items-center"><span className="w-6 h-6 rounded bg-slate-100 dark:bg-slate-800 flex items-center justify-center mr-3 text-xs font-medium">A</span> ReLU</div>
                   <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-3 text-sm text-emerald-600 dark:text-emerald-400 flex items-center"><span className="w-6 h-6 rounded bg-emerald-500/20 flex items-center justify-center mr-3 text-xs font-medium">B</span> Sigmoid <CheckCircle2 className="h-4 w-4 ml-auto" /></div>
                 </div>
               </div>
@@ -118,11 +118,11 @@ const BentoGrid = () => {
           {/* Feature 3: Materials (Medium - spans 5 cols) - ODD */}
           <motion.div variants={itemVariants} style={getTransform(true)} className={`md:col-span-5 ${cardBaseClasses}`}>
             <div className="p-8 z-10">
-              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 flex items-center justify-center mb-6">
+              <div className="w-12 h-12 rounded-xl bg-slate-100 dark:bg-slate-800 text-[#4A4A4A] dark:text-slate-300 flex items-center justify-center mb-6">
                 <UploadCloud className="h-6 w-6" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Universal Uploads</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Feed NeuralNest your exact curriculum. PDFs, Word docs, or YouTube links—it extracts the knowledge instantly.</p>
+              <h3 className="text-2xl font-bold text-[#333333] dark:text-white mb-3">Universal Uploads</h3>
+              <p className="text-[#4A4A4A] dark:text-slate-400 leading-relaxed">Feed NeuralNest your exact curriculum. PDFs, Word docs, or YouTube links—it extracts the knowledge instantly.</p>
             </div>
             <div className="mt-auto px-8 pb-8 z-10">
               <div className="bg-slate-50 dark:bg-[#0B0F19] rounded-2xl border border-slate-200 dark:border-white/5 p-4 flex items-center space-x-4 shadow-sm dark:shadow-none group-hover:scale-105 transition-transform duration-500">
@@ -130,7 +130,7 @@ const BentoGrid = () => {
                   <FileText className="h-5 w-5" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">CS_101_Syllabus.pdf</p>
+                  <p className="text-sm font-semibold text-[#333333] dark:text-white truncate">CS_101_Syllabus.pdf</p>
                   <p className="text-xs text-slate-500">Processing... 94%</p>
                 </div>
               </div>
@@ -143,8 +143,8 @@ const BentoGrid = () => {
               <div className="w-12 h-12 rounded-xl bg-purple-500/10 dark:bg-purple-500/20 text-purple-600 dark:text-purple-400 flex items-center justify-center mb-6">
                 <ShieldCheck className="h-6 w-6" />
               </div>
-              <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-3">Exam Rescue Mode</h3>
-              <p className="text-slate-600 dark:text-slate-400 leading-relaxed">Exam tomorrow? Upload your syllabus and enter Rescue Mode. We cut the fluff and give you a ruthless triage plan to pass.</p>
+              <h3 className="text-2xl font-bold text-[#333333] dark:text-white mb-3">Exam Rescue Mode</h3>
+              <p className="text-[#4A4A4A] dark:text-slate-400 leading-relaxed">Exam tomorrow? Upload your syllabus and enter Rescue Mode. We cut the fluff and give you a ruthless triage plan to pass.</p>
             </div>
             <div className="p-8 pt-0 md:pt-8 md:w-1/2 flex justify-center z-10">
               <div className="w-48 h-48 rounded-full flex items-center justify-center relative shadow-[0_0_50px_-10px_rgba(168,85,247,0.15)] dark:shadow-[0_0_50px_-10px_rgba(168,85,247,0.3)] group-hover:scale-110 transition-transform duration-700 ease-out">
@@ -153,7 +153,7 @@ const BentoGrid = () => {
                   <circle cx="96" cy="96" r="100" fill="none" stroke="#A855F7" strokeWidth="16" strokeDasharray="628.3" strokeDashoffset="125.6" strokeLinecap="round" className="transition-all duration-1000" />
                 </svg>
                 <div className="text-center">
-                  <span className="text-3xl font-extrabold text-slate-900 dark:text-white">80%</span>
+                  <span className="text-3xl font-extrabold text-[#333333] dark:text-white">80%</span>
                   <p className="text-[10px] text-purple-600 dark:text-purple-400 font-bold uppercase tracking-widest mt-1">Ready to Pass</p>
                 </div>
               </div>

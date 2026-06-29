@@ -58,7 +58,7 @@ const StatsCounter = () => {
   };
 
   return (
-    <section className="py-24 px-6 relative z-10 bg-white dark:bg-[#0B0F19] border-y border-slate-200 dark:border-white/5">
+    <section className="py-24 px-6 relative z-10 bg-transparent border-y border-slate-200 dark:border-white/5">
       <div className="max-w-7xl mx-auto">
         <motion.div 
           variants={containerVariants}
@@ -69,11 +69,11 @@ const StatsCounter = () => {
         >
           {stats.map((stat, i) => (
             <motion.div key={i} variants={itemVariants} className="pt-8 md:pt-0 md:px-8 first:md:pl-0 last:md:pr-0 flex flex-col items-center md:items-start text-center md:text-left">
-              <h3 className="font-display text-5xl md:text-6xl font-black text-slate-900 dark:text-white tracking-tighter mb-4 tabular-nums">
+              <h3 className="font-display text-5xl md:text-6xl font-black text-[#333333] dark:text-white tracking-tighter mb-4 tabular-nums">
                 <AnimatedCounter from={0} to={stat.value} suffix={stat.suffix} />
               </h3>
-              <p className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">{stat.label}</p>
-              <p className="text-slate-600 dark:text-slate-400">{stat.description}</p>
+              <p className="text-xl font-bold text-[#4A4A4A] dark:text-slate-200 mb-2">{stat.label}</p>
+              <p className="text-[#4A4A4A] dark:text-slate-400">{stat.description}</p>
             </motion.div>
           ))}
         </motion.div>

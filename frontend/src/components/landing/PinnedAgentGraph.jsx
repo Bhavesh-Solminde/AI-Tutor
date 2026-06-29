@@ -59,8 +59,8 @@ const JOURNEY = [
 ].join(' ');
 
 // ── Positioning helpers ──────────────────────────────────────────────────────
-const pos     = (x, y) => ({ left: pct(x, W), top: pct(y, H), transform: 'translate(-50%, -50%)' });
-const posLeft = (x, y) => ({ left: pct(x, W), top: pct(y, H), transform: 'translateY(-50%)' });
+const pos     = (x, y) => ({ left: pct(x, W), top: pct(y, H), x: '-50%', y: '-50%' });
+const posLeft = (x, y) => ({ left: pct(x, W), top: pct(y, H), y: '-50%' });
 const PILL = 'absolute font-mono text-[11px] tracking-wide rounded-xl border px-4 py-2.5 select-none whitespace-nowrap';
 
 const PinnedAgentGraph = () => {
@@ -114,23 +114,30 @@ const PinnedAgentGraph = () => {
   const endOp        = useTransform(scrollYProgress, [0.88, 0.96], [0, 1]);
   const scrollHint   = useTransform(scrollYProgress, [0, 0.06], [1, 0]);
 
+  // ── Node scale/zoom effects (keyed to line position) ──────────────────────
+  const startScale   = useTransform(scrollYProgress, [0.00, 0.05, 0.10], [1, 1.15, 1]);
+  const routerScale  = useTransform(scrollYProgress, [0.11, 0.16, 0.21], [1, 1.15, 1]);
+  const tutorScale   = useTransform(scrollYProgress, [0.22, 0.27, 0.32, 0.51, 0.56, 0.61], [1, 1.15, 1, 1, 1.15, 1]);
+  const gradeScale   = useTransform(scrollYProgress, [0.34, 0.39, 0.44, 0.63, 0.68, 0.73], [1, 1.15, 1, 1, 1.15, 1]);
+  const endScale     = useTransform(scrollYProgress, [0.90, 0.95, 1.00], [1, 1.15, 1]);
+
   // ── Mobile / reduced-motion fallback ────────────────────────────────────────
   if (reduceMotion || isMobile) {
     const steps = [
-      { label: '__start__', color: 'text-slate-500 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-600', bg: 'bg-white dark:bg-[#0D1220]' },
-      { label: 'router', color: 'text-[#3B6BFF]', border: 'border-[#3B6BFF]/40', bg: 'bg-[#EEF2FF] dark:bg-[#0c1530]' },
-      { label: 'tutorNode', color: 'text-[#F59E0B]', border: 'border-[#F59E0B]/40', bg: 'bg-[#FFFBEB] dark:bg-[#1a1206]' },
-      { label: 'gradeNode', note: 'CONFUSED', color: 'text-[#10B981]', border: 'border-[#10B981]/40', bg: 'bg-[#ECFDF5] dark:bg-[#06180f]', chip: { label: 'CONFUSED → loops back', color: 'text-[#EF4444]', bg: 'bg-[#fef2f2] dark:bg-[#1c0505]', border: 'border-[#EF4444]/40' } },
-      { label: 'tutorNode', color: 'text-[#F59E0B]', border: 'border-[#F59E0B]/40', bg: 'bg-[#FFFBEB] dark:bg-[#1a1206]' },
-      { label: 'gradeNode', note: 'UNDERSTOOD', color: 'text-[#10B981]', border: 'border-[#10B981]/40', bg: 'bg-[#ECFDF5] dark:bg-[#06180f]', chip: { label: 'UNDERSTOOD → END ✓', color: 'text-[#10B981]', bg: 'bg-[#f0fdf8] dark:bg-[#061510]', border: 'border-[#10B981]/40' } },
-      { label: 'END', color: 'text-slate-500 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-600', bg: 'bg-white dark:bg-[#0D1220]' },
+      { label: '__start__', color: 'text-slate-500 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-600', bg: 'bg-[#F6F5F1] dark:bg-[#0D1220]' },
+      { label: 'router', color: 'text-[#3B6BFF]', border: 'border-[#3B6BFF]/40', bg: 'bg-[#F6F5F1] dark:bg-[#0c1530]' },
+      { label: 'tutorNode', color: 'text-[#F59E0B]', border: 'border-[#F59E0B]/40', bg: 'bg-[#F6F5F1] dark:bg-[#1a1206]' },
+      { label: 'gradeNode', note: 'CONFUSED', color: 'text-[#10B981]', border: 'border-[#10B981]/40', bg: 'bg-[#F6F5F1] dark:bg-[#06180f]', chip: { label: 'CONFUSED → loops back', color: 'text-[#EF4444]', bg: 'bg-[#F6F5F1] dark:bg-[#1c0505]', border: 'border-[#EF4444]/40' } },
+      { label: 'tutorNode', color: 'text-[#F59E0B]', border: 'border-[#F59E0B]/40', bg: 'bg-[#F6F5F1] dark:bg-[#1a1206]' },
+      { label: 'gradeNode', note: 'UNDERSTOOD', color: 'text-[#10B981]', border: 'border-[#10B981]/40', bg: 'bg-[#F6F5F1] dark:bg-[#06180f]', chip: { label: 'UNDERSTOOD → END ✓', color: 'text-[#10B981]', bg: 'bg-[#F6F5F1] dark:bg-[#061510]', border: 'border-[#10B981]/40' } },
+      { label: 'END', color: 'text-slate-500 dark:text-slate-400', border: 'border-slate-300 dark:border-slate-600', bg: 'bg-[#F6F5F1] dark:bg-[#0D1220]' },
     ];
     return (
-      <section className="py-20 px-5 bg-white dark:bg-[#060A12] text-center">
-        <h2 className="font-display text-3xl font-extrabold text-slate-900 dark:text-white mb-3">
+      <section className="py-20 px-5 bg-transparent text-center">
+        <h2 className="font-display text-3xl font-extrabold text-[#333333] dark:text-white mb-3">
           Powered by <span className="text-[#3B6BFF]">LangGraph</span>.
         </h2>
-        <p className="text-slate-500 dark:text-slate-400 mb-12 max-w-sm mx-auto text-sm leading-relaxed">
+        <p className="text-[#4A4A4A] dark:text-slate-400 mb-12 max-w-sm mx-auto text-sm leading-relaxed">
           Watch the multi-agent loop classify your understanding and adapt the lesson in real time.
         </p>
         <div className="relative inline-flex flex-col items-center gap-0 max-w-xs mx-auto w-full">
@@ -155,18 +162,18 @@ const PinnedAgentGraph = () => {
   }
 
   return (
-    <section ref={containerRef} className="h-[580vh] relative bg-white dark:bg-[#060A12] z-20">
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-white dark:bg-[#060A12]">
+    <section ref={containerRef} className="h-[580vh] relative bg-transparent z-20">
+      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-transparent">
 
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <motion.div
           style={{ opacity: headerOp, y: headerY }}
           className="absolute top-[9%] text-center px-6 pointer-events-none w-full"
         >
-          <h2 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white">
+          <h2 className="font-display text-4xl md:text-5xl font-extrabold tracking-tight text-[#333333] dark:text-white">
             Powered by <span className="text-[#3B6BFF]">LangGraph</span>.
           </h2>
-          <p className="mt-3 text-slate-500 dark:text-slate-400 max-w-xl mx-auto text-base md:text-lg">
+          <p className="mt-3 text-[#4A4A4A] dark:text-slate-400 max-w-xl mx-auto text-base md:text-lg">
             Watch the multi-agent loop classify your understanding and adapt the lesson in real time.
           </p>
         </motion.div>
@@ -251,92 +258,92 @@ const PinnedAgentGraph = () => {
           <div className="absolute inset-0" style={{ zIndex: 1, pointerEvents: 'none' }}>
 
           {/* __start__ */}
-          <div
-            className={`${PILL} border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 bg-white dark:bg-[#0D1220]`}
-            style={pos(N.start.x, N.start.y)}
+          <motion.div
+            className={`${PILL} border-slate-300 dark:border-slate-700 text-slate-500 dark:text-slate-400 bg-[#F6F5F1] dark:bg-[#0D1220]`}
+            style={{ ...pos(N.start.x, N.start.y), scale: startScale }}
           >
             __start__
-          </div>
+          </motion.div>
 
           {/* router — solid opaque background so line is hidden behind */}
-          <div
-            className={`${PILL} border-[#3B6BFF]/50 text-[#3B6BFF] bg-[#EEF2FF] dark:bg-[#0c1530]`}
-            style={pos(N.router.x, N.router.y)}
+          <motion.div
+            className={`${PILL} border-[#3B6BFF]/50 text-[#3B6BFF] bg-[#F6F5F1] dark:bg-[#0c1530]`}
+            style={{ ...pos(N.router.x, N.router.y), scale: routerScale }}
           >
             router
-          </div>
+          </motion.div>
 
           {/* tutorNode */}
-          <div
-            className={`${PILL} border-[#F59E0B]/50 text-[#F59E0B] bg-[#FFFBEB] dark:bg-[#1a1206]`}
-            style={pos(N.tutor.x, N.tutor.y)}
+          <motion.div
+            className={`${PILL} border-[#F59E0B]/50 text-[#F59E0B] bg-[#F6F5F1] dark:bg-[#1a1206]`}
+            style={{ ...pos(N.tutor.x, N.tutor.y), scale: tutorScale }}
           >
             tutorNode
-          </div>
+          </motion.div>
 
           {/* gradeNode */}
-          <div
-            className={`${PILL} border-[#10B981]/50 text-[#10B981] bg-[#ECFDF5] dark:bg-[#06180f]`}
-            style={pos(N.grade.x, N.grade.y)}
+          <motion.div
+            className={`${PILL} border-[#10B981]/50 text-[#10B981] bg-[#F6F5F1] dark:bg-[#06180f]`}
+            style={{ ...pos(N.grade.x, N.grade.y), scale: gradeScale }}
           >
             gradeNode
-          </div>
+          </motion.div>
 
           {/* END */}
-          <div
-            className={`${PILL} border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-300 bg-white dark:bg-[#0D1220]`}
-            style={pos(N.end.x, N.end.y)}
+          <motion.div
+            className={`${PILL} border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-300 bg-[#F6F5F1] dark:bg-[#0D1220]`}
+            style={{ ...pos(N.end.x, N.end.y), scale: endScale }}
           >
             END
-          </div>
+          </motion.div>
 
           {/* ── Side-branch nodes — solid backgrounds ─────────────────── */}
-          <div className={`${PILL} border-[#3B82F6]/30 text-[#3B82F6]/60 bg-slate-50 dark:bg-[#0D1220]`} style={pos(N.quiz.x, N.quiz.y)}>
+          <motion.div className={`${PILL} border-[#3B82F6]/30 text-[#3B82F6]/60 bg-[#F6F5F1] dark:bg-[#0D1220]`} style={pos(N.quiz.x, N.quiz.y)}>
             quizGeneratorNode
-          </div>
-          <div className={`${PILL} border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 bg-white dark:bg-[#0D1220]`} style={pos(N.endQ.x, N.endQ.y)}>
+          </motion.div>
+          <motion.div className={`${PILL} border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 bg-[#F6F5F1] dark:bg-[#0D1220]`} style={pos(N.endQ.x, N.endQ.y)}>
             END
-          </div>
-          <div className={`${PILL} border-[#A855F7]/30 text-[#A855F7]/60 bg-slate-50 dark:bg-[#0D1220]`} style={pos(N.doubt.x, N.doubt.y)}>
+          </motion.div>
+          <motion.div className={`${PILL} border-[#A855F7]/30 text-[#A855F7]/60 bg-[#F6F5F1] dark:bg-[#0D1220]`} style={pos(N.doubt.x, N.doubt.y)}>
             doubtNode
-          </div>
-          <div className={`${PILL} border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 bg-white dark:bg-[#0D1220]`} style={pos(N.endD.x, N.endD.y)}>
+          </motion.div>
+          <motion.div className={`${PILL} border-slate-300 dark:border-slate-700 text-slate-400 dark:text-slate-500 bg-[#F6F5F1] dark:bg-[#0D1220]`} style={pos(N.endD.x, N.endD.y)}>
             END
-          </div>
+          </motion.div>
 
           {/* ── Grade output chips — solid opaque backgrounds ──────────── */}
 
           {/* CONFUSED */}
-          <div
+          <motion.div
             style={posLeft(CX, CY.confused)}
-            className="absolute font-mono text-[10px] font-bold px-3 py-1.5 rounded-lg border border-[#EF4444]/60 bg-[#fef2f2] dark:bg-[#1c0505] text-[#EF4444] whitespace-nowrap"
+            className="absolute font-mono text-[10px] font-bold px-3 py-1.5 rounded-lg border border-[#EF4444]/60 bg-[#F6F5F1] dark:bg-[#1c0505] text-[#EF4444] whitespace-nowrap"
           >
             CONFUSED → tutorNode
-          </div>
+          </motion.div>
 
           {/* UNDERSTOOD */}
-          <div
+          <motion.div
             style={posLeft(CX, CY.understood)}
-            className="absolute font-mono text-[10px] font-bold px-3 py-1.5 rounded-lg border border-[#10B981]/60 bg-[#f0fdf8] dark:bg-[#061510] text-[#10B981] whitespace-nowrap"
+            className="absolute font-mono text-[10px] font-bold px-3 py-1.5 rounded-lg border border-[#10B981]/60 bg-[#F6F5F1] dark:bg-[#061510] text-[#10B981] whitespace-nowrap"
           >
             UNDERSTOOD → END ✓
-          </div>
+          </motion.div>
 
           {/* PARTIAL */}
-          <div
+          <motion.div
             style={posLeft(CX, CY.partial)}
-            className="absolute font-mono text-[10px] px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 bg-white dark:bg-[#0D1220] whitespace-nowrap"
+            className="absolute font-mono text-[10px] px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 bg-[#F6F5F1] dark:bg-[#0D1220] whitespace-nowrap"
           >
             PARTIAL → tutorNode
-          </div>
+          </motion.div>
 
           {/* DOUBT */}
-          <div
+          <motion.div
             style={posLeft(CX, CY.doubt)}
-            className="absolute font-mono text-[10px] px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 bg-white dark:bg-[#0D1220] whitespace-nowrap"
+            className="absolute font-mono text-[10px] px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-slate-500 dark:text-slate-400 bg-[#F6F5F1] dark:bg-[#0D1220] whitespace-nowrap"
           >
             DOUBT → doubtNode → END
-          </div>
+          </motion.div>
 
           {/* ── Iteration badges ──────────────────────────────────────── */}
           <motion.div
@@ -347,7 +354,7 @@ const PinnedAgentGraph = () => {
               transform: 'translateX(-50%)',
               opacity: iter1Op,
             }}
-            className="flex items-center gap-1.5 bg-white dark:bg-[#0D1220] border border-slate-300 dark:border-slate-600 rounded-full px-3 py-1"
+            className="flex items-center gap-1.5 bg-[#F6F5F1] dark:bg-[#0D1220] border border-slate-300 dark:border-slate-600 rounded-full px-3 py-1"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444] animate-pulse inline-block"/>
             <span className="font-mono text-[9px] text-slate-600 dark:text-slate-400">iteration 1 — CONFUSED</span>
@@ -361,7 +368,7 @@ const PinnedAgentGraph = () => {
               transform: 'translateX(-50%)',
               opacity: iter2Op,
             }}
-            className="flex items-center gap-1.5 bg-white dark:bg-[#0D1220] border border-[#10B981]/40 rounded-full px-3 py-1"
+            className="flex items-center gap-1.5 bg-[#F6F5F1] dark:bg-[#0D1220] border border-[#10B981]/40 rounded-full px-3 py-1"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse inline-block"/>
             <span className="font-mono text-[9px] text-[#10B981]">iteration 2 — UNDERSTOOD ✓</span>
