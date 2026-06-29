@@ -66,7 +66,7 @@ module.exports = {
         }
       },
       fontFamily: {
-        display: ['"Instrument Serif"', 'serif'],
+        display: ['"Satoshi"', 'sans-serif'],
         sans: ['"SF Pro"', '-apple-system', 'BlinkMacSystemFont', 'Helvetica', 'Poppins', 'sans-serif'],
         mono: ['"Geist Mono"', 'monospace'],
         inter: ['Poppins', 'sans-serif'],

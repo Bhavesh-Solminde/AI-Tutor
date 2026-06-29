@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
 import { Brain, ArrowRight, Eye, EyeOff, ShieldCheck } from 'lucide-react';
 import useAuthStore from '../stores/useAuthStore';
-import ThemeToggle from '../components/layout/ThemeToggle';
 
 const AuthPage = () => {
   const { loginWithGoogle, loginWithGithub, loginWithEmail, register, error, clearError } = useAuthStore();
@@ -70,7 +69,6 @@ const AuthPage = () => {
             NEURALNEST
           </span>
         </Link>
-        <ThemeToggle />
       </div>
 
       <div className="w-full max-w-md p-8 rounded-2xl border border-[#EAE8E1] dark:border-border-dark bg-white dark:bg-surface-dark shadow-2xl relative z-10">
