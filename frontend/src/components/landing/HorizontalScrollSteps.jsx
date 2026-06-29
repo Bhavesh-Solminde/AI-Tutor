@@ -1,183 +1,172 @@
-import React, { useRef } from 'react';
-import { motion, useScroll, useTransform, useReducedMotion } from 'framer-motion';
-import { FileText, Brain, Target, BookOpen } from 'lucide-react';
+import React from 'react';
+import { motion } from "framer-motion";
+import { useTheme } from "../../hooks/useTheme";
 
-const HorizontalScrollSteps = () => {
-  const containerRef = useRef(null);
-  const reduceMotion = useReducedMotion();
-  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+const STEPS = [
+  {
+    number: "01",
+    pinColor: "#e57a5b",
+    pinHighlight: "#f4a98e",
+    pinShadow: "#b8512e",
+    cardBg: "#fff8f5",
+    cardBgDark: "#221915",
+    rotate: "-2.5deg",
+    label: "Upload your syllabus",
+    detail:
+      "NeuralNest extracts every topic, due date, and reading assignment directly from your course materials.",
+    tag: "topicExtractor.ts → Pinecone",
+  },
+  {
+    number: "02",
+    pinColor: "#7a90e5",
+    pinHighlight: "#a8b8f4",
+    pinShadow: "#4a63c8",
+    cardBg: "#f5f6ff",
+    cardBgDark: "#161826",
+    rotate: "1.8deg",
+    label: "Agents build your map.",
+    detail:
+      "Our multi-agent system constructs a dynamic cognitive map, identifying dependencies and pre-requisite knowledge gaps.",
+    tag: "router → tutorNode → gradeNode",
+  },
+  {
+    number: "03",
+    pinColor: "#7abbe5",
+    pinHighlight: "#a8d8f4",
+    pinShadow: "#4a8fb8",
+    cardBg: "#f5fbff",
+    cardBgDark: "#131d2b",
+    rotate: "-1.5deg",
+    label: "Master the material.",
+    detail:
+      "As you learn and pass adaptive quizzes, your mastery rating deterministically increases until you're ready for the exam.",
+    tag: "masteryCalculator.ts · no LLM",
+  },
+];
 
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  });
-
-  // Translate the track horizontally
-  const xTransform = useTransform(scrollYProgress, [0, 1], ["0vw", "-200vw"]);
-
-  if (isMobile || reduceMotion) {
-    return (
-      <section className="py-24 px-6 bg-transparent relative z-10 space-y-16">
-        <div className="text-center">
-          <h2 className="font-display text-3xl font-extrabold text-[#333333] dark:text-white">How it works</h2>
-        </div>
-        
-        {/* Panel 1 */}
-        <div className="bg-white/60 dark:bg-[#121622] rounded-3xl p-8 border border-[#EAE8E1] dark:border-white/5">
-          <h3 className="text-2xl font-bold mb-4">1. Upload Syllabus</h3>
-          <div className="flex flex-wrap gap-2 mt-6">
-            <span className="px-3 py-1 bg-primary/10 text-primary text-xs rounded-full">Week 1: Thermodynamics</span>
-            <span className="px-3 py-1 bg-amber-500/10 text-amber-500 text-xs rounded-full">Week 2: Entropy</span>
-          </div>
-        </div>
-
-        {/* Panel 2 */}
-        <div className="bg-white/60 dark:bg-[#121622] rounded-3xl p-8 border border-[#EAE8E1] dark:border-white/5">
-          <h3 className="text-2xl font-bold mb-4">2. AI Tutor Loop</h3>
-          <p className="text-[#4A4A4A] dark:text-[#666666]">Agents build dynamic cognitive maps.</p>
-        </div>
-
-        {/* Panel 3 */}
-        <div className="bg-white/60 dark:bg-[#121622] rounded-3xl p-8 border border-[#EAE8E1] dark:border-white/5">
-          <h3 className="text-2xl font-bold mb-4">3. Master the material</h3>
-          <div className="space-y-4">
-            <div>
-              <div className="text-xs font-bold mb-1">Quiz Progress</div>
-              <div className="h-2 w-full bg-slate-200 dark:bg-slate-800 rounded-full"><div className="h-full bg-emerald-500 rounded-full w-[80%]" /></div>
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+export default function HorizontalScrollSteps() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
 
   return (
-    <section ref={containerRef} className="h-[300vh] relative bg-transparent">
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex items-center">
-        
-        <motion.div style={{ x: xTransform }} className="flex h-full w-[300vw]">
-          
-          {/* Panel 1: Syllabus Upload */}
-          <div className="w-[100vw] h-full flex flex-col md:flex-row items-center justify-center p-12 md:p-24 relative">
-            <div className="w-full md:w-1/2 pr-8">
-              <div className="inline-block text-xs font-bold tracking-widest text-primary mb-4 uppercase">Step 01</div>
-              <h2 className="font-display text-5xl font-extrabold text-[#333333] dark:text-white mb-6">Upload your syllabus.</h2>
-              <p className="text-xl text-[#4A4A4A] dark:text-[#666666] max-w-md leading-relaxed">
-                NeuralNest extracts every topic, due date, and reading assignment directly from your course materials.
-              </p>
-            </div>
-            <div className="w-full md:w-1/2 flex items-center justify-center mt-12 md:mt-0 relative">
-              <div className="absolute inset-0 bg-primary/5 blur-3xl rounded-full" />
-              <div className="relative z-10 w-[80%] max-w-sm bg-white/60 dark:bg-[#121622] border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-6 shadow-2xl">
-                <div className="flex items-center space-x-4 border-b border-[#EAE8E1] dark:border-slate-800 pb-4 mb-4">
-                  <FileText className="h-8 w-8 text-primary" />
-                  <div>
-                    <div className="font-bold text-[#333333] dark:text-white">PHYS_201_Syllabus.pdf</div>
-                    <div className="text-xs text-[#555555]">Processing...</div>
-                  </div>
-                </div>
-                <div className="space-y-3">
-                  <div className="h-8 w-3/4 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                  <div className="flex gap-2">
-                    <div className="px-3 py-1.5 bg-primary/10 border border-primary/20 text-primary text-[10px] font-bold rounded-full">Thermodynamics</div>
-                    <div className="px-3 py-1.5 bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 text-[10px] font-bold rounded-full">Entropy</div>
-                  </div>
-                  <div className="h-8 w-1/2 bg-slate-200 dark:bg-slate-800 rounded animate-pulse" />
-                </div>
-              </div>
-            </div>
-          </div>
+    <section
+      id="how"
+      className="relative py-24 px-6 overflow-hidden bg-[#f6f5f1] dark:bg-[#181818]"
+    >
+      {/* ── Section header ── */}
+      <div className="text-center mb-20">
+        <p
+          className="text-xs font-mono uppercase tracking-widest mb-3"
+          style={{ color: "#9b8f7e" }}
+        >
+          How it works
+        </p>
+        <h2
+          className="font-display text-4xl font-black tracking-tight text-[#1a1a1a] dark:text-white"
+        >
+          Three steps. One agent loop.
+        </h2>
+      </div>
 
-          {/* Panel 2: Agent Loop */}
-          <div className="w-[100vw] h-full flex flex-col md:flex-row items-center justify-center p-12 md:p-24 relative bg-transparent">
-            <div className="w-full md:w-1/2 pr-8">
-              <div className="inline-block text-xs font-bold tracking-widest text-amber-500 mb-4 uppercase">Step 02</div>
-              <h2 className="font-display text-5xl font-extrabold text-[#333333] dark:text-white mb-6">Agents build your map.</h2>
-              <p className="text-xl text-[#4A4A4A] dark:text-[#666666] max-w-md leading-relaxed">
-                Our multi-agent system constructs a dynamic cognitive map, identifying dependencies and pre-requisite knowledge gaps.
-              </p>
-            </div>
-            <div className="w-full md:w-1/2 flex items-center justify-center mt-12 md:mt-0 relative h-full">
-              {/* Mini animated loop */}
-              <div className="relative w-64 h-64 border-2 border-dashed border-amber-500/30 rounded-full flex items-center justify-center animate-[spin_20s_linear_infinite]">
-                <div className="absolute top-[-16px] left-1/2 -translate-x-1/2 w-8 h-8 bg-amber-500 rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(245,158,11,0.5)]">
-                  <Brain className="h-4 w-4 text-white -rotate-90" />
-                </div>
-                <div className="absolute bottom-[-16px] left-1/2 -translate-x-1/2 w-8 h-8 bg-primary rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(59,107,255,0.5)]">
-                  <Target className="h-4 w-4 text-white -rotate-90" />
-                </div>
-              </div>
-              <div className="absolute w-32 h-32 rounded-full bg-white dark:bg-[#121622] border border-[#EAE8E1] dark:border-white/10 flex items-center justify-center shadow-xl">
-                <span className="text-xs font-bold font-mono">TUTOR_LOOP</span>
-              </div>
-            </div>
-          </div>
+      {/* ── Timeline ── */}
+      <div className="relative max-w-4xl mx-auto">
 
-          {/* Panel 3: Mastery Progress */}
-          <div className="w-[100vw] h-full flex flex-col md:flex-row items-center justify-center p-12 md:p-24 relative">
-            <div className="w-full md:w-1/2 pr-8">
-              <div className="inline-block text-xs font-bold tracking-widest text-emerald-500 mb-4 uppercase">Step 03</div>
-              <h2 className="font-display text-5xl font-extrabold text-[#333333] dark:text-white mb-6">Master the material.</h2>
-              <p className="text-xl text-[#4A4A4A] dark:text-[#666666] max-w-md leading-relaxed">
-                As you learn and pass adaptive quizzes, your mastery rating deterministically increases until you're ready for the exam.
-              </p>
-            </div>
-            <div className="w-full md:w-1/2 flex items-center justify-center mt-12 md:mt-0 relative">
-              <div className="w-[80%] max-w-md bg-white dark:bg-[#121622] border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-8 shadow-2xl">
-                
-                <div className="mb-6">
-                  <div className="flex justify-between text-xs font-bold mb-2">
-                    <span className="text-[#333333] dark:text-white">Quiz Performance</span>
-                    <span className="text-emerald-500">85%</span>
-                  </div>
-                  <div className="h-2 w-full bg-white/80 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      whileInView={{ width: "85%" }}
-                      transition={{ duration: 1.5, delay: 0.5, ease: "easeOut" }}
-                      className="h-full bg-emerald-500 rounded-full"
+        {/* Curved connecting line (hidden on mobile) */}
+        <svg
+          className="hidden md:block absolute inset-0 w-full h-full pointer-events-none"
+          viewBox="0 0 100 100"
+          preserveAspectRatio="none"
+          style={{ zIndex: 0 }}
+        >
+          <path
+            d="M 22.5,12 Q 50,31 77.5,50 T 22.5,88"
+            fill="none"
+            stroke={isDark ? "rgba(255, 255, 255, 0.15)" : "#c8c4ba"}
+            strokeWidth="0.25"
+            strokeDasharray="1.2,1.2"
+          />
+        </svg>
+
+        <div className="flex flex-col gap-12 md:gap-0">
+          {STEPS.map((step, i) => {
+            const isLeft = i % 2 === 0;
+            return (
+              <div
+                key={step.number}
+                className={`relative z-10 flex flex-col md:flex-row ${
+                  isLeft ? "md:justify-start" : "md:justify-end"
+                } ${i > 0 ? "md:-mt-20" : ""}`}
+              >
+                <motion.div
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: "-80px" }}
+                  transition={{ duration: 0.5, delay: i * 0.1 }}
+                  whileHover={{ rotate: 0, scale: 1.02, transition: { duration: 0.25 } }}
+                  className="w-full md:w-[45%] max-w-[420px] rounded-3xl p-3 pt-12 relative bg-white dark:bg-[#222222] cursor-default"
+                  style={{
+                    border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",
+                    boxShadow: isDark ? "0 10px 30px rgba(0,0,0,0.3)" : "0 10px 30px rgba(0,0,0,0.08)",
+                    rotate: step.rotate,
+                    transformOrigin: "center top",
+                  }}
+                >
+                  {/* 3D Pin attached to the white outer card header */}
+                  <div className="absolute top-4 left-1/2 -translate-x-1/2 z-20">
+                    <div
+                      style={{
+                        width: "22px",
+                        height: "22px",
+                        borderRadius: "50%",
+                        background: `radial-gradient(circle at 35% 35%, ${step.pinHighlight}, ${step.pinColor} 60%, ${step.pinShadow} 100%)`,
+                        boxShadow: `0 4px 10px ${step.pinColor}66, inset 0 -2px 4px rgba(0,0,0,0.2)`,
+                      }}
                     />
                   </div>
-                </div>
 
-                <div className="mb-6">
-                  <div className="flex justify-between text-xs font-bold mb-2">
-                    <span className="text-[#333333] dark:text-white">Self Rating</span>
-                    <span className="text-primary">92%</span>
-                  </div>
-                  <div className="h-2 w-full bg-white/80 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      whileInView={{ width: "92%" }}
-                      transition={{ duration: 1.5, delay: 0.7, ease: "easeOut" }}
-                      className="h-full bg-primary rounded-full"
-                    />
-                  </div>
-                </div>
+                  {/* Inner colored card */}
+                  <div
+                    className="rounded-2xl p-6"
+                    style={{
+                      backgroundColor: isDark ? step.cardBgDark : step.cardBg,
+                    }}
+                  >
+                    {/* Step number — handwritten style */}
+                    <p
+                      className="mb-2"
+                      style={{
+                        fontFamily: "'Caveat', cursive",
+                        fontWeight: 700,
+                        fontSize: "1.75rem",
+                        color: "#9b8f7e",
+                        letterSpacing: "0.02em",
+                        lineHeight: 1,
+                      }}
+                    >
+                      {step.number}
+                    </p>
 
-                <div>
-                  <div className="flex justify-between text-xs font-bold mb-2">
-                    <span className="text-[#333333] dark:text-white">Engagement</span>
-                    <span className="text-amber-500">78%</span>
-                  </div>
-                  <div className="h-2 w-full bg-white/80 dark:bg-slate-800 rounded-full overflow-hidden">
-                    <motion.div 
-                      initial={{ width: 0 }}
-                      whileInView={{ width: "78%" }}
-                      transition={{ duration: 1.5, delay: 0.9, ease: "easeOut" }}
-                      className="h-full bg-amber-500 rounded-full"
-                    />
-                  </div>
-                </div>
+                    {/* Heading */}
+                    <h3
+                      className="text-xl font-bold mb-3 text-[#1a1a1a] dark:text-white"
+                    >
+                      {step.label}
+                    </h3>
 
+                    {/* Body */}
+                    <p
+                      className="text-sm leading-relaxed text-[#555555] dark:text-slate-300"
+                    >
+                      {step.detail}
+                    </p>
+                  </div>
+                </motion.div>
               </div>
-            </div>
-          </div>
+            );
+          })}
+        </div>
 
-        </motion.div>
       </div>
     </section>
   );
-};
-
-export default HorizontalScrollSteps;
+}

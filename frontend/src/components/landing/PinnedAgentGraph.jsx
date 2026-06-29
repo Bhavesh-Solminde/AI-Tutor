@@ -81,11 +81,12 @@ const PinnedAgentGraph = () => {
   });
 
   // ── Header ──────────────────────────────────────────────────────────────────
-  const headerOp = useTransform(scrollYProgress, [0, 0.08, 0.18], [0, 1, 1]);
-  const headerY  = useTransform(scrollYProgress, [0, 0.10], [30, 0]);
+  const headerOp = useTransform(scrollYProgress, [0, 0.08], [0, 1]);
+  const headerY  = useTransform(scrollYProgress, [0, 0.08], [30, 0]);
 
   // ── Graph shell ─────────────────────────────────────────────────────────────
-  const graphOp  = useTransform(scrollYProgress, [0.04, 0.18], [0, 1]);
+  const graphOp  = useTransform(scrollYProgress, [0, 0.10], [0, 1]);
+
 
   /*
     THE LINE — single strokeDashoffset 1→0 over scroll [0.05, 0.95]
@@ -133,7 +134,7 @@ const PinnedAgentGraph = () => {
       { label: 'END', color: 'text-[#555555] dark:text-[#666666]', border: 'border-[#DFDCD4] dark:border-slate-600', bg: 'bg-[#F6F5F1] dark:bg-[#0D1220]' },
     ];
     return (
-      <section className="py-20 px-5 bg-transparent text-center">
+      <section id="progression" className="py-20 px-5 bg-transparent text-center">
         <h2 className="font-display text-3xl font-extrabold text-[#333333] dark:text-white mb-3">
           Powered by <span className="text-[#3B6BFF]">LangGraph</span>.
         </h2>
@@ -163,7 +164,10 @@ const PinnedAgentGraph = () => {
 
   return (
     <section ref={containerRef} className="h-[580vh] relative bg-transparent z-20">
+      <div id="progression" className="absolute top-[80vh] left-0 pointer-events-none" />
+
       <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-transparent">
+
 
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <motion.div

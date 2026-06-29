@@ -20,7 +20,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = ['features', 'how-it-works', 'testimonials'];
+      const sections = ['features', 'progression', 'testimonials'];
       let current = '';
       for (const section of sections) {
         const el = document.getElementById(section);
@@ -38,9 +38,10 @@ const Navbar = () => {
 
   const navLinks = [
     { href: '#features', label: 'Features', id: 'features' },
-    { href: '#how-it-works', label: 'Progression', id: 'how-it-works' },
+    { href: '#progression', label: 'Progression', id: 'progression' },
     { href: '#testimonials', label: 'Testimonials', id: 'testimonials' },
   ];
+
 
   return (
     <>

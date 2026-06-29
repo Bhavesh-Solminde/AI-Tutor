@@ -15,14 +15,14 @@ const HeroParallax = () => {
   });
 
   // Parallax layers
-  const bgY       = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const bgY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
   const bgOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.3]);
-  const cardAY    = useTransform(scrollYProgress, [0, 1], ['0%', '-25%']);
+  const cardAY = useTransform(scrollYProgress, [0, 1], ['0%', '-25%']);
   const cardARotate = useTransform(scrollYProgress, [0, 1], [-2, -8]);
-  const cardBY    = useTransform(scrollYProgress, [0, 1], ['0%', '-40%']);
+  const cardBY = useTransform(scrollYProgress, [0, 1], ['0%', '-40%']);
   const cardBRotate = useTransform(scrollYProgress, [0, 1], [2, 10]);
-  const cardCY    = useTransform(scrollYProgress, [0, 1], ['0%', '-15%']);
-  const fgY       = useTransform(scrollYProgress, [0, 0.4], ['0%', '-8%']);
+  const cardCY = useTransform(scrollYProgress, [0, 1], ['0%', '-15%']);
+  const fgY = useTransform(scrollYProgress, [0, 0.4], ['0%', '-8%']);
 
   const indicatorOpacity = useTransform(scrollYProgress, [0, 0.05], [1, 0]);
 
@@ -82,7 +82,7 @@ const HeroParallax = () => {
         >
           <div className="relative w-14 h-14 mb-2 flex items-center justify-center">
             <svg className="absolute inset-0 w-full h-full -rotate-90 overflow-visible" viewBox="0 0 60 60">
-              <circle cx="30" cy="30" r="28" fill="none" stroke="#e2e8f0" className="dark:stroke-white/10" strokeWidth="3"/>
+              <circle cx="30" cy="30" r="28" fill="none" stroke="#e2e8f0" className="dark:stroke-white/10" strokeWidth="3" />
               <motion.circle
                 initial={{ strokeDashoffset: 176 }}
                 animate={{ strokeDashoffset: 63 }}
@@ -107,7 +107,7 @@ const HeroParallax = () => {
           className="hidden xl:block absolute top-[35%] right-[8%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-xl p-4 shadow-lg min-w-[200px]"
         >
           <div className="font-mono text-[9px] text-[#FBBF24] mb-2">GRADE_NODE</div>
-          <div className="h-px w-full bg-slate-200 dark:bg-white/10 mb-2"/>
+          <div className="h-px w-full bg-slate-200 dark:bg-white/10 mb-2" />
           <div className="text-[10px] text-[#555555] dark:text-white/50 mb-1">Response classified:</div>
           <div className="px-3.5 py-1.5 rounded-lg border border-[#10B981]/30 bg-[#10B981]/15 text-[#10B981] font-mono font-bold text-[12px] mb-2 inline-block">
             UNDERSTOOD ✓
@@ -141,7 +141,7 @@ const HeroParallax = () => {
               transition={{ delay: 0.8, duration: 0.8 }}
               className="mt-6 text-lg text-[#4A4A4A] dark:text-[#666666] max-w-2xl leading-relaxed"
             >
-              NeuralNest is an AI tutor that builds personalized roadmaps and adaptive quizzes from your syllabus. Stop studying blindly—let the AI show you exactly what you need to know.
+              NeuralNest turns your syllabus into personalized roadmaps and AI-powered quizzes. Study smarter, not harder.
             </motion.p>
 
             <motion.div
@@ -156,12 +156,12 @@ const HeroParallax = () => {
                   className="w-full sm:w-auto px-8 py-3.5 bg-primary hover:bg-primary-hover text-white font-semibold rounded-xl transition-all shadow-[0_0_30px_-5px_rgba(59,107,255,0.4)] hover:shadow-[0_0_40px_-5px_rgba(59,107,255,0.6)] flex items-center justify-center space-x-2"
                 >
                   <span>Start Learning Free</span>
-                  <ArrowRight className="h-4 w-4"/>
+                  <ArrowRight className="h-4 w-4" />
                 </Link>
               </MagneticNode>
               <MagneticNode>
                 <button className="w-full sm:w-auto px-8 py-3.5 bg-white dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 hover:bg-white/60 dark:hover:bg-white/10 text-[#333333] dark:text-white font-semibold rounded-xl transition-colors flex items-center justify-center space-x-2 shadow-sm backdrop-blur-sm">
-                  <Play className="h-4 w-4 text-[#555555] dark:text-[#666666]"/>
+                  <Play className="h-4 w-4 text-[#555555] dark:text-[#666666]" />
                   <span>Watch Demo</span>
                 </button>
               </MagneticNode>
