@@ -61,7 +61,7 @@ const JOURNEY = [
 // ── Positioning helpers ──────────────────────────────────────────────────────
 const pos     = (x, y) => ({ left: pct(x, W), top: pct(y, H), x: '-50%', y: '-50%' });
 const posLeft = (x, y) => ({ left: pct(x, W), top: pct(y, H), y: '-50%' });
-const PILL = 'absolute font-mono text-[11px] tracking-wide rounded-xl border px-4 py-2.5 select-none whitespace-nowrap';
+const PILL = 'absolute font-mono text-[12px] tracking-wide rounded-xl border px-5 py-3 select-none whitespace-nowrap';
 
 const PinnedAgentGraph = () => {
   const containerRef = useRef(null);
@@ -186,8 +186,8 @@ const PinnedAgentGraph = () => {
         <motion.div
           style={{
             opacity: graphOp,
-            width:   'min(1100px, 96vw)',
-            height:  'min(420px, 40vw)',
+            width:   'min(1250px, 98vw)',
+            height:  'min(477px, 44vw)',
           }}
           className="relative mt-16 md:mt-20"
         >
@@ -320,7 +320,7 @@ const PinnedAgentGraph = () => {
           {/* CONFUSED */}
           <motion.div
             style={posLeft(CX, CY.confused)}
-            className="absolute font-mono text-[10px] font-bold px-3 py-1.5 rounded-lg border border-[#EF4444]/60 bg-[#F6F5F1] dark:bg-[#1c0505] text-[#EF4444] whitespace-nowrap"
+            className="absolute font-mono text-[11.5px] font-bold px-4 py-2 rounded-lg border border-[#EF4444]/60 bg-[#F6F5F1] dark:bg-[#1c0505] text-[#EF4444] whitespace-nowrap"
           >
             CONFUSED → tutorNode
           </motion.div>
@@ -328,7 +328,7 @@ const PinnedAgentGraph = () => {
           {/* UNDERSTOOD */}
           <motion.div
             style={posLeft(CX, CY.understood)}
-            className="absolute font-mono text-[10px] font-bold px-3 py-1.5 rounded-lg border border-[#10B981]/60 bg-[#F6F5F1] dark:bg-[#061510] text-[#10B981] whitespace-nowrap"
+            className="absolute font-mono text-[11.5px] font-bold px-4 py-2 rounded-lg border border-[#10B981]/60 bg-[#F6F5F1] dark:bg-[#061510] text-[#10B981] whitespace-nowrap"
           >
             UNDERSTOOD → END ✓
           </motion.div>
@@ -336,7 +336,7 @@ const PinnedAgentGraph = () => {
           {/* PARTIAL */}
           <motion.div
             style={posLeft(CX, CY.partial)}
-            className="absolute font-mono text-[10px] px-3 py-1.5 rounded-lg border border-[#DFDCD4] dark:border-slate-600 text-[#555555] dark:text-[#666666] bg-[#F6F5F1] dark:bg-[#0D1220] whitespace-nowrap"
+            className="absolute font-mono text-[11.5px] px-4 py-2 rounded-lg border border-[#DFDCD4] dark:border-slate-600 text-[#555555] dark:text-[#666666] bg-[#F6F5F1] dark:bg-[#0D1220] whitespace-nowrap"
           >
             PARTIAL → tutorNode
           </motion.div>
@@ -344,7 +344,7 @@ const PinnedAgentGraph = () => {
           {/* DOUBT */}
           <motion.div
             style={posLeft(CX, CY.doubt)}
-            className="absolute font-mono text-[10px] px-3 py-1.5 rounded-lg border border-[#DFDCD4] dark:border-slate-600 text-[#555555] dark:text-[#666666] bg-[#F6F5F1] dark:bg-[#0D1220] whitespace-nowrap"
+            className="absolute font-mono text-[11.5px] px-4 py-2 rounded-lg border border-[#DFDCD4] dark:border-slate-600 text-[#555555] dark:text-[#666666] bg-[#F6F5F1] dark:bg-[#0D1220] whitespace-nowrap"
           >
             DOUBT → doubtNode → END
           </motion.div>
@@ -358,10 +358,10 @@ const PinnedAgentGraph = () => {
               transform: 'translateX(-50%)',
               opacity: iter1Op,
             }}
-            className="flex items-center gap-1.5 bg-[#F6F5F1] dark:bg-[#0D1220] border border-[#DFDCD4] dark:border-slate-600 rounded-full px-3 py-1"
+            className="flex items-center gap-1.5 bg-[#F6F5F1] dark:bg-[#0D1220] border border-[#DFDCD4] dark:border-slate-600 rounded-full px-3.5 py-1.5"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#EF4444] animate-pulse inline-block"/>
-            <span className="font-mono text-[9px] text-[#4A4A4A] dark:text-[#666666]">iteration 1 — CONFUSED</span>
+            <span className="font-mono text-[10px] text-[#4A4A4A] dark:text-[#666666]">iteration 1 — CONFUSED</span>
           </motion.div>
 
           <motion.div
@@ -372,10 +372,10 @@ const PinnedAgentGraph = () => {
               transform: 'translateX(-50%)',
               opacity: iter2Op,
             }}
-            className="flex items-center gap-1.5 bg-[#F6F5F1] dark:bg-[#0D1220] border border-[#10B981]/40 rounded-full px-3 py-1"
+            className="flex items-center gap-1.5 bg-[#F6F5F1] dark:bg-[#0D1220] border border-[#10B981]/40 rounded-full px-3.5 py-1.5"
           >
             <span className="w-1.5 h-1.5 rounded-full bg-[#10B981] animate-pulse inline-block"/>
-            <span className="font-mono text-[9px] text-[#10B981]">iteration 2 — UNDERSTOOD ✓</span>
+            <span className="font-mono text-[10px] text-[#10B981]">iteration 2 — UNDERSTOOD ✓</span>
           </motion.div>
 
           </div>{/* end z-index:1 node wrapper */}
