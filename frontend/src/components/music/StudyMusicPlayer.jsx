@@ -43,6 +43,10 @@ const useYouTubePlayer = ({ containerId, videoId, isPlaying, volume, onReady }) 
   // Prevents the isPlaying sync effect from calling pauseVideo() during the
   // brief window when YouTube fires PAUSED for the old video before PLAYING fires.
   const isSwitching = useRef(false);
+  // userPaused: true when the user deliberately hit pause.
+  // Blocks YouTube's automatic re-PLAYING event (triggered on tab visibility restore)
+  // from overriding the user's explicit pause state.
+  const userPaused = useRef(false);
   const play = useMusicStore((s) => s.play);
   const pause = useMusicStore((s) => s.pause);
 
@@ -85,6 +89,12 @@ const useYouTubePlayer = ({ containerId, videoId, isPlaying, volume, onReady }) 
             if (!YTState) return;
             if (e.data === YTState.PLAYING) {
               isSwitching.current = false; // transition complete
+              // If user deliberately paused, YouTube may auto-resume on tab switch —
+              // cancel it immediately and keep the store in paused state.
+              if (userPaused.current) {
+                playerRef.current?.pauseVideo?.();
+                return;
+              }
               play();
             } else if (e.data === YTState.PAUSED || e.data === YTState.ENDED) {
               // Ignore PAUSED fired during a genre switch — it's from the old video
@@ -112,6 +122,7 @@ const useYouTubePlayer = ({ containerId, videoId, isPlaying, volume, onReady }) 
     if (videoId === prevVideoId.current) return;
     prevVideoId.current = videoId;
     isSwitching.current = true;  // block pause() until new video fires PLAYING
+    userPaused.current = false;  // genre switch always plays the new track
     playerRef.current.loadVideoById({ videoId });
   }, [videoId]);
 
@@ -119,8 +130,13 @@ const useYouTubePlayer = ({ containerId, videoId, isPlaying, volume, onReady }) 
   useEffect(() => {
     if (!readyRef.current || !playerRef.current) return;
     if (isSwitching.current) return; // loadVideoById handles playback itself
-    if (isPlaying) playerRef.current.playVideo?.();
-    else playerRef.current.pauseVideo?.();
+    if (isPlaying) {
+      userPaused.current = false;
+      playerRef.current.playVideo?.();
+    } else {
+      userPaused.current = true;   // user explicitly paused — block YouTube auto-resume
+      playerRef.current.pauseVideo?.();
+    }
   }, [isPlaying]);
 
   // ── Sync volume ───────────────────────────────────────────────────────────

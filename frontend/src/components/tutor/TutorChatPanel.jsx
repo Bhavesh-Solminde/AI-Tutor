@@ -115,7 +115,7 @@ const TutorChatPanel = ({
       {/* Floating Pinned Input Card at bottom */}
       {!hideInputBox && (
         <div className="px-2 pb-2 pt-0 bg-transparent border-none flex-shrink-0">
-          <div className="w-full bg-white dark:bg-surface-dark border border-[#EAE8E1] dark:border-border-dark rounded-[24px] shadow-lg p-3.5 transition-all duration-300">
+          <div className="w-full bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-[24px] shadow-lg p-3.5 transition-all duration-300">
           
           {/* Top part: Borderless input/textarea */}
           <textarea
@@ -129,14 +129,14 @@ const TutorChatPanel = ({
               e.target.style.height = `${Math.min(e.target.scrollHeight, 150)}px`;
             }}
             onKeyDown={handleKeyDown}
-            className="w-full px-3 py-1 bg-transparent text-[#333333] dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none text-sm border-none resize-none overflow-y-auto"
+            className="w-full px-3 py-1 bg-transparent text-text-primary-light dark:text-text-primary-dark placeholder-slate-400 dark:placeholder-text-muted-dark focus:outline-none text-sm border-none resize-none overflow-y-auto"
             style={{ minHeight: '28px', maxHeight: '150px' }}
           />
 
           {/* Bottom part: Tools Row */}
-          <div className="flex justify-between items-center mt-3 pt-3 border-t border-slate-100 dark:border-slate-800/80 px-1">
+          <div className="flex justify-between items-center mt-3 pt-3 border-t border-border-light/50 dark:border-border-dark/50 px-1">
             {/* Left side actions */}
-            <div className="flex items-center space-x-3 text-[#666666] dark:text-[#555555]">
+            <div className="flex items-center space-x-3 text-text-muted-light dark:text-text-muted-dark">
               <button
                 onClick={onAttachClick}
                 className="hover:text-primary dark:hover:text-accent transition-colors p-1"
@@ -168,7 +168,7 @@ const TutorChatPanel = ({
               {/* Materials Badge */}
               <button
                 onClick={onAttachClick}
-                className="px-2.5 py-1 rounded-full bg-white/80 dark:bg-elevated-dark text-[#4A4A4A] dark:text-slate-300 text-[10px] font-bold font-sans flex items-center space-x-1 hover:bg-slate-200 transition-colors"
+                className="px-2.5 py-1 rounded-full bg-white/80 dark:bg-elevated-dark text-text-primary-light dark:text-slate-300 text-[10px] font-bold font-sans flex items-center space-x-1 hover:bg-slate-200 transition-colors"
               >
                 <Layers className="h-3.5 w-3.5" />
                 <span>{materialsCount} materials</span>
@@ -177,7 +177,7 @@ const TutorChatPanel = ({
 
             {/* Right side actions */}
             <div className="flex items-center space-x-3">
-              <span className="text-[10px] text-[#666666] font-sans hidden sm:inline">
+              <span className="text-[10px] text-text-muted-light dark:text-text-muted-dark font-sans hidden sm:inline">
                 Mode: {explanationLevel}{webSearchEnabled ? ' · Web' : ''}
               </span>
 
@@ -205,7 +205,7 @@ const TutorChatPanel = ({
                 <AlertCircle className="h-3.5 w-3.5" />
                 <span>Q&A Doubt Mode Active</span>
               </p>
-              <p className="text-[#555555] dark:text-[#666666] mt-1">
+              <p className="text-text-muted-light dark:text-text-muted-dark mt-1">
                 The tutor will focus on answering your immediate queries or equations before resuming lessons.
               </p>
             </div>

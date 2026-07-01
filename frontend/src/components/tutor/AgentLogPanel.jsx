@@ -12,7 +12,7 @@ const NODE_COLORS = {
 
 // ── Colour per log type ───────────────────────────────────────────────
 const LOG_TYPE_COLORS = {
-  info:    'text-[#333333] dark:text-slate-100',
+  info:    'text-text-primary-light dark:text-slate-100',
   success: 'text-emerald-400',
   warn:    'text-amber-400',
   error:   'text-red-400',
@@ -54,27 +54,27 @@ const AgentLogPanel = ({ logs = [], isStreaming = false }) => {
   const hasLogs = logs.length > 0;
 
   return (
-    <div className="flex-shrink-0 border-t border-border-light dark:border-border-dark bg-white dark:bg-[#090909] font-mono text-xs">
+    <div className="flex-shrink-0 border-t border-border-light dark:border-border-dark bg-white dark:bg-background-dark font-mono text-xs">
       {/* ── Header / Collapsed Bar ── */}
       <button
         onClick={() => setExpanded((v) => !v)}
-        className="w-full flex items-center justify-between px-4 py-2 hover:bg-white/60 dark:hover:bg-[#111111] transition-colors group"
+        className="w-full flex items-center justify-between px-4 py-2 hover:bg-slate-50 dark:hover:bg-surface-dark transition-colors group"
       >
         <div className="flex items-center gap-2">
           <Activity
-            className={`h-3.5 w-3.5 flex-shrink-0 ${isStreaming ? 'text-emerald-400 animate-pulse' : 'text-[#555555] dark:text-[#4A4A4A]'}`}
+            className={`h-3.5 w-3.5 flex-shrink-0 ${isStreaming ? 'text-emerald-400 animate-pulse' : 'text-text-muted-light dark:text-text-muted-dark'}`}
           />
-          <span className="text-[#555555] dark:text-[#555555] uppercase tracking-widest text-[10px]">
+          <span className="text-text-muted-light dark:text-text-muted-dark uppercase tracking-widest text-[10px]">
             Agent Log
           </span>
           {hasLogs && (
-            <span className="text-[#666666] dark:text-[#4A4A4A] text-[10px]">
+            <span className="text-text-muted-light dark:text-text-muted-dark text-[10px]">
               ({logs.length} events)
             </span>
           )}
           {/* Show last message when collapsed */}
           {!expanded && lastLog && (
-            <span className={`hidden sm:inline truncate max-w-xs ml-2 ${NODE_COLORS[lastLog.node] || 'text-[#666666]'}`}>
+            <span className={`hidden sm:inline truncate max-w-xs ml-2 ${NODE_COLORS[lastLog.node] || 'text-text-muted-light'}`}>
               {lastLog.node}
             </span>
           )}
@@ -92,8 +92,8 @@ const AgentLogPanel = ({ logs = [], isStreaming = false }) => {
             </span>
           )}
           {expanded
-            ? <ChevronDown className="h-3.5 w-3.5 text-[#555555]" />
-            : <ChevronUp className="h-3.5 w-3.5 text-[#555555]" />
+            ? <ChevronDown className="h-3.5 w-3.5 text-text-muted-light dark:text-text-muted-dark" />
+            : <ChevronUp className="h-3.5 w-3.5 text-text-muted-light dark:text-text-muted-dark" />
           }
         </div>
       </button>
@@ -102,14 +102,14 @@ const AgentLogPanel = ({ logs = [], isStreaming = false }) => {
       {expanded && (
         <div className="px-4 pb-3 max-h-44 overflow-y-auto space-y-1.5 scrollbar-thin scrollbar-thumb-slate-700">
           {logs.length === 0 ? (
-            <div className="text-[#4A4A4A] py-2">Waiting for agent activity...</div>
+            <div className="text-text-muted-light dark:text-text-muted-dark py-2">Waiting for agent activity...</div>
           ) : (
             logs.map((entry, i) => (
               <div key={i} className="flex gap-3 items-start leading-snug">
                 {/* Timestamp */}
-                <span className="text-[#666666] dark:text-[#666666] flex-shrink-0 tabular-nums">[{fmt(entry.timestamp)}]</span>
+                <span className="text-text-muted-light dark:text-text-muted-dark flex-shrink-0 tabular-nums">[{fmt(entry.timestamp)}]</span>
                 {/* Node name */}
-                <span className={`flex-shrink-0 font-bold w-[88px] ${NODE_COLORS[entry.node] || 'text-[#666666]'}`}>
+                <span className={`flex-shrink-0 font-bold w-[88px] ${NODE_COLORS[entry.node] || 'text-text-muted-light dark:text-text-muted-dark'}`}>
                   {entry.node}
                 </span>
                 {/* Message */}
@@ -122,8 +122,8 @@ const AgentLogPanel = ({ logs = [], isStreaming = false }) => {
           {/* Blinking cursor while streaming */}
           {isStreaming && (
             <div className="flex gap-3">
-              <span className="text-[#666666] dark:text-[#666666] tabular-nums">[{fmt(new Date().toISOString())}]</span>
-              <span className="text-[#4A4A4A] animate-pulse">█</span>
+              <span className="text-text-muted-light dark:text-text-muted-dark tabular-nums">[{fmt(new Date().toISOString())}]</span>
+              <span className="text-text-muted-light dark:text-text-muted-dark animate-pulse">█</span>
             </div>
           )}
           <div ref={logEndRef} />

@@ -81,7 +81,7 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
       <div className="w-full max-w-2xl bg-white dark:bg-surface-dark border border-border-light dark:border-border-dark rounded-3xl shadow-xl flex flex-col overflow-hidden text-left">
         <div className="flex items-center justify-between px-6 py-4 border-b border-border-light dark:border-border-dark">
           <div>
-            <h3 className="text-base font-bold text-[#333333] dark:text-white">Select Materials</h3>
+            <h3 className="text-base font-bold text-text-primary-light dark:text-white">Select Materials</h3>
             <p className="text-xs text-text-muted-light dark:text-text-muted-dark">Choose materials to reference during this session.</p>
           </div>
           <button onClick={onClose} className="p-1 rounded-lg border border-border-light dark:border-border-dark text-text-muted-light dark:text-text-muted-dark hover:bg-white/80 dark:hover:bg-elevated-dark">
@@ -128,7 +128,7 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
                 <span className="text-xs font-semibold">{uploading ? 'Uploading...' : 'Upload New'}</span>
               </button>
               {filtered.length === 0 && !uploading && (
-                <div className="col-span-3 flex items-center justify-center py-8 text-xs text-[#666666]">
+                <div className="col-span-3 flex items-center justify-center py-8 text-xs text-text-muted-light dark:text-text-muted-dark">
                   No materials yet — upload your first file above.
                 </div>
               )}
