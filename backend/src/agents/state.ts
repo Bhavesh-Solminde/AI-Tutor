@@ -62,6 +62,16 @@ export const AgentState = Annotation.Root({
     reducer: (_, next) => next,
     default: () => [],
   }),
+  // Human-readable names for the attached material sessions (e.g. "Machine Learning Notes")
+  materialSessionNames: Annotation<string[]>({
+    reducer: (_, next) => next,
+    default: () => [],
+  }),
+  // GPT-generated topic summaries for the attached sessions (parallel array to materialSessionNames)
+  materialSessionSummaries: Annotation<string[]>({
+    reducer: (_, next) => next,
+    default: () => [],
+  }),
 
   // Previous quiz score for this topic (null if first attempt) — used by quizGeneratorNode
   previousQuizScore: Annotation<number | null>({

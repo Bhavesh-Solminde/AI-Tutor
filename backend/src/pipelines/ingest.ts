@@ -4,6 +4,7 @@ import pdfParse from "pdf-parse";
 import { cohereEmbeddings, getPineconeIndex } from "../config/pinecone";
 import { uploadPdfToCloudinary } from "../utils/cloudinaryUpload";
 import { extractTopicsFromText } from "./topicExtractor";
+import { generateDocumentSummary } from "./summarizer";
 import { Topic } from "../models/Topic";
 import { Session } from "../models/Session";
 import mongoose from "mongoose";
@@ -171,6 +172,13 @@ export async function ingestPDF(
     estimatedMinutes: doc.estimatedMinutes,
   }));
 
+  // 9. Generate and store document topic summary (fire-and-forget, never blocks response)
+  generateDocumentSummary(rawText, originalName)
+    .then((summary) => {
+      if (summary) return Session.findByIdAndUpdate(sessionId, { topicSummary: summary });
+    })
+    .catch(() => {}); // already logged inside generateDocumentSummary
+
   return {
     fileUrl,
     sessionId,
@@ -248,6 +256,13 @@ export async function ingestText(
     estimatedMinutes: doc.estimatedMinutes,
   }));
 
+  // Generate and store document topic summary (fire-and-forget)
+  generateDocumentSummary(rawText, "pasted notes")
+    .then((summary) => {
+      if (summary) return Session.findByIdAndUpdate(sessionId, { topicSummary: summary });
+    })
+    .catch(() => {});
+
   return {
     fileUrl: "",
     sessionId,
@@ -304,6 +319,13 @@ export async function ingestReference(
   const pineconeIndex = getPineconeIndex();
   await PineconeStore.fromDocuments(chunks, cohereEmbeddings, { pineconeIndex, namespace });
   log.info("ingestReference: Pinecone upsert complete", { namespace, chunkCount: chunks.length });
+
+  // Generate and store document topic summary (fire-and-forget)
+  generateDocumentSummary(text, originalName)
+    .then((summary) => {
+      if (summary) return Session.findByIdAndUpdate(sessionId, { topicSummary: summary });
+    })
+    .catch(() => {});
 
   return { fileUrl, sessionId };
 }

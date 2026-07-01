@@ -58,7 +58,7 @@ const StatsCounter = () => {
   };
 
   return (
-    <section className="py-24 px-6 relative z-10 bg-transparent border-y border-[#EAE8E1] dark:border-white/5">
+    <section className="py-24 px-6 relative z-10 bg-transparent">
       <div className="max-w-7xl mx-auto">
         <motion.div 
           variants={containerVariants}

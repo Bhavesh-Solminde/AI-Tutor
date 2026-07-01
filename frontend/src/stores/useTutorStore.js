@@ -53,7 +53,7 @@ const useTutorStore = create((set, get) => ({
   },
 
   // Send message to tutor via SSE stream
-  sendMessage: async ({ topicId, message, type = 'teach', chatHistoryId, onChatCreated, materialSessionIds = [] }) => {
+  sendMessage: async ({ topicId, message, type = 'teach', chatHistoryId, onChatCreated, materialSessionIds = [], materialSessionSummaries = [] }) => {
     const { isStreaming } = get();
     if (isStreaming) return;
 
@@ -76,7 +76,7 @@ const useTutorStore = create((set, get) => ({
     const attemptStream = async () => {
       try {
         const res = await createSSERequest('/api/tutor/chat', {
-          topicId, message, type, chatHistoryId, materialSessionIds,
+          topicId, message, type, chatHistoryId, materialSessionIds, materialSessionSummaries,
         });
 
         if (!res.ok) {

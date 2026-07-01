@@ -162,13 +162,16 @@ const PinnedAgentGraph = () => {
     );
   }
 
+  const pinboardLines = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='50'%3E%3Crect x='0' y='48.5' width='4' height='1.5' fill='%23000000' fill-opacity='0.08'/%3E%3C/svg%3E\")";
+
   return (
     <section ref={containerRef} className="h-[580vh] relative bg-transparent z-20">
       <div id="progression" className="absolute top-[80vh] left-0 pointer-events-none" />
 
-      <div className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-transparent">
-
-
+      <div 
+        className="sticky top-0 h-screen w-full overflow-hidden flex flex-col items-center justify-center bg-[#F6F5F1] dark:bg-[#181818]"
+        style={{ backgroundImage: pinboardLines }}
+      >
         {/* ── Header ─────────────────────────────────────────────────────── */}
         <motion.div
           style={{ opacity: headerOp, y: headerY }}

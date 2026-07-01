@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import MainLayout from '../components/layout/MainLayout';
-import { Calendar, Sparkles, CheckCircle, Clock, Trash2, AlertTriangle, ChevronDown, BookOpen, Target, FileText } from 'lucide-react';
+import { Calendar, Sparkles, CheckCircle, Clock, Trash2, AlertTriangle, ChevronDown, BookOpen, Target, FileText, Archive } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import useAuthStore from '../stores/useAuthStore';
 import useExamStore from '../stores/useExamStore';
@@ -16,7 +16,7 @@ const ExamMode = () => {
   const {
     exam, topics, daysLeft, rescuePlan, setupComplete, loading,
     examSessionId, examRoadmapNodes, examRoadmapEdges,
-    fetchExam, fetchStudyPlan, fetchExamRoadmap, setSetupComplete, deleteExam,
+    fetchExam, fetchStudyPlan, fetchExamRoadmap, setSetupComplete, deleteExam, archiveExam,
   } = useExamStore();
 
   const [selectedTopic, setSelectedTopic] = React.useState(null);
@@ -24,6 +24,18 @@ const ExamMode = () => {
   const [resetting, setResetting] = React.useState(false);
   // Which day block is expanded in the timeline (null = all collapsed)
   const [expandedDay, setExpandedDay] = React.useState(null);
+  const [archiving, setArchiving] = React.useState(false);
+
+  const handleArchive = async () => {
+    setArchiving(true);
+    try {
+      await archiveExam();
+    } catch {
+      // error already toasted by store
+    } finally {
+      setArchiving(false);
+    }
+  };
 
   const handleReset = async () => {
     if (!user?._id) return;
@@ -46,10 +58,11 @@ const ExamMode = () => {
     }
   }, [user?._id]);
 
-  // Fetch roadmap edges when we know the exam's sessionId
+  // Fetch roadmap: use persisted examSessionId first, fall back to exam.sessionId from server
   useEffect(() => {
-    if (examSessionId) fetchExamRoadmap(examSessionId);
-  }, [examSessionId]);
+    const sid = examSessionId || exam?.sessionId;
+    if (sid) fetchExamRoadmap(sid);
+  }, [examSessionId, exam?.sessionId]);
 
   // Prefer roadmap API nodes (have position data + edges) over flat topic list
   const roadmapSource = examRoadmapNodes?.length > 0 ? examRoadmapNodes : topics;
@@ -147,6 +160,31 @@ const ExamMode = () => {
                 )}
               </div>
             </div>
+
+            {/* Exam Passed Banner */}
+            {daysLeft !== null && daysLeft <= 0 && (
+              <div className="flex items-center justify-between p-4 bg-emerald-50 dark:bg-emerald-900/15 border border-emerald-500/30 rounded-2xl">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-5 w-5 text-emerald-500 flex-shrink-0" />
+                  <div>
+                    <p className="text-sm font-bold text-emerald-700 dark:text-emerald-300">This exam has passed!</p>
+                    <p className="text-xs text-emerald-600 dark:text-emerald-400">Archive it to your history and set up your next exam.</p>
+                  </div>
+                </div>
+                <button
+                  onClick={handleArchive}
+                  disabled={archiving}
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition disabled:opacity-50"
+                >
+                  {archiving ? (
+                    <div className="h-3 w-3 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Archive className="h-3.5 w-3.5" />
+                  )}
+                  {archiving ? 'Archiving…' : 'Archive & New Exam'}
+                </button>
+              </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 flex-grow min-h-0">
               <div className="lg:col-span-8 flex flex-col h-[500px]">

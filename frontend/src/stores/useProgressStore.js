@@ -8,6 +8,8 @@ const useProgressStore = create((set) => ({
   total: 0,
   loading: false,
   error: null,
+  recommendations: [],
+  recommendationsLoading: false,
 
   fetchProgress: async (userId) => {
     set({ loading: true, error: null });
@@ -23,7 +25,6 @@ const useProgressStore = create((set) => ({
       return data;
     } catch (err) {
       if (err.response?.status === 404) {
-        // New user — no progress yet
         set({ loading: false, topics: [], overallMastery: 0, mastered: 0, total: 0 });
         return null;
       }
@@ -31,10 +32,19 @@ const useProgressStore = create((set) => ({
     }
   },
 
+  fetchRecommendations: async () => {
+    set({ recommendationsLoading: true });
+    try {
+      const { data } = await api.get('/api/progress/recommendations', { _silent: true });
+      set({ recommendations: data.recommendations || [], recommendationsLoading: false });
+    } catch {
+      set({ recommendationsLoading: false, recommendations: [] });
+    }
+  },
+
   updateProgress: async (topicId, masteryScore, status) => {
     try {
       await api.post('/api/progress/update', { topicId, masteryScore, status });
-      // Update locally too
       set((state) => ({
         topics: state.topics.map((t) =>
           t._id === topicId ? { ...t, masteryScore, status } : t

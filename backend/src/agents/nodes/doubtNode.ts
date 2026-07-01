@@ -23,27 +23,64 @@ export async function doubtNode(
     allNamespaces.push(...state.materialNamespaces);
   }
 
+  // Detect document meta-questions so we use a meaningful RAG query instead of the
+  // literal question text (which won't semantically match anything in Pinecone).
+  //
+  // Triggers when the message contains:
+  //  - Document-related keywords (pdf, notes, file, content, material, reference…)
+  //  - A file extension (.md, .pdf, .docx, .txt)
+  //  - The name of one of the attached session documents (e.g. "fast-api.md")
+  const DOCUMENT_KEYWORDS = /\b(pdf|document|notes|attachment|attached|material|file|reference|upload|content)\b|\.(md|pdf|docx|txt)\b/i;
+  const mentionsAttachedFile = (state.materialSessionNames || []).some((name) =>
+    state.message.toLowerCase().includes(name.toLowerCase().replace(/\.(md|pdf|docx|txt)$/i, ""))
+  );
+  const isDocumentMetaQuestion = (DOCUMENT_KEYWORDS.test(state.message) || mentionsAttachedFile) && allNamespaces.length > 0;
+
+  // For document questions: search with "overview introduction summary" to pull
+  // the opening/summary sections of the attached file instead of matching the meta-question.
+  const ragQuery = isDocumentMetaQuestion
+    ? `overview introduction summary ${state.topicName !== "General Study" ? state.topicName : ""}`
+    : state.message;
+
   if (allNamespaces.length > 1) {
-    ragContext = await retrieveFromMultipleNamespaces(state.message, allNamespaces);
+    ragContext = await retrieveFromMultipleNamespaces(ragQuery, allNamespaces);
   } else if (allNamespaces.length === 1) {
-    // Use the pre-built namespace directly — avoids incorrect re-derivation
-    ragContext = await retrieveContextByNamespace(state.message, allNamespaces[0]);
+    ragContext = await retrieveContextByNamespace(ragQuery, allNamespaces[0]);
   } else if (state.userId) {
-    // Open-mode fallback: retrieve from all active user sessions
-    ragContext = await retrieveFromAllUserSessions(state.message, state.userId);
+    ragContext = await retrieveFromAllUserSessions(ragQuery, state.userId);
   }
+
 
   // Build system prompt (chat history summary for context summary only)
   const chatHistorySummary = state.chatHistory.length > 0
     ? `The conversation so far has ${state.chatHistory.length} turns. Refer to the message history above when answering follow-up questions.`
     : "This is the start of the conversation.";
 
+  // Build attached materials description — mirrors tutorNode logic
+  let attachedMaterialsStr: string;
+  if (state.materialSessionNames && state.materialSessionNames.length > 0) {
+    const lines = state.materialSessionNames.map((name, i) => {
+      const summary = state.materialSessionSummaries?.[i];
+      if (summary) {
+        return `  ${i + 1}. "${name}"\n     Topics covered:\n${summary.split("\n").map((l) => `       ${l.trim()}`).join("\n")}`;
+      }
+      return `  ${i + 1}. "${name}"`;
+    });
+    attachedMaterialsStr = `The student has attached the following documents to this session:\n${lines.join("\n")}`;
+  } else if (state.sessionId && state.topicName && state.topicName !== "General Study") {
+    attachedMaterialsStr = `Topic session context: "${state.topicName}" (from the student's uploaded study material for this subject).`;
+  } else {
+    attachedMaterialsStr = "None — no documents or notes are currently attached to this session.";
+  }
+
   const systemPrompt = DOUBT_SYSTEM_PROMPT
     .replace("{currentDateTime}", state.currentDateTime)
     .replace("{topicName}", state.topicName)
     .replace("{explanationLevel}", state.explanationLevel)
     .replace("{ragContext}", ragContext || "No uploaded materials found. Use your knowledge.")
+    .replace("{attachedMaterials}", attachedMaterialsStr)
     .replace("{chatHistory}", chatHistorySummary);
+
 
   // Build messages array with full conversation history as real turns
   const historyMessages = state.chatHistory.map((m) => ({

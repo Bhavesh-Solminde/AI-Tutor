@@ -55,11 +55,38 @@ export async function examSetup(req: AuthRequest, res: Response, next: NextFunct
 
     const userId = req.userId!;
     const daysLeft = Math.ceil((date.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
-    const exam = await Exam.findOneAndUpdate(
-      { userId },
-      { userId, subject: subject.trim(), examDate: date, syllabusSource: "web" },
-      { upsert: true, new: true }
-    );
+
+    // Archive any existing active exam before creating a new one
+    const existingActive = await Exam.findOne({ userId, status: "active" });
+    if (existingActive) {
+      const topics = await Topic.find({ userId, sessionId: existingActive.sessionId, archived: { $ne: true } });
+      const total = topics.length;
+      const mastered = topics.filter((t) => t.status === "mastered").length;
+      const overallMastery = total > 0
+        ? Math.round(topics.reduce((sum, t) => sum + t.masteryScore, 0) / total)
+        : 0;
+
+      await Exam.findByIdAndUpdate(existingActive._id, {
+        status: "past",
+        finalMasteryScore: overallMastery,
+        finalMastered: mastered,
+        finalTotal: total,
+      });
+      // Also clear the old study plan so the new exam gets a fresh one
+      if (existingActive.sessionId) {
+        await StudyPlan.findOneAndDelete({ userId, sessionId: existingActive.sessionId });
+      }
+      log.info("Archived previous active exam", { userId, examId: existingActive._id });
+    }
+
+    const exam = await Exam.create({
+      userId,
+      subject: subject.trim(),
+      examDate: date,
+      syllabusSource: "web",
+      status: "active",
+    });
+
     log.info("Exam setup saved", { userId, subject: subject.trim(), daysLeft, examId: exam._id });
     res.json({ exam, daysLeft });
   } catch (err) {
@@ -71,7 +98,7 @@ export async function examSetup(req: AuthRequest, res: Response, next: NextFunct
 export async function uploadSyllabus(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.userId!;
-    const exam = await Exam.findOne({ userId });
+    const exam = await Exam.findOne({ userId, status: "active" });
     if (!exam) return next(new NotFoundError("Exam setup"));
 
     log.info("Syllabus upload", { userId, hasFile: !!req.file, fileName: req.file?.originalname });
@@ -96,7 +123,6 @@ export async function uploadSyllabus(req: AuthRequest, res: Response, next: Next
         result = await ingestPDF(req.file.buffer, req.file.originalname, userId, sessionId);
         await Exam.findByIdAndUpdate(exam._id, { syllabusSource: "upload", syllabusFileUrl: result.fileUrl, sessionId: session._id });
       } else {
-        // .md / .txt / .docx — extract text, then ingest
         const rawText = await extractTextFromFile(req.file.buffer, req.file.originalname);
         result = await ingestText(rawText, userId, sessionId);
         await Exam.findByIdAndUpdate(exam._id, { syllabusSource: "upload", sessionId: session._id });
@@ -134,7 +160,6 @@ export async function uploadSyllabus(req: AuthRequest, res: Response, next: Next
       roadmapNodes = topicDocs.map((t) => ({ id: t._id.toString(), label: t.name, status: "unstarted", position: t.roadmapPosition, difficulty: t.difficulty, estimatedMinutes: t.estimatedMinutes }));
       log.info("Syllabus from web search complete", { sessionId, topicCount: topics.length });
 
-      // Best-effort: search for PYQs online too
       try {
         const pyqSearch = new TavilySearch({ maxResults: 3 });
         const pyqResults = await pyqSearch.invoke({
@@ -146,8 +171,6 @@ export async function uploadSyllabus(req: AuthRequest, res: Response, next: Next
           if (Object.keys(freq).length > 0) {
             await Exam.findByIdAndUpdate(exam._id, { pyqUploaded: true, topicFrequencies: freq });
             log.info("PYQ web search found frequencies", { freqCount: Object.keys(freq).length });
-          } else {
-            log.info("PYQ web search returned no usable frequencies");
           }
         }
       } catch (pyqErr: any) {
@@ -166,19 +189,16 @@ export async function uploadSyllabus(req: AuthRequest, res: Response, next: Next
 export async function uploadPYQ(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.userId!;
-    const exam = await Exam.findOne({ userId });
+    const exam = await Exam.findOne({ userId, status: "active" });
     if (!exam) return next(new NotFoundError("Exam setup"));
     if (!req.file) return next(new ValidationError("Please upload a PYQ file (PDF, DOCX, TXT, or MD)."));
 
-    // Extract text regardless of file type
     const rawText = await extractTextFromFile(req.file.buffer, req.file.originalname);
-    
+
     const topicQuery: any = { userId };
     if (exam.sessionId) topicQuery.sessionId = exam.sessionId;
     const topicNames = (await Topic.find(topicQuery)).map((t) => t.name);
 
-    // analyzePYQ is best-effort — any failure falls back to empty frequencies.
-    // The PYQ is still marked as uploaded so the roadmap generates normally.
     let frequencies: Record<string, number> = {};
     try {
       frequencies = await analyzePYQ(rawText, topicNames);
@@ -191,11 +211,9 @@ export async function uploadPYQ(req: AuthRequest, res: Response, next: NextFunct
       topicFrequencies: frequencies,
     });
 
-    // Auto-recalibrate the study plan if one already exists
     const existingPlan = await StudyPlan.findOne({ userId });
     let recalibrated = false;
     if (existingPlan && Object.keys(frequencies).length > 0) {
-      // Update topic estimated minutes based on PYQ frequency
       await recalibrateTopicsFromPYQ(userId, exam.sessionId, frequencies);
       recalibrated = true;
     }
@@ -210,13 +228,13 @@ export async function uploadPYQ(req: AuthRequest, res: Response, next: NextFunct
 export async function getExam(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.userId!;
-    const exam = await Exam.findOne({ userId });
-    if (!exam) { res.status(404).json({ error: "No exam configured yet." }); return; }
-    
+    const exam = await Exam.findOne({ userId, status: "active" });
+    if (!exam) { res.status(404).json({ error: "No active exam configured yet." }); return; }
+
     const query: any = { userId };
     if (exam.sessionId) query.sessionId = exam.sessionId;
     const topics = await Topic.find(query);
-    
+
     const daysLeft = Math.ceil((exam.examDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     res.json({ exam, topics, daysLeft });
   } catch (err) {
@@ -224,15 +242,61 @@ export async function getExam(req: AuthRequest, res: Response, next: NextFunctio
   }
 }
 
-// DELETE /api/exam/:userId — removes exam + study plan so user can start fresh
+// ─── GET /api/exam/history ────────────────────────────────────────────────────
+export async function getExamHistory(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.userId!;
+    const history = await Exam.find({ userId, status: "past" }).sort({ examDate: -1 });
+    res.json({ history });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// ─── PATCH /api/exam/archive ──────────────────────────────────────────────────
+export async function archiveExam(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
+  try {
+    const userId = req.userId!;
+    const exam = await Exam.findOne({ userId, status: "active" });
+    if (!exam) { res.status(404).json({ error: "No active exam to archive." }); return; }
+
+    // Snapshot progress stats at archive time
+    const topics = await Topic.find({ userId, sessionId: exam.sessionId, archived: { $ne: true } });
+    const total = topics.length;
+    const mastered = topics.filter((t) => t.status === "mastered").length;
+    const overallMastery = total > 0
+      ? Math.round(topics.reduce((sum, t) => sum + t.masteryScore, 0) / total)
+      : 0;
+
+    await Exam.findByIdAndUpdate(exam._id, {
+      status: "past",
+      finalMasteryScore: overallMastery,
+      finalMastered: mastered,
+      finalTotal: total,
+    });
+
+    // Delete the study plan for this exam session
+    if (exam.sessionId) {
+      await StudyPlan.findOneAndDelete({ userId, sessionId: exam.sessionId });
+    }
+
+    log.info("Exam archived by user", { userId, examId: exam._id, subject: exam.subject });
+    res.json({ success: true, archived: { subject: exam.subject, finalMasteryScore: overallMastery } });
+  } catch (err) {
+    next(err);
+  }
+}
+
+// DELETE /api/exam/:userId — removes ACTIVE exam + study plan so user can start fresh
 export async function deleteExam(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.userId!;
+    const exam = await Exam.findOne({ userId, status: "active" });
     await Promise.all([
-      Exam.findOneAndDelete({ userId }),
-      StudyPlan.findOneAndDelete({ userId }),
+      Exam.findOneAndDelete({ userId, status: "active" }),
+      exam?.sessionId ? StudyPlan.findOneAndDelete({ userId, sessionId: exam.sessionId }) : null,
     ]);
-    log.info("Exam deleted", { userId });
+    log.info("Active exam deleted", { userId });
     res.json({ success: true });
   } catch (err) {
     next(err);
@@ -252,11 +316,9 @@ async function recalibrateTopicsFromPYQ(
 
   const bulkOps = topics.map((t) => {
     const freq = frequencies[t.name] || 0;
-    const freqRatio = freq / maxFreq; // 0.0 – 1.0
-    // High-frequency topics get up to 50% more time; zero-frequency lose 20%
+    const freqRatio = freq / maxFreq;
     const multiplier = freq > 0 ? 1.0 + (freqRatio * 0.5) : 0.8;
     const adjustedMinutes = Math.round(t.estimatedMinutes * multiplier);
-    // Also bump difficulty if appeared > 60% of max frequency
     const bumpDifficulty = freqRatio > 0.6 && t.difficulty === "easy" ? "medium" : t.difficulty;
 
     return {
@@ -284,19 +346,12 @@ export async function recalibrateExam(
 ): Promise<void> {
   try {
     const userId = req.userId!;
-    const exam = await Exam.findOne({ userId });
+    const exam = await Exam.findOne({ userId, status: "active" });
     if (!exam) return next(new NotFoundError("Exam setup"));
 
-    // Re-fetch updated topics (with PYQ-adjusted times)
-    const query: any = { userId };
-    if (exam.sessionId) query.sessionId = exam.sessionId;
-    const topics = await Topic.find(query);
-
-    // Delegate to generateStudyPlan logic by calling it internally
     const sessionId = exam.sessionId?.toString();
     const examDate = exam.examDate.toISOString();
 
-    // Forward to the existing generate endpoint handler
     req.body = { sessionId, examDate, pyqFrequencies: exam.topicFrequencies };
     return generateStudyPlan(req, res, next);
   } catch (err) {

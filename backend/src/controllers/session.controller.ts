@@ -49,14 +49,25 @@ export async function getSessionTopics(req: AuthRequest, res: Response, next: Ne
 export async function getSessionMaterials(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.userId!;
-    // Only return sessions marked as reference material (uploaded via chat Materials modal)
-    const sessions = await Session.find({ userId, isReference: true }).sort({ createdAt: -1 });
+    // Return ALL sessions for this user: both dedicated reference materials (isReference:true)
+    // AND their main study sessions (syllabus PDFs from the roadmap/exam setup).
+    // Exclude sessions with no Pinecone namespace (topic-only sessions have nothing to search).
+    const sessions = await Session.find({
+      userId,
+      deleted: { $ne: true },
+      pineconeNamespace: { $exists: true, $ne: "" },
+    }).sort({ createdAt: -1 });
+
     const materials = sessions.map((s) => ({
       _id: s._id,
       title: s.name,
-      desc: s.inputMethod === "pdf" ? "PDF document" : "Pasted notes",
+      desc: s.isReference
+        ? (s.inputMethod === "pdf" ? "Uploaded reference PDF" : "Pasted notes")
+        : (s.inputMethod === "pdf" ? "Study session PDF" : `Study session`),
       fileUrl: s.fileUrl || null,
       inputMethod: s.inputMethod,
+      type: s.isReference ? "reference" : "study",
+      topicSummary: s.topicSummary || null,   // ← pre-computed topic summary
       createdAt: s.createdAt,
     }));
     log.debug("Session materials fetched", { userId, count: materials.length });
@@ -65,6 +76,7 @@ export async function getSessionMaterials(req: AuthRequest, res: Response, next:
     next(err);
   }
 }
+
 
 // GET /api/sessions/user — all non-deleted roadmap sessions (for session switcher)
 export async function getUserSessions(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {

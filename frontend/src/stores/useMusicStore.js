@@ -13,40 +13,40 @@ export const STUDY_GENRES = [
     id: 'classical',
     label: 'Classical',
     description: 'Mozart, Bach & Beethoven',
-    videoId: 'jgpJVI3tDbY',
+    videoId: 'SllpB3W5f6s',
     color: '#B8A99A',
   },
   {
-    id: 'nature',
-    label: 'Nature Sounds',
-    description: 'Rain, forest & ocean ambience',
-    videoId: 'eKFTSSKCzWA',
+    id: 'natural',
+    label: 'Natural',
+    description: 'Nature ambience',
+    videoId: 'Mpzqck8zSgM',
     color: '#8FAF8F',
   },
   {
-    id: 'binaural',
-    label: 'Binaural Beats',
-    description: 'Deep focus alpha waves',
-    videoId: 'WPni755-Krg',
+    id: 'neural',
+    label: 'Neural',
+    description: 'Deep focus waves',
+    videoId: 'lkkGlVWvkLk',
     color: '#9B8EC4',
   },
   {
-    id: 'jazz',
-    label: 'Jazz',
-    description: 'Smooth jazz for studying',
-    videoId: 'Dx5qFachd3A',
+    id: 'natural_rain',
+    label: 'Natural Rain',
+    description: 'Rain ambience',
+    videoId: 'eIoHJBA43lk',
     color: '#C49A6C',
   },
   {
     id: 'ambient',
     label: 'Ambient',
     description: 'Space & atmospheric sounds',
-    videoId: 'UfcAVejslrU',
+    videoId: '4GnVDPD01as',
     color: '#7A9BBF',
   },
 ];
 
-export const NATURE_GENRE    = STUDY_GENRES.find((g) => g.id === 'nature');
+export const NATURE_GENRE    = STUDY_GENRES.find((g) => g.id === 'natural');
 export const CLASSICAL_GENRE = STUDY_GENRES.find((g) => g.id === 'classical');
 
 const useMusicStore = create((set, get) => ({

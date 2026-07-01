@@ -24,7 +24,7 @@ const LiveTerminalPreview = () => {
   };
 
   return (
-    <section className="py-24 px-6 relative z-10 border-y border-[#EAE8E1] dark:border-white/5 bg-transparent">
+    <section className="py-24 px-6 relative z-10 bg-transparent">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#333333] dark:text-white">Intelligence that adapts.</h2>

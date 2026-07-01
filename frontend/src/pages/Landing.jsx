@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Brain } from 'lucide-react';
 import Navbar from '../components/landing/Navbar';
@@ -11,16 +11,40 @@ import Testimonials from '../components/landing/Testimonials';
 import FinalCTA from '../components/landing/FinalCTA';
 import LiveTerminalPreview from '../components/landing/LiveTerminalPreview';
 import useAutoplay from '../hooks/useAutoplay';
+import { useTheme } from '../hooks/useTheme';
 import { CLASSICAL_GENRE } from '../stores/useMusicStore';
 
 const Landing = () => {
   // Autoplay classical music on first user interaction with the landing page
   useAutoplay(CLASSICAL_GENRE);
 
+  const { theme } = useTheme();
+
+  // Force light mode on landing page regardless of global theme
+  useEffect(() => {
+    const root = document.documentElement;
+    root.classList.remove('dark');
+    root.classList.add('light');
+    
+    // Restore the actual global theme when unmounting (e.g. navigating to dashboard)
+    return () => {
+      if (theme === 'dark') {
+        root.classList.add('dark');
+        root.classList.remove('light');
+      }
+    };
+  }, [theme]);
+
+  // Always use light mode pinboard lines on the landing page
+  const pinboardLines = "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='50'%3E%3Crect x='0' y='48.5' width='4' height='1.5' fill='%23000000' fill-opacity='0.08'/%3E%3C/svg%3E\")";
+
   return (
     // Removed Forced Dark Wrapper so ThemeToggle can work globally
     // Removed overflow-x-hidden because it breaks position: sticky for all children
-    <div className="min-h-screen bg-[#F6F5F1] dark:bg-[#181818] text-[#333333] dark:text-slate-200 font-sans selection:bg-primary/30 relative transition-colors duration-300">
+    <div
+      className="min-h-screen bg-[#F6F5F1] dark:bg-[#181818] text-[#333333] dark:text-slate-200 font-sans selection:bg-primary/30 relative transition-colors duration-300"
+      style={{ backgroundImage: pinboardLines }}
+    >
 
       {/* Basic global fade animation for demo */}
       <style>{`
@@ -62,7 +86,7 @@ const Landing = () => {
       <FinalCTA />
 
       {/* ─── FOOTER ─── */}
-      <footer className="border-t border-[#EAE8E1] dark:border-white/5 py-12 px-6 relative z-10">
+      <footer className="py-12 px-6 relative z-10">
         {/* Prototype Disclaimer */}
         <div className="max-w-7xl mx-auto mb-8">
           <div className="flex items-start space-x-3 px-4 py-3 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 text-amber-800 dark:text-amber-300 text-xs">

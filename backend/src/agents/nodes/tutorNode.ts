@@ -138,6 +138,24 @@ export async function tutorNode(
           : "Answer their specific doubt, then smoothly resume tutoring.")
       : "";
 
+  // ── Build the attached materials description for the prompt ─────────────
+  let attachedMaterialsStr: string;
+  if (state.materialSessionNames && state.materialSessionNames.length > 0) {
+    const lines = state.materialSessionNames.map((name, i) => {
+      const summary = state.materialSessionSummaries?.[i];
+      if (summary) {
+        return `  ${i + 1}. "${name}"\n     Topics covered:\n${summary.split("\n").map((l) => `       ${l.trim()}`).join("\n")}`;
+      }
+      return `  ${i + 1}. "${name}"`;
+    });
+    attachedMaterialsStr = `The student has attached the following documents to this session:\n${lines.join("\n")}`;
+  } else if (state.sessionId && state.topicName && state.topicName !== "General Study") {
+    // Topic mode: the topic's own session PDF is always in context via Pinecone
+    attachedMaterialsStr = `Topic session context: "${state.topicName}" (from the student's uploaded study material for this subject).`;
+  } else {
+    attachedMaterialsStr = "None — no documents or notes are currently attached to this session.";
+  }
+
   const systemPrompt =
     TUTOR_SYSTEM_PROMPT.replace("{currentDateTime}", state.currentDateTime)
       .replace("{topicName}", state.topicName)
@@ -149,6 +167,7 @@ export async function tutorNode(
           "Use search_uploaded_materials first for any new concept. " +
           "Use search_web for real-world analogies or examples not in the notes."
       )
+      .replace("{attachedMaterials}", attachedMaterialsStr)
       .replace("{chatHistory}", chatHistorySummary)
       .replace("{selfRatingBefore}", String(state.selfRatingBefore ?? 0))
       .replace("{learningProfile}", state.learningProfile || "No profile yet.")

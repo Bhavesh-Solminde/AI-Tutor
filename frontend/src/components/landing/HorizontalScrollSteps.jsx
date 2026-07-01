@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from "framer-motion";
 import { useTheme } from "../../hooks/useTheme";
+import { PushPin } from "../ui/PushPin";
 
 const STEPS = [
   {
@@ -97,28 +98,8 @@ export default function HorizontalScrollSteps() {
   return (
     <section
       id="how"
-      className="relative py-24 px-6 overflow-hidden bg-[#f6f5f1] dark:bg-[#181818]"
+      className="relative z-[1] py-24 px-6 overflow-hidden"
     >
-      {/* Horizontal ruled dashed lines spanning the full section (notebook-paper effect) */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{ zIndex: 0 }}
-        aria-hidden="true"
-      >
-        {Array.from({ length: 28 }).map((_, i) => (
-          <div
-            key={i}
-            style={{
-              position: "absolute",
-              left: 0,
-              right: 0,
-              top: `${(i + 1) * (100 / 29)}%`,
-              height: 0,
-              borderTop: `1.5px dashed ${ruleColor}`,
-            }}
-          />
-        ))}
-      </div>
 
       {/* Section header */}
       <div className="relative z-10 text-center mb-20">
@@ -150,91 +131,21 @@ export default function HorizontalScrollSteps() {
                     } ${i > 0 ? "md:-mt-16" : ""}`}
                 >
                   <div className="relative w-full md:w-[45%] max-w-[420px]">
-                    {/* Push-pin — matching reference exactly (placed outside motion.div to stay static and neutral) */}
+                    {/* 3D Push Pin */}
                     <div
-                      className="absolute z-20"
+                      className="absolute z-50 pointer-events-none"
                       style={{
-                        top: "-22px",
+                        top: "-24px",
                         left: "50%",
-                        transform: "translateX(-50%)",
-                        width: "48px",
-                        height: "62px",
+                        transform: "translateX(-50%) ",
+                        transformOrigin: "bottom center",
                       }}
                     >
-                      {/* Soft oval shadow cast on card surface */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: "2px",
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          width: "32px",
-                          height: "10px",
-                          borderRadius: "50%",
-                          background: `radial-gradient(ellipse, rgba(0,0,0,0.18) 0%, transparent 70%)`,
-                          zIndex: 0,
-                        }}
-                      />
-                      {/* Metallic spike/needle — thin tapered point */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          bottom: "4px",
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          width: "4px",
-                          height: "20px",
-                          background: `linear-gradient(to bottom, ${step.pinShadow}, #888 40%, #aaa 100%)`,
-                          borderRadius: "2px 2px 1px 1px",
-                          clipPath: "polygon(30% 0%, 70% 0%, 55% 100%, 45% 100%)",
-                          zIndex: 1,
-                        }}
-                      />
-                      {/* Base rim — small disc where head meets spike */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: "34px",
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          width: "16px",
-                          height: "6px",
-                          borderRadius: "50%",
-                          background: `linear-gradient(to bottom, ${step.pinShadow}, ${step.pinRim})`,
-                          boxShadow: `0 1px 3px rgba(0,0,0,0.2)`,
-                          zIndex: 3,
-                        }}
-                      />
-                      {/* Main sphere dome — slightly oblate for 3/4 view */}
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: 0,
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                          width: "44px",
-                          height: "38px",
-                          borderRadius: "50%",
-                          background: `
-                            radial-gradient(ellipse at 32% 25%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 18%, transparent 40%),
-                            radial-gradient(ellipse at 40% 35%, ${step.pinHighlight} 0%, ${step.pinColor} 50%, ${step.pinShadow} 100%)
-                          `,
-                          boxShadow: `
-                            inset 0 -5px 12px rgba(0,0,0,0.25),
-                            inset 2px 2px 8px rgba(255,255,255,0.15),
-                            0 4px 14px ${step.pinColor}66
-                          `,
-                          zIndex: 4,
-                        }}
-                      />
+                      <PushPin color={step.pinColor} className="w-[72px] h-[72px]" />
                     </div>
 
                     <motion.div
-                      initial={{ opacity: 0, y: 32 }}
-                      whileInView={{ opacity: 1, y: 0 }}
                       whileHover={{ rotate: 0, scale: 1.03, transition: { duration: 0.2 } }}
-                      viewport={{ once: true, margin: "-80px" }}
-                      transition={{ duration: 0.5, delay: i * 0.1 }}
                       className="w-full rounded-3xl p-3 pt-14 relative bg-white dark:bg-[#222222] cursor-pointer"
                       style={{
                         border: isDark ? "1px solid rgba(255,255,255,0.05)" : "1px solid rgba(0,0,0,0.08)",

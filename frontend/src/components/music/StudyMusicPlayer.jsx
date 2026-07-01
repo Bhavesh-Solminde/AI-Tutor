@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useCallback, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Play, Pause, ChevronDown, ChevronUp, X, Music,
-  Headphones, Piano, Trees, Brain, Guitar, Wind, Radio, Volume2, VolumeX,
+  Headphones, Piano, Trees, CloudRain, Wind, Radio, Volume2, VolumeX,
 } from 'lucide-react';
 import useMusicStore, { STUDY_GENRES } from '../../stores/useMusicStore';
 
@@ -10,9 +10,8 @@ import useMusicStore, { STUDY_GENRES } from '../../stores/useMusicStore';
 const GENRE_ICONS = {
   lofi: Headphones,
   classical: Piano,
-  nature: Trees,
-  binaural: Brain,
-  jazz: Guitar,
+  natural: Trees,
+  natural_rain: CloudRain,
   ambient: Wind,
 };
 
@@ -274,8 +273,18 @@ const StudyMusicPlayer = () => {
                                 : 'border-[#EAE8E1] dark:border-[#333333] hover:border-[#C4A882]/60 hover:bg-white/80 dark:hover:bg-[#2A2A2A]/60'
                             }`}
                           >
-                            <Icon className="h-4 w-4" style={{ color: active ? genre.color : '#888888' }} />
-                            <span className="text-[9px] font-semibold text-[#555555] dark:text-[#888888] leading-tight">{genre.label.split(' ')[0]}</span>
+                            {genre.id === 'neural' ? (
+                              <img 
+                                src="/logo_without_text.png" 
+                                alt="Neural" 
+                                className={`h-4 w-4 object-contain transition-all duration-200 ${!active ? 'opacity-50 grayscale dark:invert dark:brightness-200' : 'dark:invert dark:brightness-200'}`} 
+                              />
+                            ) : (
+                              <Icon className="h-4 w-4" style={{ color: active ? genre.color : '#888888' }} />
+                            )}
+                            <span className="text-[9px] font-semibold text-[#555555] dark:text-[#888888] leading-tight">
+                              {genre.id === 'natural_rain' ? 'Rain' : genre.label.replace(' Hip Hop', '')}
+                            </span>
                           </button>
                         );
                       })}

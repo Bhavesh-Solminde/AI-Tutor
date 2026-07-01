@@ -16,12 +16,14 @@ const useExamStore = create(
       setupComplete: false,
       loading: false,
       error: null,
+      examHistory: [],
+      historyLoading: false,
 
       setupExam: async ({ subject, examDate }) => {
         set({ loading: true, error: null });
         try {
           const { data } = await api.post('/api/exam/setup', { subject, examDate });
-          set({ exam: data.exam, daysLeft: data.daysLeft, loading: false });
+          set({ exam: data.exam, daysLeft: data.daysLeft, loading: false, setupComplete: false });
           return data;
         } catch (err) {
           set({ loading: false, error: err.userMessage || 'Failed to save exam details.' });
@@ -63,7 +65,6 @@ const useExamStore = create(
       fetchExam: async (userId) => {
         set({ loading: true, error: null });
         try {
-          // _silent: true — 404 is expected for users who haven't set up an exam yet
           const { data } = await api.get(`/api/exam/${userId}`, { _silent: true });
           set({
             exam: data.exam,
@@ -75,8 +76,7 @@ const useExamStore = create(
           return data;
         } catch (err) {
           if (err.response?.status === 404) {
-            // No exam set yet — perfectly normal for new users
-            set({ loading: false, exam: null, topics: [], daysLeft: null });
+            set({ loading: false, exam: null, topics: [], daysLeft: null, setupComplete: false });
             return null;
           }
           set({ loading: false, error: err.userMessage || 'Failed to load exam data.' });
@@ -86,7 +86,8 @@ const useExamStore = create(
       generateStudyPlan: async ({ sessionId: explicitSessionId, examDate }) => {
         set({ loading: true, error: null });
         try {
-          const sessionId = explicitSessionId || get().examSessionId;
+          // Resolve sessionId: explicit arg → persisted store → fetched exam
+          const sessionId = explicitSessionId || get().examSessionId || get().exam?.sessionId;
           const { data } = await api.post('/api/studyplan/generate', { sessionId, examDate });
           set({ rescuePlan: data.plan, loading: false, setupComplete: true });
           return data;
@@ -116,7 +117,7 @@ const useExamStore = create(
           set({ rescuePlan: data.plan, loading: false });
           toast.success('Study plan recalibrated with PYQ data! 🎯');
           return data;
-        } catch (err) {
+        } catch {
           set({ loading: false });
           toast.error('Failed to recalibrate plan.');
         }
@@ -125,14 +126,14 @@ const useExamStore = create(
       fetchStudyPlan: async (userId) => {
         try {
           const { data } = await api.get(`/api/studyplan/${userId}`);
-          if (data.plan) set({ rescuePlan: data.plan, setupComplete: true });
+          // A plan existing means setup is complete — always sync this
+          set({ rescuePlan: data.plan || null, setupComplete: !!data.plan });
         } catch {}
       },
 
       markDayComplete: async (dayId, planId, score) => {
         try {
           await api.patch(`/api/studyplan/day/${dayId}`, { planId, score });
-          // Reflect locally
           set((state) => ({
             rescuePlan: state.rescuePlan
               ? {
@@ -147,10 +148,48 @@ const useExamStore = create(
         } catch {}
       },
 
-      setSetupComplete: (val) => set({ setupComplete: val }),
-      clearExam: () => set({ exam: null, examSessionId: null, topics: [], examRoadmapNodes: [], examRoadmapEdges: [], daysLeft: null, rescuePlan: null, setupComplete: false }),
+      // Archive the active exam (marks as past, snapshots stats, deletes study plan)
+      archiveExam: async () => {
+        set({ loading: true });
+        try {
+          const { data } = await api.patch('/api/exam/archive');
+          set({
+            exam: null,
+            examSessionId: null,
+            topics: [],
+            examRoadmapNodes: [],
+            examRoadmapEdges: [],
+            daysLeft: null,
+            rescuePlan: null,
+            setupComplete: false,
+            loading: false,
+          });
+          toast.success(`"${data.archived?.subject}" archived to history!`);
+          return data;
+        } catch (err) {
+          set({ loading: false });
+          toast.error('Failed to archive exam.');
+          throw err;
+        }
+      },
 
-      // DELETE exam + study plan so user can restart from scratch
+      // Fetch past exams for history section
+      fetchExamHistory: async () => {
+        set({ historyLoading: true });
+        try {
+          const { data } = await api.get('/api/exam/history', { _silent: true });
+          set({ examHistory: data.history || [], historyLoading: false });
+        } catch {
+          set({ historyLoading: false, examHistory: [] });
+        }
+      },
+
+      setSetupComplete: (val) => set({ setupComplete: val }),
+      clearExam: () => set({
+        exam: null, examSessionId: null, topics: [], examRoadmapNodes: [], examRoadmapEdges: [],
+        daysLeft: null, rescuePlan: null, setupComplete: false,
+      }),
+
       deleteExam: async (userId) => {
         try {
           await api.delete(`/api/exam/${userId}`);

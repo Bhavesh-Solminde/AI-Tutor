@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useTheme } from "../hooks/useTheme";
+import { PushPin } from "../components/ui/PushPin";
 
 
 
@@ -217,8 +218,15 @@ export default function LandingPage() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  const pinboardStyle = {
+    backgroundColor: isDark ? '#181818' : '#f6f5f1',
+    backgroundImage: isDark
+      ? 'repeating-linear-gradient(to bottom, transparent, transparent 39px, rgba(255,255,255,0.07) 39px, rgba(255,255,255,0.07) 40px)'
+      : 'repeating-linear-gradient(to bottom, transparent, transparent 39px, rgba(0,0,0,0.07) 39px, rgba(0,0,0,0.07) 40px)',
+  };
+
   return (
-    <div className="min-h-screen bg-[#181818] text-white">
+    <div className="min-h-screen text-white relative" style={pinboardStyle}>
 
       {/* ── NAVBAR ── */}
       <nav className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${scrolled ? "bg-[#181818]/90 backdrop-blur border-b border-white/10" : ""
@@ -306,7 +314,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── STATS BAR ── */}
-      <section className="border-y border-white/10 bg-[#0d1220]">
+      <section className="border-y border-white/10 relative z-[1]" style={{ backgroundColor: isDark ? 'rgba(13,18,32,0.85)' : 'rgba(230,228,220,0.85)' }}>
         <div className="max-w-6xl mx-auto px-6 py-8 grid grid-cols-2 lg:grid-cols-4 gap-6">
           {STATS.map((s) => (
             <div key={s.label} className="space-y-1">
@@ -320,28 +328,8 @@ export default function LandingPage() {
       {/* ── HOW IT WORKS ── */}
       <section
         id="how"
-        className="relative py-24 px-6 overflow-hidden bg-[#f6f5f1] dark:bg-[#181818]"
+        className="relative z-[1] py-24 px-6 overflow-hidden"
       >
-        {/* Horizontal ruled dashed lines spanning full section width (notebook-paper effect) */}
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{ zIndex: 0 }}
-          aria-hidden="true"
-        >
-          {Array.from({ length: 28 }).map((_, idx) => (
-            <div
-              key={idx}
-              style={{
-                position: "absolute",
-                left: 0,
-                right: 0,
-                top: `${(idx + 1) * (100 / 29)}%`,
-                height: 0,
-                borderTop: `1.5px dashed ${isDark ? "rgba(255,255,255,0.07)" : "rgba(0,0,0,0.07)"}`,
-              }}
-            />
-          ))}
-        </div>
 
         {/* ── Section header ── */}
         <div className="relative z-10 text-center mb-20">
@@ -379,83 +367,16 @@ export default function LandingPage() {
                       } ${i > 0 ? "md:-mt-16" : ""}`}
                   >
                     <div className="relative w-full md:w-[45%] max-w-[420px]">
-                      {/* Push-pin — matching reference exactly (placed outside motion.div to stay static and neutral) */}
+                      {/* Push-pin SVG component */}
                       <div
                         className="absolute z-20"
                         style={{
-                          top: "-22px",
+                          top: "-28px",
                           left: "50%",
                           transform: "translateX(-50%)",
-                          width: "48px",
-                          height: "62px",
                         }}
                       >
-                        {/* Soft oval shadow cast on card surface */}
-                        <div
-                          style={{
-                            position: "absolute",
-                            bottom: "2px",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "32px",
-                            height: "10px",
-                            borderRadius: "50%",
-                            background: `radial-gradient(ellipse, rgba(0,0,0,0.18) 0%, transparent 70%)`,
-                            zIndex: 0,
-                          }}
-                        />
-                        {/* Metallic spike/needle — thin tapered point */}
-                        <div
-                          style={{
-                            position: "absolute",
-                            bottom: "4px",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "4px",
-                            height: "20px",
-                            background: `linear-gradient(to bottom, ${step.pinShadow}, #888 40%, #aaa 100%)`,
-                            borderRadius: "2px 2px 1px 1px",
-                            clipPath: "polygon(30% 0%, 70% 0%, 55% 100%, 45% 100%)",
-                            zIndex: 1,
-                          }}
-                        />
-                        {/* Base rim — small disc where head meets spike */}
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: "34px",
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "16px",
-                            height: "6px",
-                            borderRadius: "50%",
-                            background: `linear-gradient(to bottom, ${step.pinShadow}, ${step.pinRim})`,
-                            boxShadow: `0 1px 3px rgba(0,0,0,0.2)`,
-                            zIndex: 3,
-                          }}
-                        />
-                        {/* Main sphere dome — slightly oblate for 3/4 view */}
-                        <div
-                          style={{
-                            position: "absolute",
-                            top: 0,
-                            left: "50%",
-                            transform: "translateX(-50%)",
-                            width: "44px",
-                            height: "38px",
-                            borderRadius: "50%",
-                            background: `
-                              radial-gradient(ellipse at 32% 25%, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.4) 18%, transparent 40%),
-                              radial-gradient(ellipse at 40% 35%, ${step.pinHighlight} 0%, ${step.pinColor} 50%, ${step.pinShadow} 100%)
-                            `,
-                            boxShadow: `
-                              inset 0 -5px 12px rgba(0,0,0,0.25),
-                              inset 2px 2px 8px rgba(255,255,255,0.15),
-                              0 4px 14px ${step.pinColor}66
-                            `,
-                            zIndex: 4,
-                          }}
-                        />
+                        <PushPin color={step.pinColor} className="w-14 h-14" />
                       </div>
 
                       <motion.div
@@ -572,7 +493,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── COMPARISON ── */}
-      <section id="compare" className="max-w-6xl mx-auto px-6 pb-24 space-y-8">
+      <section id="compare" className="relative z-[1] max-w-6xl mx-auto px-6 pb-24 space-y-8">
         <div className="space-y-3">
           <p className="text-xs text-[#555555] font-mono uppercase tracking-widest">Why NeuralNest</p>
           <h2 className="text-3xl font-black tracking-tight">
@@ -604,7 +525,7 @@ export default function LandingPage() {
       </section>
 
       {/* ── FINAL CTA ── */}
-      <section className="border-t border-white/10 bg-[#0d1220]">
+      <section className="border-t border-white/10 relative z-[1]" style={{ backgroundColor: isDark ? 'rgba(13,18,32,0.85)' : 'rgba(230,228,220,0.85)' }}>
         <div className="max-w-2xl mx-auto px-6 py-24 text-center space-y-6">
           <h2 className="text-4xl font-black tracking-tight">
             Your syllabus is already sitting on your desktop.

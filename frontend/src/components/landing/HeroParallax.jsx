@@ -87,13 +87,7 @@ const HeroParallax = () => {
       ref={containerRef}
       className="relative min-h-screen pt-20 pb-20 overflow-hidden flex flex-col z-10 bg-transparent"
     >
-      {/* LAYER 1 — Background canvas */}
-      <motion.div
-        style={reduceMotion ? {} : { y: bgY, opacity: bgOpacity }}
-        className="absolute inset-0 z-0"
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#F6F5F1] dark:to-[#181818]" />
-      </motion.div>
+      {/* LAYER 1 — Background canvas removed so global dotted lines show through */}
 
       <div className="relative w-full flex-grow flex flex-col justify-center">
 
@@ -105,7 +99,7 @@ const HeroParallax = () => {
           animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.8, delay: 0.8 }}
           style={reduceMotion ? {} : { y: cardBY, rotate: cardBRotate }}
-          className="hidden xl:flex flex-col items-center absolute top-[8%] left-[9%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-7 shadow-xl min-w-[220px]"
+          className="hidden xl:flex flex-col items-center absolute top-[8%] left-[9%] z-10 dark:backdrop-blur-md bg-white/95 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-7 shadow-xl min-w-[220px]"
         >
           <span className="text-[12px] text-[#9CA3AF] font-bold tracking-[0.8px] mb-3">TOPIC MASTERY</span>
           <div className="relative w-24 h-24 mb-3 flex items-center justify-center">
@@ -131,7 +125,7 @@ const HeroParallax = () => {
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.8, delay: 1.0 }}
           style={reduceMotion ? {} : { y: cardCY }}
-          className="hidden xl:block absolute top-[52%] right-[8%] z-10 backdrop-blur-md bg-white/80 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-7 shadow-xl min-w-[290px]"
+          className="hidden xl:block absolute top-[52%] right-[8%] z-10 dark:backdrop-blur-md bg-white/95 dark:bg-white/5 border border-[#EAE8E1] dark:border-white/10 rounded-2xl p-7 shadow-xl min-w-[290px]"
         >
           <div className="text-[13px] text-[#F59E0B] mb-2.5 font-extrabold tracking-[0.8px]">GRADE_NODE</div>
           <div className="h-px w-full bg-slate-200 dark:bg-white/10 mb-3" />

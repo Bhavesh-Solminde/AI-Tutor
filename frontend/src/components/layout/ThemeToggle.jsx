@@ -2,8 +2,15 @@ import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
 
+import { useLocation } from 'react-router-dom';
+
 const ThemeToggle = () => {
   const { theme, toggleTheme } = useTheme();
+  const location = useLocation();
+
+  if (['/', '/login', '/register'].includes(location.pathname)) {
+    return null;
+  }
 
   return (
     <button

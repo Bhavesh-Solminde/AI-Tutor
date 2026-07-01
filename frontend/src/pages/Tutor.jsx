@@ -157,19 +157,15 @@ const Tutor = () => {
       message: text,
       type: (() => {
         if (messages.length === 0) return 'teach';
-        // Classify as doubt only for genuine follow-up questions:
-        //   - Contains a question mark, OR
-        //   - Starts with why/how/what (not "explain X" teaching commands)
         const startsWithQuestion = /^(why|how|what|when|where|who)\b/i.test(text.trim());
         const hasQuestionMark = text.includes('?');
         return (startsWithQuestion || hasQuestionMark) ? 'doubt' : 'teach';
       })(),
       chatHistoryId: activeChatId,
       materialSessionIds: attachedMaterials.map((m) => m._id),
+      materialSessionSummaries: attachedMaterials.map((m) => m.topicSummary).filter(Boolean),
       onChatCreated: (newId) => {
-        // Backend auto-created a chat — update URL so refresh re-loads this exact chat
         navigate(`/tutor/new?chatId=${newId}&section=${chatSection}`, { replace: true });
-        // Refresh sidebar so the new chat appears
         if (user?._id) fetchChatHistory(user._id);
       },
     });

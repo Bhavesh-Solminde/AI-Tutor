@@ -10,6 +10,11 @@ export interface IExam extends Document {
   pyqUploaded: boolean;
   pyqFileUrl?: string;
   topicFrequencies: Record<string, number>;
+  status: "active" | "past";
+  // Snapshot captured when exam is archived
+  finalMasteryScore?: number;
+  finalMastered?: number;
+  finalTotal?: number;
   createdAt: Date;
 }
 
@@ -24,10 +29,15 @@ const ExamSchema = new Schema<IExam>(
     pyqUploaded: { type: Boolean, default: false },
     pyqFileUrl: { type: String },
     topicFrequencies: { type: Map, of: Number, default: {} },
+    status: { type: String, enum: ["active", "past"], default: "active" },
+    finalMasteryScore: { type: Number },
+    finalMastered: { type: Number },
+    finalTotal: { type: Number },
   },
   { timestamps: true }
 );
 
-ExamSchema.index({ userId: 1 }, { unique: true });
+// Compound index — allows multiple past exams per user, only one active at a time
+ExamSchema.index({ userId: 1, status: 1 });
 
 export const Exam = mongoose.model<IExam>("Exam", ExamSchema);

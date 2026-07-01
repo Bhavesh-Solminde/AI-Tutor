@@ -145,6 +145,9 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
                   <div className="w-full min-w-0">
                     <h4 className="text-xs font-bold text-text-base-light dark:text-text-base-dark leading-tight line-clamp-2 break-all" title={item.title}>{item.title}</h4>
                     <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark mt-1 truncate w-full">{item.desc}</p>
+                    {item.type === 'study' && (
+                      <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent rounded-md">Study PDF</span>
+                    )}
                   </div>
                 </div>
               ))}
@@ -161,7 +164,12 @@ const MaterialsModal = ({ isOpen, onClose, onConfirm }) => {
                     <FileText className={`h-4.5 w-4.5 flex-shrink-0 ${item.selected ? 'text-primary dark:text-accent-light' : 'text-text-muted-light dark:text-text-muted-dark'}`} />
                     <div className="min-w-0 flex-1">
                       <h4 className="text-xs font-bold text-text-base-light dark:text-text-base-dark leading-tight truncate" title={item.title}>{item.title}</h4>
-                      <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark truncate">{item.desc}</p>
+                      <div className="flex items-center gap-1.5">
+                        <p className="text-[10px] text-text-muted-light dark:text-text-muted-dark truncate">{item.desc}</p>
+                        {item.type === 'study' && (
+                          <span className="flex-shrink-0 text-[9px] font-bold uppercase tracking-wide px-1.5 py-0.5 bg-primary/10 dark:bg-accent/10 text-primary dark:text-accent rounded-md">Study</span>
+                        )}
+                      </div>
                     </div>
                   </div>
                   {item.selected && <CheckCircle2 className="h-4.5 w-4.5 text-emerald-500 flex-shrink-0" />}

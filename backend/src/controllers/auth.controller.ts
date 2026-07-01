@@ -6,24 +6,55 @@ import { generateToken } from "../middleware/auth";
 import { AuthRequest } from "../types";
 import { env } from "../config/env";
 import { createLogger } from "../config/logger";
+import { registerSchema, loginSchema, formatZodErrors } from "../utils/authValidation";
+import { z } from "zod";
 
 const log = createLogger("controller:auth");
 
 // POST /api/auth/register
 export async function register(req: Request, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { email, password, name } = req.body;
-    const existing = await User.findOne({ email });
-    if (existing) {
-      log.warn("Registration: email already exists", { email });
-      res.status(409).json({ error: "Email already registered" });
+    // Validate input
+    const parsed = registerSchema.safeParse(req.body);
+    if (!parsed.success) {
+      const fieldErrors = formatZodErrors(parsed.error);
+      const firstMessage = Object.values(fieldErrors)[0];
+      res.status(422).json({ error: firstMessage, fieldErrors });
       return;
     }
+
+    const { email, password, name } = parsed.data;
+
+    const existing = await User.findOne({ email: email.toLowerCase() });
+    if (existing) {
+      log.warn("Registration: email already exists", { email });
+      res.status(409).json({
+        error: "An account with this email already exists. Try logging in instead.",
+        fieldErrors: { email: "An account with this email already exists." },
+      });
+      return;
+    }
+
     const passwordHash = await bcrypt.hash(password, 12);
-    const user = await User.create({ email, passwordHash, name, authProvider: "local" });
+    const user = await User.create({
+      email: email.toLowerCase(),
+      passwordHash,
+      name: name.trim(),
+      authProvider: "local",
+    });
+
     const token = generateToken(user._id.toString());
     log.info("New user registered", { userId: user._id, email });
-    res.status(201).json({ token, user: { _id: user._id, email: user.email, name: user.name, avatar: user.avatar } });
+    res.status(201).json({
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+        onboarded: user.onboarded,
+      },
+    });
   } catch (err) {
     next(err);
   }
@@ -31,16 +62,41 @@ export async function register(req: Request, res: Response, next: NextFunction):
 
 // POST /api/auth/login
 export async function login(req: Request, res: Response, next: NextFunction): Promise<void> {
+  // Validate input format first
+  const parsed = loginSchema.safeParse(req.body);
+  if (!parsed.success) {
+    const fieldErrors = formatZodErrors(parsed.error);
+    const firstMessage = Object.values(fieldErrors)[0];
+    res.status(422).json({ error: firstMessage, fieldErrors });
+    return;
+  }
+
   passport.authenticate("local", { session: false }, (err: any, user: any, info: any) => {
     if (err) return next(err);
     if (!user) {
       log.warn("Login failed: invalid credentials", { email: req.body?.email });
-      res.status(401).json({ error: info?.message ?? "Invalid credentials" });
+      // Never reveal which field is wrong — generic message for security
+      res.status(401).json({
+        error: "Incorrect email or password. Please try again.",
+        fieldErrors: {
+          email: " ", // trigger field highlight without message
+          password: "Incorrect email or password.",
+        },
+      });
       return;
     }
     const token = generateToken(user._id.toString());
     log.info("User logged in", { userId: user._id, email: user.email });
-    res.json({ token, user: { _id: user._id, email: user.email, name: user.name, avatar: user.avatar } });
+    res.json({
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        name: user.name,
+        avatar: user.avatar,
+        onboarded: user.onboarded,
+      },
+    });
   })(req, res, next);
 }
 

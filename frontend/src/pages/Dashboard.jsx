@@ -24,6 +24,7 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const {
     topics, overallMastery, mastered, total, loading: progressLoading, error: progressError, fetchProgress,
+    recommendations, recommendationsLoading, fetchRecommendations,
   } = useProgressStore();
   const {
     exam, daysLeft, rescuePlan, fetchExam, fetchStudyPlan, loading: examLoading,
@@ -36,11 +37,14 @@ const Dashboard = () => {
       fetchExam(user._id);
       fetchStudyPlan(user._id);
       fetchQuizHistory(user._id);
+      fetchRecommendations();
     }
   }, [user?._id]);
 
-  // Derive the next recommended topic (last in-progress or first unstarted)
-  const nextTopic = topics.find((t) => t.status === 'learning') || topics.find((t) => t.status === 'unstarted');
+  // Performance-based recommendation (from backend scoring)
+  const topRec = recommendations?.[0];
+  // Fallback: pick by status if no recommendations yet
+  const nextTopic = topRec?.topic || topics.find((t) => t.status === 'learning') || topics.find((t) => t.status === 'unstarted');
   // Continue card: most recently studied (highest masteryScore but not mastered)
   const continueTopic = topics.find((t) => t.status === 'learning' && t.masteryScore > 0);
 
@@ -95,7 +99,7 @@ const Dashboard = () => {
         {/* Main Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           <div className="lg:col-span-8 space-y-6 flex flex-col justify-between">
-            {progressLoading ? (
+            {progressLoading || recommendationsLoading ? (
               <><CardSkeleton /><CardSkeleton /></>
             ) : (
               <>
@@ -104,7 +108,8 @@ const Dashboard = () => {
                     topicId={nextTopic._id}
                     topicName={nextTopic.name}
                     difficulty={nextTopic.difficulty}
-                    estTime={nextTopic.estimatedTime || 'Est. 30m'}
+                    estTime={nextTopic.estimatedMinutes ? `Est. ${nextTopic.estimatedMinutes}m` : 'Est. 30m'}
+                    reason={topRec?.reason || ''}
                     onCtaClick={() => navigate(`/tutor/${nextTopic._id}`)}
                   />
                 )}
@@ -122,13 +127,18 @@ const Dashboard = () => {
           </div>
 
           <div className="lg:col-span-4">
-            {rescuePlan ? (
+            {/* Only show rescue plan if exam is still upcoming */}
+            {rescuePlan && daysLeft !== null && daysLeft > 0 ? (
+              <RescuePlanTimeline rescuePlan={rescuePlan.days || []} />
+            ) : rescuePlan && (daysLeft === null || daysLeft > 0) ? (
               <RescuePlanTimeline rescuePlan={rescuePlan.days || []} />
             ) : (
               <div className="p-6 border border-dashed border-border-light dark:border-border-dark rounded-2xl flex flex-col items-center justify-center text-center space-y-2 h-full">
-                <p className="text-sm font-semibold text-[#555555] dark:text-[#666666]">No rescue plan yet</p>
+                <p className="text-sm font-semibold text-[#555555] dark:text-[#666666]">
+                  {daysLeft !== null && daysLeft <= 0 ? 'Exam has passed' : 'No rescue plan yet'}
+                </p>
                 <button onClick={() => navigate('/exam')} className="text-xs text-primary dark:text-accent hover:underline">
-                  Generate Plan →
+                  {daysLeft !== null && daysLeft <= 0 ? 'Archive & start new exam →' : 'Generate Plan →'}
                 </button>
               </div>
             )}

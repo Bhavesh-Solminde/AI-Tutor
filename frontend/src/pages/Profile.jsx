@@ -8,10 +8,11 @@ import toast from 'react-hot-toast';
 import UserProfileCard from '../components/profile/UserProfileCard';
 import MasteryHeatmap from '../components/profile/MasteryHeatmap';
 import { CardSkeleton } from '../components/ui/LoadingSkeleton';
+import { Trophy, BookOpen, Calendar } from 'lucide-react';
 
 const Profile = () => {
   const { user, updateUser, logout } = useAuthStore();
-  const { exam, fetchExam } = useExamStore();
+  const { exam, fetchExam, examHistory, historyLoading, fetchExamHistory } = useExamStore();
   const { mastered: topicsDone, fetchProgress } = useProgressStore();
 
   // Compute weekly streak the same way Dashboard does — single source of truth
@@ -31,6 +32,7 @@ const Profile = () => {
     if (user?._id) {
       fetchExam(user._id);
       fetchProgress(user._id);
+      fetchExamHistory();
     }
   }, [user?._id]);
 
@@ -153,6 +155,60 @@ const Profile = () => {
               </button>
             )}
           </div>
+        </div>
+
+        {/* Exam History */}
+        <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark shadow-sm overflow-hidden">
+          <div className="px-5 py-4 border-b border-border-light dark:border-border-dark flex items-center gap-2">
+            <Trophy className="h-4 w-4 text-amber-500" />
+            <h4 className="font-bold text-sm text-[#333333] dark:text-white">Exam History</h4>
+          </div>
+          {historyLoading ? (
+            <div className="p-5"><CardSkeleton lines={2} /></div>
+          ) : examHistory.length === 0 ? (
+            <div className="p-5 text-center">
+              <p className="text-xs text-[#555555] dark:text-[#666666]">
+                No past exams yet. Complete your first exam to see it here.
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-slate-100 dark:divide-border-dark">
+              {examHistory.map((h) => (
+                <div key={h._id} className="p-4 flex items-start justify-between gap-4">
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <BookOpen className="h-3.5 w-3.5 text-primary dark:text-accent flex-shrink-0" />
+                      <span className="text-sm font-bold text-[#333333] dark:text-white truncate">{h.subject}</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 mt-1">
+                      <Calendar className="h-3 w-3 text-[#777777]" />
+                      <span className="text-[11px] text-[#666666] dark:text-[#888888]">
+                        {new Date(h.examDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </span>
+                    </div>
+                    {h.finalTotal > 0 && (
+                      <div className="mt-2">
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="text-[10px] text-[#777777]">
+                            {h.finalMastered}/{h.finalTotal} topics mastered
+                          </span>
+                          <span className="text-[10px] font-bold text-primary dark:text-accent">
+                            {h.finalMasteryScore ?? 0}%
+                          </span>
+                        </div>
+                        <div className="h-1.5 w-full bg-slate-100 dark:bg-border-dark rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-primary dark:bg-accent rounded-full transition-all"
+                            style={{ width: `${h.finalMasteryScore ?? 0}%` }}
+                          />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">

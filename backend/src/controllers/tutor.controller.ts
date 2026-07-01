@@ -14,7 +14,7 @@ const log = createLogger("controller:tutor");
 // POST /api/tutor/chat — SSE streaming
 export async function tutorChat(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
-    const { topicId, message, type, chatHistoryId, materialSessionIds } = req.body;
+    const { topicId, message, type, chatHistoryId, materialSessionIds, materialSessionSummaries: clientSummaries } = req.body;
     const userId = req.userId!;
 
     log.info("Tutor chat request", {
@@ -65,13 +65,24 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
     res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders();
 
-    // Resolve material namespaces from the selected session IDs
+    // Resolve material namespaces AND human-readable names from the selected session IDs
     let materialNamespaces: string[] = [];
+    let materialSessionNames: string[] = [];
+    let materialSessionSummaries: string[] = [];
     if (materialSessionIds && materialSessionIds.length > 0) {
       const validIds = (materialSessionIds as string[]).filter((id) => mongoose.Types.ObjectId.isValid(id));
       const materialSessions = await Session.find({ _id: { $in: validIds }, userId });
       materialNamespaces = materialSessions.map((s) => s.pineconeNamespace);
-      log.debug("Material namespaces resolved", { count: materialNamespaces.length, namespaces: materialNamespaces });
+      materialSessionNames = materialSessions.map((s) => s.name);
+      // Use DB summaries (authoritative) — fall back to client-sent if DB field not yet populated
+      materialSessionSummaries = materialSessions.map(
+        (s, i) => s.topicSummary || (clientSummaries?.[i] ?? "")
+      );
+      log.debug("Material sessions resolved", {
+        count: materialNamespaces.length,
+        names: materialSessionNames,
+        hasSummaries: materialSessionSummaries.filter(Boolean).length,
+      });
     }
 
     // ── Build learning profile string for prompt injection ─────────────────
@@ -97,10 +108,12 @@ export async function tutorChat(req: AuthRequest, res: Response, next: NextFunct
       chatHistory,
       sessionId: topic?.sessionId?.toString() || "",
       materialNamespaces,
+      materialSessionNames,
+      materialSessionSummaries,
       currentDateTime: new Date().toISOString(),
-      loopCount: 0, // Reset loop counter for each new user message
-      learningProfile: profileStr,                      // ← ADD
-      selfRatingBefore: topic?.selfRatingBefore ?? 0,   // ← ADD
+      loopCount: 0,
+      learningProfile: profileStr,
+      selfRatingBefore: topic?.selfRatingBefore ?? 0,
     }, emit);
 
     // ── Resolve / auto-create ChatHistory BEFORE streaming ────────────────────
