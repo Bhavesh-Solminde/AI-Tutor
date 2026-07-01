@@ -55,8 +55,8 @@ const TutorChatPanel = ({
               </div>
               
               <div className="text-center space-y-2">
-                <h3 className="font-extrabold text-2xl text-[#333333] dark:text-white">Hello, I'm NeuralNest</h3>
-                <p className="text-sm text-[#555555] dark:text-[#666666] max-w-md mx-auto">
+                <h3 className="font-extrabold text-2xl text-text-primary-light dark:text-text-primary-dark">Hello, I'm NeuralNest</h3>
+                <p className="text-sm text-text-muted-light dark:text-text-muted-dark max-w-md mx-auto">
                   Your AI-powered learning companion. What would you like to explore today?
                 </p>
               </div>
@@ -65,10 +65,10 @@ const TutorChatPanel = ({
               <QuickActionCards onActionClick={onSend} />
 
               {/* Footer Quick Links */}
-              <div className="flex items-center justify-center space-x-2 text-xs text-[#666666] dark:text-[#555555] pt-3">
-                <button className="hover:text-[#4A4A4A] dark:hover:text-slate-300 transition-colors">View More</button>
+              <div className="flex items-center justify-center space-x-2 text-xs text-text-muted-light dark:text-text-muted-dark pt-3">
+                <button className="hover:text-text-primary-light dark:hover:text-text-primary-dark transition-colors">View More</button>
                 <span>•</span>
-                <button className="hover:text-[#4A4A4A] dark:hover:text-slate-300 transition-colors">View Previous Chat Sessions</button>
+                <button className="hover:text-text-primary-light dark:hover:text-text-primary-dark transition-colors">View Previous Chat Sessions</button>
               </div>
               </div>
             ) : (
@@ -76,8 +76,8 @@ const TutorChatPanel = ({
                 <div className="w-16 h-16 bg-primary/10 dark:bg-accent/10 rounded-2xl text-primary dark:text-accent flex items-center justify-center mb-2 shadow-sm">
                   <Brain className="h-8 w-8" />
                 </div>
-                <h3 className="font-extrabold text-2xl text-[#333333] dark:text-white">Ready to master this topic?</h3>
-                <p className="text-sm text-[#555555] dark:text-[#666666] max-w-md">
+                <h3 className="font-extrabold text-2xl text-text-primary-light dark:text-text-primary-dark">Ready to master this topic?</h3>
+                <p className="text-sm text-text-muted-light dark:text-text-muted-dark max-w-md">
                   Click the button below to have your AI tutor start teaching <strong>{topicName}</strong> from the beginning.
                 </p>
               </div>
@@ -90,7 +90,7 @@ const TutorChatPanel = ({
                     <div className="space-y-3 mt-3 w-full">
                       <YoutubeSuggestions topic={topicName} />
                       <ComprehensionChips onChipClick={onChipClick} />
-                      <p className="text-xs text-[#666666] dark:text-[#555555] italic font-medium mt-1">
+                      <p className="text-xs text-text-muted-light dark:text-text-muted-dark italic font-medium mt-1">
                         Do you have any doubts or questions before we move on?
                       </p>
                     </div>
@@ -101,7 +101,7 @@ const TutorChatPanel = ({
           )}
 
           {isTyping && (
-            <div className="flex items-center space-x-2 text-[#666666] mt-4 px-1 flex-shrink-0">
+            <div className="flex items-center space-x-2 text-text-muted-light dark:text-text-muted-dark mt-4 px-1 flex-shrink-0">
               <div className="h-2 w-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '0ms' }} />
               <div className="h-2 w-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '150ms' }} />
               <div className="h-2 w-2 bg-slate-400 rounded-full animate-pulse" style={{ animationDelay: '300ms' }} />

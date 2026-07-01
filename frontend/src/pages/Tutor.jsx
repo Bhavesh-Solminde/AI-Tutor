@@ -203,7 +203,7 @@ const Tutor = () => {
               </button>
               <div className="min-w-0">
                 <span className="text-[10px] font-sans tracking-wider uppercase text-primary dark:text-accent">Active Session</span>
-                <h2 className="text-base md:text-lg font-bold text-[#333333] dark:text-white truncate max-w-[140px] sm:max-w-xs md:max-w-none">{topicName}</h2>
+                <h2 className="text-base md:text-lg font-bold text-text-primary-light dark:text-text-primary-dark truncate max-w-[140px] sm:max-w-xs md:max-w-none">{topicName}</h2>
               </div>
             </div>
             <div className="flex items-center space-x-2 flex-shrink-0">

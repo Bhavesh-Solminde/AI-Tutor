@@ -42,9 +42,13 @@ const Dashboard = () => {
   }, [user?._id]);
 
   // Performance-based recommendation (from backend scoring)
-  const topRec = recommendations?.[0];
-  // Fallback: pick by status if no recommendations yet
-  const nextTopic = topRec?.topic || topics.find((t) => t.status === 'learning') || topics.find((t) => t.status === 'unstarted');
+  const topRec = recommendations?.[0] ?? null;
+  // nextTopic: prefer the recommended topic; fall back to in-progress or first unstarted
+  const nextTopic = topRec?.topic
+    ?? topics.find((t) => t.status === 'learning')
+    ?? topics.find((t) => t.status === 'unstarted');
+  // unmetPrerequisites only comes from topRec — fallback topics have no prereq data
+  const unmetPrerequisites = topRec?.unmetPrerequisites ?? [];
   // Continue card: most recently studied (highest masteryScore but not mastered)
   const continueTopic = topics.find((t) => t.status === 'learning' && t.masteryScore > 0);
 
@@ -110,7 +114,7 @@ const Dashboard = () => {
                     difficulty={nextTopic.difficulty}
                     estTime={nextTopic.estimatedMinutes ? `Est. ${nextTopic.estimatedMinutes}m` : 'Est. 30m'}
                     reason={topRec?.reason || ''}
-                    unmetPrerequisites={topRec?.unmetPrerequisites || []}
+                    unmetPrerequisites={unmetPrerequisites}
                     onCtaClick={() => navigate(`/tutor/${nextTopic._id}`)}
                   />
                 )}
