@@ -83,10 +83,12 @@ const useMusicStore = create((set, get) => ({
    * Does nothing if:
    *  - Music is already playing
    *  - The user has explicitly closed the player
+   *  - The user has EVER interacted with the player (played or paused manually)
+   *    — this prevents a click event from restarting music the user deliberately stopped
    */
   autoplay: (genre) => {
-    const { isPlaying, userClosedPlayer } = get();
-    if (isPlaying || userClosedPlayer) return;
+    const { isPlaying, userClosedPlayer, hasEverPlayed } = get();
+    if (isPlaying || userClosedPlayer || hasEverPlayed) return;
     set({
       isOpen: true,
       isPlaying: true,

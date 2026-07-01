@@ -81,7 +81,14 @@ const useYouTubePlayer = ({ containerId, videoId, isPlaying, volume, onReady }) 
             readyRef.current = true;
             prevVideoId.current = videoId;
             e.target.setVolume(volume);
-            e.target.playVideo();
+            // Only start playback if the store says we should be playing.
+            // Don't blindly call playVideo() — the user may have paused before
+            // the player finished initialising (or on player recreation).
+            if (isPlaying) {
+              e.target.playVideo();
+            } else {
+              userPaused.current = true; // treat as user-paused from the start
+            }
             onReady?.();
           },
           onStateChange: (e) => {
