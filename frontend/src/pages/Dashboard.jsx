@@ -66,7 +66,7 @@ const Dashboard = () => {
       <div className="space-y-8 text-left">
         <div>
           <h1 className="text-2xl font-bold text-[#333333] dark:text-white">Workspace Overview</h1>
-          <p className="text-sm text-[#555555] dark:text-[#666666]">
+          <p className="text-sm text-text-muted-light dark:text-text-muted-dark">
             Welcome back, {user?.name || '—'}. Track your rescue plan and mastery status.
           </p>
         </div>
@@ -110,6 +110,7 @@ const Dashboard = () => {
                     difficulty={nextTopic.difficulty}
                     estTime={nextTopic.estimatedMinutes ? `Est. ${nextTopic.estimatedMinutes}m` : 'Est. 30m'}
                     reason={topRec?.reason || ''}
+                    unmetPrerequisites={topRec?.unmetPrerequisites || []}
                     onCtaClick={() => navigate(`/tutor/${nextTopic._id}`)}
                   />
                 )}
@@ -127,14 +128,11 @@ const Dashboard = () => {
           </div>
 
           <div className="lg:col-span-4">
-            {/* Only show rescue plan if exam is still upcoming */}
-            {rescuePlan && daysLeft !== null && daysLeft > 0 ? (
-              <RescuePlanTimeline rescuePlan={rescuePlan.days || []} />
-            ) : rescuePlan && (daysLeft === null || daysLeft > 0) ? (
+            {rescuePlan && (daysLeft === null || daysLeft > 0) ? (
               <RescuePlanTimeline rescuePlan={rescuePlan.days || []} />
             ) : (
               <div className="p-6 border border-dashed border-border-light dark:border-border-dark rounded-2xl flex flex-col items-center justify-center text-center space-y-2 h-full">
-                <p className="text-sm font-semibold text-[#555555] dark:text-[#666666]">
+                <p className="text-sm font-semibold text-text-muted-light dark:text-text-muted-dark">
                   {daysLeft !== null && daysLeft <= 0 ? 'Exam has passed' : 'No rescue plan yet'}
                 </p>
                 <button onClick={() => navigate('/exam')} className="text-xs text-primary dark:text-accent hover:underline">

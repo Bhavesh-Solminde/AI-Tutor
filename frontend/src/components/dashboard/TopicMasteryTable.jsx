@@ -9,7 +9,7 @@ const TopicMasteryTable = ({ topics, onStudyClick }) => {
     } else if (diff === 'medium') {
       return 'bg-amber-500/10 text-amber-500 dark:text-amber-400';
     } else {
-      return 'bg-red-500/10 text-red-500 dark:text-red-400';
+      return 'bg-rose-500/10 text-rose-500 dark:text-rose-400';
     }
   };
 
@@ -23,7 +23,7 @@ const TopicMasteryTable = ({ topics, onStudyClick }) => {
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark shadow-sm overflow-hidden text-left">
       <div className="p-5 border-b border-border-light/40 dark:border-border-dark/40 flex justify-between items-center">
         <h3 className="font-bold text-[#333333] dark:text-white text-base">Topic Mastery</h3>
-        <button className="text-xs font-semibold text-[#3B6BFF] hover:underline">
+        <button className="text-xs font-semibold text-[#3B6BFF] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded">
           View All
         </button>
       </div>
@@ -31,7 +31,7 @@ const TopicMasteryTable = ({ topics, onStudyClick }) => {
       <div className="overflow-x-auto">
         <table className="w-full text-left text-sm border-collapse">
           <thead>
-            <tr className="bg-white/60/50 dark:bg-slate-900/40 text-xs font-mono text-text-muted-light dark:text-text-muted-dark border-b border-border-light/40 dark:border-border-dark/40 uppercase">
+            <tr className="bg-slate-50/60 dark:bg-slate-900/40 text-[10px] font-semibold text-text-muted-light dark:text-text-muted-dark border-b border-border-light/40 dark:border-border-dark/40 uppercase tracking-wider">
               <th className="p-4 font-semibold">Topic</th>
               <th className="p-4 font-semibold">Difficulty</th>
               <th className="p-4 font-semibold">Est. Time</th>
@@ -46,7 +46,7 @@ const TopicMasteryTable = ({ topics, onStudyClick }) => {
               const progress = t.masteryScore ?? t.progress ?? 0;
               const estTime = t.estimatedMinutes ? `${t.estimatedMinutes}m` : (t.time || '—');
               return (
-                <tr key={topicId} className="hover:bg-white/60/30 dark:hover:bg-slate-900/10 transition">
+                <tr key={topicId} className="hover:bg-slate-50/60 dark:hover:bg-slate-900/10 transition-colors">
                   <td className="p-4 font-semibold text-[#333333] dark:text-text-primary-dark">{t.name}</td>
                   <td className="p-4">
                     <span className={`px-3 py-1 rounded-full text-[10px] font-bold capitalize ${getDifficultyStyles(difficulty)}`}>
@@ -68,10 +68,11 @@ const TopicMasteryTable = ({ topics, onStudyClick }) => {
                   <td className="p-4 text-right">
                     <button
                       onClick={() => onStudyClick(topicId)}
-                      className="p-1 rounded-full text-[#3B6BFF] hover:opacity-80 transition"
+                      aria-label={`Study ${t.name}`}
+                      className="p-1 rounded-full text-[#3B6BFF] hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition"
                       title="Start study session"
                     >
-                      <PlayCircle className="h-5.5 w-5.5" />
+                      <PlayCircle className="h-5 w-5" />
                     </button>
                   </td>
                 </tr>

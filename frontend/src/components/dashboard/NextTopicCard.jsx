@@ -11,7 +11,7 @@ const NextTopicCard = ({
     <div className="border border-border-light dark:border-border-dark rounded-2xl bg-white dark:bg-surface-dark p-6 shadow-sm flex flex-col justify-between space-y-5 text-left">
       <div className="space-y-3.5">
         <div className="space-y-1">
-          <h4 className="font-mono text-xs text-text-muted-light dark:text-text-muted-dark uppercase tracking-wider font-bold">
+          <h4 className="text-[10px] font-semibold text-text-muted-light dark:text-text-muted-dark uppercase tracking-wider">
             {title}
           </h4>
           <p className="text-sm font-bold text-text-base-light dark:text-text-base-dark">
@@ -21,7 +21,7 @@ const NextTopicCard = ({
 
         {/* Progress bar */}
         <div className="space-y-1">
-          <div className="w-full h-1.5 bg-white/80 dark:bg-border-dark rounded-full overflow-hidden">
+          <div className="w-full h-1.5 bg-slate-100 dark:bg-border-dark rounded-full overflow-hidden">
             <div 
               className="h-full bg-primary dark:bg-accent transition-all duration-300"
               style={{ width: `${progress}%` }}
@@ -36,13 +36,13 @@ const NextTopicCard = ({
       <div className="grid grid-cols-2 gap-3">
         <button
           onClick={onResume}
-          className="py-2.5 bg-cta hover:bg-cta-hover text-white text-xs font-bold rounded-xl shadow-md transition-all duration-300 text-center"
+          className="py-2.5 bg-cta hover:bg-cta-hover text-white text-xs font-bold rounded-full shadow-md transition-all duration-300 text-center"
         >
           Resume
         </button>
         <button
           onClick={onTakeQuiz}
-          className="py-2.5 border border-border-light dark:border-border-dark hover:bg-white/60 dark:hover:bg-elevated-dark text-text-base-light dark:text-text-base-dark text-xs font-bold rounded-xl transition-all duration-300 text-center"
+          className="py-2.5 border border-border-light dark:border-border-dark hover:bg-slate-100 dark:hover:bg-elevated-dark text-text-base-light dark:text-text-base-dark text-xs font-bold rounded-2xl transition-all duration-300 text-center"
         >
           Take Quiz
         </button>

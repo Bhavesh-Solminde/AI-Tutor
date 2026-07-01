@@ -42,36 +42,64 @@ export async function updateProgress(req: AuthRequest, res: Response, next: Next
 export async function getRecommendations(req: AuthRequest, res: Response, next: NextFunction): Promise<void> {
   try {
     const userId = req.userId!;
-    const topics = await Topic.find({ userId, archived: { $ne: true } });
+    const allTopics = await Topic.find({ userId, archived: { $ne: true } });
 
-    if (topics.length === 0) {
+    if (allTopics.length === 0) {
       res.json({ recommendations: [] });
       return;
     }
 
     const now = Date.now();
+    // Build a quick lookup: topicName → status for prerequisite checking
+    const topicStatusMap = new Map(allTopics.map((t) => [t.name, t.status]));
 
-    const scored = topics
+    const scored = allTopics
       .filter((t) => t.masteryScore < 85) // skip already-mastered topics
       .map((t) => {
+        // ── Staleness (only for topics the student has actually studied) ──────
         const daysSinceStudied = t.lastStudiedAt
           ? Math.floor((now - new Date(t.lastStudiedAt).getTime()) / (1000 * 60 * 60 * 24))
-          : 14; // treat never-studied as 2 weeks stale
+          : null; // null = never studied (treated differently from "stale")
+        const stalenessBonus = daysSinceStudied !== null
+          ? Math.min(daysSinceStudied, 7) * 3   // max 21 pts for forgotten topics
+          : 0;                                    // never-studied: no staleness bonus
 
-        const masteryUrgency  = (100 - t.masteryScore) * 0.4;
-        const pyqBoost        = (t.pyqFrequency || 0) * 15;
-        const stalenessBonus  = Math.min(daysSinceStudied, 7) * 3;
-        const difficultyBonus = t.difficulty === "hard" ? 10 : t.difficulty === "medium" ? 5 : 0;
-        const score = masteryUrgency + pyqBoost + stalenessBonus + difficultyBonus;
+        // ── Prerequisite gate ────────────────────────────────────────────────
+        const unmetPrereqs = t.prerequisites.filter(
+          (prereqName) => topicStatusMap.get(prereqName) !== "mastered"
+        );
+        const prereqsMastered = t.prerequisites.length - unmetPrereqs.length;
+        const allPrereqsDone = unmetPrereqs.length === 0;
+        const anyPrereqDone  = prereqsMastered > 0;
 
-        // Build a human-readable reason string
+        // ── Difficulty modifier — penalty for hard/medium if not ready ───────
+        // Before: hard got +10 bonus (wrong — caused "Error Backpropagation" bug)
+        // After:  hard gets -30 penalty unless all prereqs are complete
+        let difficultyMod = 0;
+        if (t.difficulty === "hard") {
+          difficultyMod = allPrereqsDone ? +5 : -30;
+        } else if (t.difficulty === "medium") {
+          difficultyMod = anyPrereqDone  ? +2 : -10;
+        } else {
+          difficultyMod = +5; // easy topics always get a small boost
+        }
+
+        // ── Readiness bonus — reward topics whose prereqs are all done ───────
+        const readinessBonus = allPrereqsDone && t.prerequisites.length > 0 ? 20 : 0;
+
+        // ── Core scoring ─────────────────────────────────────────────────────
+        const masteryUrgency = (100 - t.masteryScore) * 0.4;
+        const pyqBoost       = (t.pyqFrequency || 0) * 15;
+        const score = masteryUrgency + pyqBoost + stalenessBonus + difficultyMod + readinessBonus;
+
+        // ── Human-readable reason string ─────────────────────────────────────
         const reasons: string[] = [];
-        if (t.masteryScore < 40) reasons.push(`Low mastery (${t.masteryScore}%)`);
+        if (t.masteryScore < 40)  reasons.push(`Low mastery (${t.masteryScore}%)`);
         else if (t.masteryScore < 70) reasons.push(`Moderate mastery (${t.masteryScore}%)`);
         if ((t.pyqFrequency || 0) > 0) reasons.push("High exam frequency");
-        if (daysSinceStudied >= 5) reasons.push(`Not studied in ${daysSinceStudied}d`);
-        if (t.difficulty === "hard") reasons.push("Hard topic");
-        if (t.status === "unstarted") reasons.push("Not started yet");
+        if (daysSinceStudied !== null && daysSinceStudied >= 5) reasons.push(`Not studied in ${daysSinceStudied}d`);
+        if (allPrereqsDone && t.prerequisites.length > 0) reasons.push("Prerequisites complete — ready!");
+        if (t.status === "unstarted" && t.prerequisites.length === 0) reasons.push("Good starting point");
 
         return {
           topic: {
@@ -84,6 +112,8 @@ export async function getRecommendations(req: AuthRequest, res: Response, next: 
           },
           score,
           reason: reasons.length > 0 ? reasons.slice(0, 2).join(" · ") : "Good next step",
+          // Unmet prerequisites — used by the frontend to show a warning modal
+          unmetPrerequisites: unmetPrereqs,
         };
       })
       .sort((a, b) => b.score - a.score)

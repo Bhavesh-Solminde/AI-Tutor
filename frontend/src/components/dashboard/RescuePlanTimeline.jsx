@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Clock, Check, ChevronDown } from 'lucide-react';
+import { Clock, Check, ChevronDown, Target, FileText } from 'lucide-react';
 
 const RescuePlanTimeline = ({ rescuePlan }) => {
   const timelineSteps = rescuePlan || [];
@@ -24,8 +24,8 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
       </div>
 
       <div className="relative flex-1 pl-4 space-y-6 text-xs overflow-y-auto pr-2">
-        {/* Left vertical timeline bar */}
-        <div className="absolute left-[23px] top-2 bottom-2 w-0.5 bg-white/80 dark:bg-border-dark -z-0" />
+      {/* Left vertical timeline bar */}
+        <div className="absolute left-[26px] top-2 bottom-2 w-0.5 bg-slate-100 dark:bg-border-dark -z-0" />
 
         {timelineSteps.length > 0 ? timelineSteps.map((step, idx) => {
           const isFirstUncompleted = !step.completed && timelineSteps.slice(0, idx).every(s => s.completed);
@@ -42,7 +42,7 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
           };
 
           const dateStr = step.date ? new Date(step.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : '';
-          const title = step.isMockExam ? '🎯 Mock Exam' : `Day ${step.dayNumber} — ${dateStr}`;
+          const title = step.isMockExam ? 'Mock Exam' : `Day ${step.dayNumber} — ${dateStr}`;
           
           const stepKey = step._id || step.id || idx;
           const isExpanded = expandedDay === stepKey;
@@ -60,25 +60,28 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
                   className="flex items-center justify-between cursor-pointer group"
                   onClick={() => setExpandedDay(isExpanded ? null : stepKey)}
                 >
-                  <h4 className="font-bold text-[#333333] dark:text-text-primary-dark group-hover:text-primary dark:group-hover:text-accent transition-colors">
+                  <h4 className="flex items-center gap-1.5 font-bold text-[#333333] dark:text-text-primary-dark group-hover:text-primary dark:group-hover:text-accent transition-colors">
+                    {step.isMockExam && <Target className="h-3.5 w-3.5 flex-shrink-0 text-primary" />}
                     {title}
                   </h4>
-                  <ChevronDown className={`h-3.5 w-3.5 text-[#666666] transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`h-3.5 w-3.5 text-text-muted-light dark:text-text-muted-dark transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''}`} />
                 </div>
                 
                 {isExpanded && (
                   <div className="space-y-0.5 pt-1 animate-in slide-in-from-top-1 fade-in duration-200">
                     {(step.topics || []).map((t, ti) => (
-                      <p key={t.topicId || ti} className="text-xs text-text-muted-light dark:text-text-muted-dark truncate max-w-[200px]" title={t.topicName}>
-                        • {t.topicName}
+                      <p key={t.topicId || ti} className="flex items-center gap-1.5 text-xs text-text-muted-light dark:text-text-muted-dark truncate max-w-[200px]" title={t.topicName}>
+                        <span className="w-1 h-1 rounded-full bg-text-muted-light dark:bg-text-muted-dark flex-shrink-0" />
+                        {t.topicName}
                       </p>
                     ))}
                     {(step.topics || []).length === 0 && !step.isMockExam && (
                       <p className="text-xs text-[#666666] italic">No topics assigned.</p>
                     )}
                     {step.isMockExam && (
-                      <p className="text-xs text-purple-600 dark:text-purple-400 font-medium pt-1">
-                        📝 Full mock exam from past papers
+                      <p className="flex items-center gap-1.5 text-xs text-purple-600 dark:text-purple-400 font-medium pt-1">
+                        <FileText className="h-3 w-3 flex-shrink-0" />
+                        Full mock exam from past papers
                       </p>
                     )}
                   </div>
@@ -87,7 +90,7 @@ const RescuePlanTimeline = ({ rescuePlan }) => {
             </div>
           );
         }) : (
-          <p className="text-xs text-[#666666] italic">Timeline will appear here.</p>
+          <p className="text-xs text-text-muted-light dark:text-text-muted-dark">Timeline will appear once a rescue plan is generated.</p>
         )}
       </div>
     </div>
