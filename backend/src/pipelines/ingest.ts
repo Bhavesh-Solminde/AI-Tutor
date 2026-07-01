@@ -176,6 +176,7 @@ export async function ingestPDF(
   generateDocumentSummary(rawText, originalName)
     .then((summary) => {
       if (summary) return Session.findByIdAndUpdate(sessionId, { topicSummary: summary });
+      return undefined;
     })
     .catch(() => {}); // already logged inside generateDocumentSummary
 
@@ -260,6 +261,7 @@ export async function ingestText(
   generateDocumentSummary(rawText, "pasted notes")
     .then((summary) => {
       if (summary) return Session.findByIdAndUpdate(sessionId, { topicSummary: summary });
+      return undefined;
     })
     .catch(() => {});
 
@@ -324,6 +326,7 @@ export async function ingestReference(
   generateDocumentSummary(text, originalName)
     .then((summary) => {
       if (summary) return Session.findByIdAndUpdate(sessionId, { topicSummary: summary });
+      return undefined;
     })
     .catch(() => {});
 

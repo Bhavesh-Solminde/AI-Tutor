@@ -260,9 +260,9 @@ ${hasPYQData ? "- PYQ frequency data IS available — weight scheduling heavily 
       date: new Date(d.date),
       topics: d.topicNames.map((name: string) => {
         const nameLower = name.toLowerCase().trim();
-        let t = topics.find((topic) => topic.name.toLowerCase().trim() === nameLower);
+        let t = topics.find((topic: any) => topic.name.toLowerCase().trim() === nameLower);
         if (!t) {
-          t = topics.find((topic) => {
+          t = topics.find((topic: any) => {
             const tnl = topic.name.toLowerCase().trim();
             return tnl.includes(nameLower) || nameLower.includes(tnl);
           });
