@@ -11,7 +11,6 @@ const STEPS = [
     pinShadow: "#b8512e",
     pinRim: "#8c3a1e",
     cardBg: "#fff8f5",
-    cardBgDark: "#221915",
     rotate: "6deg",
     label: "Upload your syllabus",
     detail:
@@ -24,7 +23,6 @@ const STEPS = [
     pinShadow: "#4a63c8",
     pinRim: "#2e40a0",
     cardBg: "#f5f6ff",
-    cardBgDark: "#161826",
     rotate: "-7deg",
     label: "Agents build your map.",
     detail:
@@ -37,7 +35,6 @@ const STEPS = [
     pinShadow: "#4a8fb8",
     pinRim: "#2e6a8c",
     cardBg: "#f5fbff",
-    cardBgDark: "#131d2b",
     rotate: "5deg",
     label: "Get a personalised study plan.",
     detail:
@@ -50,7 +47,6 @@ const STEPS = [
     pinShadow: "#b88c2e",
     pinRim: "#8c6010",
     cardBg: "#fffdf0",
-    cardBgDark: "#222115",
     rotate: "-8deg",
     label: "Learn through dialogue.",
     detail:
@@ -63,7 +59,6 @@ const STEPS = [
     pinShadow: "#7a4ac8",
     pinRim: "#551e9e",
     cardBg: "#faf5ff",
-    cardBgDark: "#1d1626",
     rotate: "6deg",
     label: "Master the material.",
     detail:
@@ -157,7 +152,7 @@ export default function HorizontalScrollSteps() {
                       {/* Inner coloured card */}
                       <div
                         className="rounded-2xl p-6"
-                        style={{ backgroundColor: isDark ? step.cardBgDark : step.cardBg }}
+                        style={{ backgroundColor: step.cardBg }}
                       >
                         <p
                           className="mb-2"
