@@ -82,13 +82,22 @@ const ExamSetupWizard = ({ onComplete }) => {
         const freqEntries = Object.entries(pyqData.topicFrequencies)
           .sort((a, b) => b[1] - a[1])
           .slice(0, 8);
+
+        // Fuzzy coverage: normalise both sides (lowercase, alphanumeric only)
+        const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, '');
+        const pyqNormKeys = new Set(Object.keys(pyqData.topicFrequencies).map(norm));
+        const { topics: syllabusTopics } = useExamStore.getState();
+        const totalTopics = syllabusTopics?.length || 0;
+        const coveredCount = syllabusTopics?.filter((t) => pyqNormKeys.has(norm(t.name))).length || 0;
+        const approxCoverage = totalTopics > 0 ? Math.round((coveredCount / totalTopics) * 100) : 0;
+
         const insights = {
           topTopics: freqEntries.map(([name, freq]) => ({
             name,
             frequency: freq,
             importance: freq >= 5 ? 'Critical' : freq >= 3 ? 'High' : 'Medium',
           })),
-          coveragePercent: 0, // will be computed server-side
+          coveragePercent: approxCoverage,
           topicCount: freqEntries.length,
           unfeasibleTopics: [],
         };

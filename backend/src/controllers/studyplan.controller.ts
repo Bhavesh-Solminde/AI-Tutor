@@ -91,6 +91,10 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
     });
 
     // ── PYQ insights (always computed, returned to frontend) ──────────────────
+    // Use same normalization as pyqParser so name variants don't cause false misses
+    const normalize = (s: string) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+    const pyqNormKeys = new Set(Object.keys(pyqFrequencies).map(normalize));
+
     const pyqTopics = Object.entries(pyqFrequencies)
       .sort((a, b) => b[1] - a[1])
       .slice(0, 8)
@@ -99,9 +103,11 @@ export async function generateStudyPlan(req: AuthRequest, res: Response, next: N
         frequency: freq,
         importance: freq >= 5 ? "Critical" : freq >= 3 ? "High" : "Medium",
       }));
-    const pyqCoveredNames = new Set(Object.keys(pyqFrequencies).filter((k) => pyqFrequencies[k] > 0));
+
+    // Coverage: how many syllabus topics appear (fuzzy) in PYQ data
+    const coveredCount = topics.filter((t) => pyqNormKeys.has(normalize(t.name))).length;
     const coveragePercent = topics.length > 0
-      ? Math.round((topics.filter((t) => pyqCoveredNames.has(t.name)).length / topics.length) * 100)
+      ? Math.round((coveredCount / topics.length) * 100)
       : 0;
 
     // ── Sort topics by priority ───────────────────────────────────────────────
